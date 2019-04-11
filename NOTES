@@ -44,4 +44,9 @@ VM (Virtual Machine)
 
         for each line in input:
 
-            fwrite line output
+            fwrite line output as binary
+
+
+        NOTE:
+
+            can use 'xxd -r file.bin' to create a reverse print binary file
