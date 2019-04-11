@@ -1,34 +1,20 @@
-LANG
-
-    compile.py
-
-ASM
-
-    asm.py
-
-HEX
+LANGUAGE -> compile.py -> ASSEMBLY -> asm.py -> HEX -> bin.py -> BINARY -> vm.py -> VIRTUAL MACHINE
 
     bin.py
 
-BIN
+        Need to convert file.hex:
 
-    vm.py
+            00000001
+            00000042
 
-VM (Virtual Machine)
+            00000002
+            00000032
 
+        to file.bin:
 
-    vm.py
+            ^1^c6a6A^^^41326^^asd@@6@^ (Binary)
 
-        00000001
-        00000042
-
-        00000002
-        00000032
-
-        to
-
-        ^1^c6a6A^^^41326^^asd@@6@^ (Binary)
-
+        Thus, bin.py
 
         REQUIRES:
 
@@ -38,7 +24,7 @@ VM (Virtual Machine)
 
             one output file (file.bin)
 
-        input = fopen file.hex
+        input = fopen file.hex "r"
 
         output = fopen file.bin "wb"
 
@@ -46,7 +32,6 @@ VM (Virtual Machine)
 
             fwrite line output as binary
 
-
         NOTE:
 
-            can use 'xxd -r file.bin' to create a reverse print binary file
+            can use 'xxd -r file.bin' to create a reverse binary file print for validation
