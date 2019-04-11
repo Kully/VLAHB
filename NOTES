@@ -28,3 +28,20 @@ VM (Virtual Machine)
         to
 
         ^1^c6a6A^^^41326^^asd@@6@^ (Binary)
+
+
+        REQUIRES:
+
+            one input file (file.hex)
+
+        CREATES:
+
+            one output file (asm.bin)
+
+        input = fopen file.hex
+
+        output = fopen file.bin "rb"
+
+        for each line in input:
+
+            fwrite line output
