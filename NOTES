@@ -36,7 +36,7 @@ VM (Virtual Machine)
 
         CREATES:
 
-            one output file (asm.bin)
+            one output file (file.bin)
 
         input = fopen file.hex
 
