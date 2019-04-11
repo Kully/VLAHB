@@ -40,7 +40,7 @@ VM (Virtual Machine)
 
         input = fopen file.hex
 
-        output = fopen file.bin "rb"
+        output = fopen file.bin "wb"
 
         for each line in input:
 
