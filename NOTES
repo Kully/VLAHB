@@ -1,0 +1,30 @@
+LANG
+
+    compile.py
+
+ASM
+
+    asm.py
+
+HEX
+
+    bin.py
+
+BIN
+
+    vm.py
+
+VM (Virtual Machine)
+
+
+    vm.py
+
+        00000001
+        00000042
+
+        00000002
+        00000032
+
+        to
+
+        ^1^c6a6A^^^41326^^asd@@6@^ (Binary)
