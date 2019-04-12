@@ -9,8 +9,10 @@ def hex_string_to_bin(x):
 
 is_op_code = True
 for line in lines_from_hex_file:
-    if line != '\n':
-        bin_file_string += hex_string_to_bin(line)
+	try:
+		bin_file_string += hex_string_to_bin(line)
+	except ValueError:
+		pass
 
 print(bin_file_string)
 
