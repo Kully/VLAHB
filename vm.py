@@ -34,11 +34,13 @@ RAM = [None] * 2**16
 PC = []
 ALU = ['+', '-', '*', '%']
 
-def return_lines_from_file_hex(file_hex):
+def return_lines_from_file_hex(file_hex, remove_empty_lines=True):
 	f = open(file_hex, 'r')
 	lines = f.read().split('\n')
-	while '' in lines:
-		lines.remove('')
+
+	if remove_empty_lines:
+		while '' in lines:
+			lines.remove('')
 	return lines
 
 def hex_to_int(h):

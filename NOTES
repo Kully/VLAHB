@@ -1,4 +1,4 @@
-LANGUAGE -> compile.py -> ASSEMBLY -> asm.py -> HEX -> bin.py -> BINARY -> vm.py -> VIRTUAL MACHINE
+`LANGUAGE` -> compile.py -> `ASSEMBLY` -> asm.py -> `HEX` -> bin.py -> `BINARY` -> vm.py -> `VIRTUAL MACHINE`
 
     bin.py
 

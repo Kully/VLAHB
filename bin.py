@@ -1,3 +1,10 @@
+'''
+Converts a hex file into binary
+
+bin.py: HEX -> BIN
+'''
+
+
 # read hex file
 f = open('file.hex', 'r')
 lines_from_hex_file = f.readlines()
