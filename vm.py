@@ -77,11 +77,3 @@ def read_and_exec_hex_file(file_hex):
 
 read_and_exec_hex_file('file.hex')
 pprint.pprint(RAM[:11])
-
-
-
-
-
-
-
-
