@@ -1,28 +1,28 @@
 '''
 Virtual Machine
 
-The vm is what would be the PCB, etched silicon 
+The vm is what would be the Printed Circuit Board
+as well as the etched silicon and logic gates
 
-The file.hex that the vm looks at is of the form
+For now, vm.py looks at the hex file (file.hex)
+Eventually, vm.py will look at the binary (file.bin)
 
 ```
 hhhhhhhh
 hhhhhhhh
-
 hhhhhhhh
 hhhhhhhh
-
 ...
 ```
 
-where `h` is a hexadecimal value which takes on a value
+where `h` is a hexadecimal value (4 bits, 1/2 a byte) which takes on a value
 between 0-f (16 unique values).
 
-This is how 2 rows (32x2 bits) is interpreted
+This is how 2 rows is interpreted
 
 ```
-[index in RAM][command]
-[value]
+hhhh[index in RAM]hhhh[command]
+hhhhhhhh[value]
 ```
 
 PC = program counter
@@ -41,6 +41,7 @@ def return_lines_from_file_hex(file_hex, remove_empty_lines=True):
 	if remove_empty_lines:
 		while '' in lines:
 			lines.remove('')
+	f.close()
 	return lines
 
 def hex_to_int(h):

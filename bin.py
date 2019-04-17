@@ -3,14 +3,6 @@ Converts a hex file into binary
 
 bin.py: HEX -> BIN
 '''
-
-# binary = open('file.bin', 'wb')
-# binary.write(bytes(int('00', 16)))
-# binary.write(bytes(int('00', 16)))
-# binary.write(bytes(int('00', 16)))
-# binary.write(bytes(int('04', 16)))
-
-
 def hex_string_to_bin(x):
     return bin(int(x, 16))[2:]
 
@@ -23,6 +15,7 @@ def return_lines_from_file_hex(file_hex):
 	return lines
 
 lines_from_hex_file = return_lines_from_file_hex('file.hex')
+binaryFile = open('file.bin', 'w+b')
 for line in lines_from_hex_file:
 	reversed_line = line[::-1]
 
@@ -37,6 +30,10 @@ for line in lines_from_hex_file:
 	print(line3)
 	print('')
 	# load each hh into binary file
+	binaryFile.write(bytes(int(line0, 16)))
+	binaryFile.write(bytes(int(line1, 16)))
+	binaryFile.write(bytes(int(line2, 16)))
+	binaryFile.write(bytes(int(line3, 16)))
 
 
 # f = open('file.hex', 'r')
@@ -48,3 +45,5 @@ for line in lines_from_hex_file:
 #         bin_file_string += hex_string_to_bin(line)
 
 # print(bin_file_string)
+
+
