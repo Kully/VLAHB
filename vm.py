@@ -123,7 +123,7 @@ def exec(lines_from_file_hex):
             pass
 
         # increment program counter
-        PC += 1
+        PC += 2
 
 
 myHexFileName = 'file.hex'
