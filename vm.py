@@ -80,7 +80,7 @@ def validate_hex_file(file_hex, remove_empty_lines=True):
     assert all(char in string.hexdigits + 'x' for char in "".join(lines)), util.VALID_HEX_VALUES_ERROR_MSG
     print('    all chars are valid hexadecimal (ok)')
 
-    print('\nValidation:\n    PASS!\n')
+    print('Validation:\n    PASS!\n')
 
 def exec(lines_from_file_hex):
     '''Execute lines in ROM'''
@@ -95,16 +95,19 @@ def exec(lines_from_file_hex):
             break
 
         print('\nPC: %r'%PC)
-        print('next line in ROM: %s\n'%ROM[PC])
+        print('    next 2 lines in ROM:')
+        print('        %s'%ROM[PC])
+        print('        %s'%ROM[PC+1])
 
         # convert all hex to int
+        GOTO = False
         index_in_RAM = util.hex_to_int(ROM[PC][:4])
         command = util.hex_to_int(ROM[PC][4:])
         value = util.hex_to_int(ROM[PC+1])
 
-        print('\nindex_in_RAM: %s'%index_in_RAM)
-        print('command: %s'%command)
-        print('value: %s\n'%value)
+        print('    index_in_RAM: %s'%index_in_RAM)
+        print('    command: %s'%command)
+        print('    value: %s'%value)
 
         if command == 1:  # LD (load)
             RAM[index_in_RAM] = value
@@ -120,10 +123,12 @@ def exec(lines_from_file_hex):
             RAM[index_in_RAM] -= value
 
         elif command == 4:  # GOTO (go to)
-            pass
+            PC = value
+            GOTO = True
 
         # increment program counter
-        PC += 2
+        if not GOTO:
+            PC += 2
 
 
 myHexFileName = 'file.hex'
@@ -132,5 +137,5 @@ fill_ROM_with_hex_lines(hex_lines)
 validate_hex_file(myHexFileName)
 exec(hex_lines)
 
-print('RAM after program is done:')
-print(RAM[:20])
+print('\nRAM after program is done:')
+print('    %s'%RAM[:10])
