@@ -1,3 +1,16 @@
+'''
+Converts a hex file into binary
+
+bin.py: HEX -> BIN
+'''
+
+# binary = open('file.bin', 'wb')
+# binary.write(bytes(int('00', 16)))
+# binary.write(bytes(int('00', 16)))
+# binary.write(bytes(int('00', 16)))
+# binary.write(bytes(int('04', 16)))
+
+
 def hex_string_to_bin(x):
     return bin(int(x, 16))[2:]
 
@@ -35,5 +48,3 @@ for line in lines_from_hex_file:
 #         bin_file_string += hex_string_to_bin(line)
 
 # print(bin_file_string)
-
-
