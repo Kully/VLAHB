@@ -130,7 +130,6 @@ def exec(lines_from_file_hex):
         if not GOTO:
             PC += 2
 
-
 myHexFileName = 'file.hex'
 hex_lines = return_lines_from_file_hex(myHexFileName)
 fill_ROM_with_hex_lines(hex_lines)
