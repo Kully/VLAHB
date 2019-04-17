@@ -25,58 +25,112 @@ hhhh[index in RAM]hhhh[command]
 hhhhhhhh[value]
 ```
 
-PC = program counter
-'''
-import pprint
 
+An example of my setup:
+```python
+ROM = [
+    '0x00030001',
+    '0x00000004',
+    '0x00030002',
+    '0x00000006',
+    '0x00030003',
+    '0x00000001'
+]
+
+RAM = []
+PC = 0  # program counter
+```
+'''
+import string
+import time
+import util
+
+# CPU constants and data structures
+COMMANDS_PER_SEC = 100
+DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
 ROM = []
+# TODO: make RAM dynamic - index as I go
 RAM = [None] * 2**16
-PC = []
-ALU = ['+', '-', '*', '%']
+RAM_SIZE = 500  # in units of 4 bytes
 
 def return_lines_from_file_hex(file_hex, remove_empty_lines=True):
-	f = open(file_hex, 'r')
-	lines = f.read().split('\n')
+    f = open(file_hex, 'r')
+    lines = f.read().split('\n')
 
-	if remove_empty_lines:
-		while '' in lines:
-			lines.remove('')
-	f.close()
-	return lines
+    if remove_empty_lines:
+        while '' in lines:
+            lines.remove('')
+    f.close()
+    return lines
 
-def hex_to_int(h):
-	return int(h, 16)
+def fill_ROM_with_hex_lines(hex_lines):
+    for line in hex_lines:
+        ROM.append(line)
 
-def read_and_exec_hex_file(file_hex):
-	lines_from_file_hex = return_lines_from_file_hex(file_hex)
+def validate_hex_file(file_hex, remove_empty_lines=True):
+    print('Validating hex file...')
+    lines = return_lines_from_file_hex(file_hex)
 
-	isCommand = True
-	for PC, line in enumerate(lines_from_file_hex):
-		print('PC: %r' %PC)
-		print('line: %r\n' %line)
-		if isCommand:
-			index_in_register = hex_to_int(line[:4])
-			command = line[4:]
+    assert len(lines) % 2 == 0, util.EVEN_NUMBER_HEX_LINES_ERROR_MSG
+    print('    even number of hex lines (ok)')
 
-		else:
-			value = line
-			if command == '0001':  # LD
-				RAM[index_in_register] = hex_to_int(value)
+    assert all(len(line) == 8 for line in lines), util.CHARS_PER_LINE_ERROR_MSG
+    print('    all lines in file.hex are 8 chars long (ok)')
 
-			elif command == '0002':  # ADD
-				if RAM[index_in_register] is None:
-					RAM[index_in_register] = 0
-				RAM[index_in_register] += hex_to_int(value)
+    assert all(char in string.hexdigits + 'x' for char in "".join(lines)), util.VALID_HEX_VALUES_ERROR_MSG
+    print('    all chars are valid hexadecimal (ok)')
 
-			elif command == '0003':  # SUB
-				if RAM[index_in_register] is None:
-					RAM[index_in_register] = 0
-				RAM[index_in_register] -= hex_to_int(value)
+    print('\nValidation:\n    PASS!\n')
 
-			elif command == '0004':  # GOTO
-				pass
-		isCommand = not isCommand
+def exec(lines_from_file_hex):
+    '''Execute lines in ROM'''
+    PC = 0
+    while True:
+        time.sleep(DELAY_BETWEEN_COMMANDS)
+        # check if end of ROM
+        try:
+            ROM[PC]
+            ROM[PC+1]
+        except IndexError:
+            break
+
+        print('\nPC: %r'%PC)
+        print('next line in ROM: %s\n'%ROM[PC])
+
+        # convert all hex to int
+        index_in_RAM = util.hex_to_int(ROM[PC][:4])
+        command = util.hex_to_int(ROM[PC][4:])
+        value = util.hex_to_int(ROM[PC+1])
+
+        print('\nindex_in_RAM: %s'%index_in_RAM)
+        print('command: %s'%command)
+        print('value: %s\n'%value)
+
+        if command == 1:  # LD (load)
+            RAM[index_in_RAM] = value
+
+        elif command == 2:  # ADD
+            if RAM[index_in_RAM] is None:
+                RAM[index_in_RAM] = 0
+            RAM[index_in_RAM] += value
+
+        elif command == 3:  # SUB (subtract)
+            if RAM[index_in_RAM] is None:
+                RAM[index_in_RAM] = 0
+            RAM[index_in_RAM] -= value
+
+        elif command == 4:  # GOTO (go to)
+            pass
+
+        # increment program counter
+        PC += 1
 
 
-read_and_exec_hex_file('file.hex')
-pprint.pprint(RAM[:11])
+myHexFileName = 'file.hex'
+hex_lines = return_lines_from_file_hex(myHexFileName)
+fill_ROM_with_hex_lines(hex_lines)
+validate_hex_file(myHexFileName)
+exec(hex_lines)
+
+print('RAM after program is done:')
+print(RAM[:20])
