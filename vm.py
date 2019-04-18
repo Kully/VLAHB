@@ -52,6 +52,7 @@ ROM = []
 # TODO: make RAM dynamic - index as I go
 RAM = [None] * 2**16
 RAM_SIZE = 128000  # units of 4 bytes // 512KB
+MAX_RAM_NUMBER = 2**32  # largest value in a slot of RAM (hhhhhhhh)
 
 def return_lines_from_file_hex(file_hex, remove_empty_lines=True):
     f = open(file_hex, 'r')
@@ -67,6 +68,14 @@ def fill_ROM_with_hex_lines(hex_lines):
     for line in hex_lines:
         ROM.append(line)
 
+def manage_stack_over_under_flow(index_in_RAM):
+    if RAM[index_in_RAM] < 0:
+        RAM[index_in_RAM] = MAX_RAM_NUMBER + RAM[index_in_RAM]
+        print("Stack Underflow at RAM[%r], new int value is "%index_in_RAM)
+    elif RAM[index_in_RAM] > MAX_RAM_NUMBER - 1:
+        RAM[index_in_RAM] = MAX_RAM_NUMBER - RAM[index_in_RAM]
+        print("Stack Overflow at RAM[%r], new int value is "%index_in_RAM)
+
 def validate_hex_file(file_hex, remove_empty_lines=True):
     print('Validating hex file...')
     lines = return_lines_from_file_hex(file_hex)
@@ -80,7 +89,7 @@ def validate_hex_file(file_hex, remove_empty_lines=True):
     assert all(char in string.hexdigits + 'x' for char in "".join(lines)), util.VALID_HEX_VALUES_ERROR_MSG
     print('    all chars are valid hexadecimal (ok)')
 
-    print('Validation:\n    PASS!\n')
+    print('Validation: PASS!\n')
 
 def exec(lines_from_file_hex):
     '''Execute lines in ROM'''
@@ -105,33 +114,43 @@ def exec(lines_from_file_hex):
         command = util.hex_to_int(ROM[PC][4:])
         value = util.hex_to_int(ROM[PC+1])
 
-        print('    index_in_RAM: %s'%index_in_RAM)
-        print('    command: %s'%command)
-        print('    value: %s'%value)
-
         if command == 1:  # LD (load)
             RAM[index_in_RAM] = value
+            print('LD {} to RAM[{}]'.format(
+                value, index_in_RAM
+            ))
 
         elif command == 2:  # ADD
             if RAM[index_in_RAM] is None:
                 RAM[index_in_RAM] = 0
             RAM[index_in_RAM] += value
+            print('ADD {} to RAM[{}]={}'.format(
+                value, index_in_RAM, RAM[index_in_RAM]
+            ))
+            manage_stack_over_under_flow(index_in_RAM)
 
         elif command == 3:  # SUB (subtract)
             if RAM[index_in_RAM] is None:
                 RAM[index_in_RAM] = 0
             RAM[index_in_RAM] -= value
+            print('SUB {} from RAM[{}]={}'.format(
+                value, index_in_RAM, RAM[index_in_RAM]
+            ))
+            manage_stack_over_under_flow(index_in_RAM)
 
         elif command == 4:  # GOTO (go to)
-            PC = value
             GOTO = True
 
         elif command == 5:  # ALD (address load)
             RAM[PC] = RAM[value]
 
         # increment program counter
-        if not GOTO:
+        if GOTO:
+            PC = value
+            print('GOTO line %s' %value)
+        else:
             PC += 2
+
 
 myHexFileName = 'file.hex'
 hex_lines = return_lines_from_file_hex(myHexFileName)
