@@ -51,7 +51,7 @@ DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
 ROM = []
 # TODO: make RAM dynamic - index as I go
 RAM = [None] * 2**16
-RAM_SIZE = 500  # in units of 4 bytes
+RAM_SIZE = 128000  # units of 4 bytes // 512KB
 
 def return_lines_from_file_hex(file_hex, remove_empty_lines=True):
     f = open(file_hex, 'r')
@@ -125,6 +125,9 @@ def exec(lines_from_file_hex):
         elif command == 4:  # GOTO (go to)
             PC = value
             GOTO = True
+
+        elif command == 5:  # ALD (address load)
+            RAM[PC] = RAM[value]
 
         # increment program counter
         if not GOTO:
