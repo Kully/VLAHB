@@ -122,7 +122,7 @@ def exec(lines_from_file_hex):
 
         if command == 1:  # LD (load)
             RAM[index_in_RAM] = value
-            print('LD {} to RAM[{}]'.format(
+            print('\n    LD {} to RAM[{}]'.format(
                 value, index_in_RAM
             ))
 
@@ -130,8 +130,8 @@ def exec(lines_from_file_hex):
             if RAM[index_in_RAM] is None:
                 RAM[index_in_RAM] = 0
             RAM[index_in_RAM] += value
-            print('ADD {} to RAM[{}]={}'.format(
-                value, index_in_RAM, RAM[index_in_RAM]
+            print('    ADD {} to RAM[{}]'.format(
+                value, index_in_RAM
             ))
             manage_stack_over_under_flow(index_in_RAM)
 
@@ -139,7 +139,7 @@ def exec(lines_from_file_hex):
             if RAM[index_in_RAM] is None:
                 RAM[index_in_RAM] = 0
             RAM[index_in_RAM] -= value
-            print('SUB {} from RAM[{}]={}'.format(
+            print('    SUB {} from RAM[{}]={}'.format(
                 value, index_in_RAM, RAM[index_in_RAM]
             ))
             manage_stack_over_under_flow(index_in_RAM)
@@ -153,7 +153,7 @@ def exec(lines_from_file_hex):
         # increment program counter
         if GOTO:
             PC = value
-            print('GOTO line %s' %value)
+            print('    GOTO line %s' %value)
         else:
             PC += 2
 
