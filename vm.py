@@ -46,7 +46,7 @@ import time
 import util
 
 # CPU constants and data structures
-COMMANDS_PER_SEC = 100
+COMMANDS_PER_SEC = 10
 DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
 ROM = []
 # TODO: make RAM dynamic - index as I go
@@ -113,6 +113,12 @@ def exec(lines_from_file_hex):
         index_in_RAM = util.hex_to_int(ROM[PC][:4])
         command = util.hex_to_int(ROM[PC][4:])
         value = util.hex_to_int(ROM[PC+1])
+
+        print('    RAM[0]: %s'%RAM[0])
+        print('    RAM[1]: %s'%RAM[1])
+        print('    RAM[2]: %s'%RAM[2])
+        print('    RAM[3]: %s'%RAM[3])
+        print('    RAM[4]: %s'%RAM[4])
 
         if command == 1:  # LD (load)
             RAM[index_in_RAM] = value
