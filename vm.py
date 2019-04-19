@@ -75,10 +75,10 @@ def fill_ROM_with_hex_lines(hex_lines):
 def manage_stack_over_under_flow(index_in_RAM):
     if RAM[index_in_RAM] < 0:
         RAM[index_in_RAM] = MAX_RAM_NUMBER + RAM[index_in_RAM]
-        print("Stack Underflow at RAM[%r], new int value is "%index_in_RAM)
+        print("Stack Underflow at RAM[%r]"%index_in_RAM)
     elif RAM[index_in_RAM] > MAX_RAM_NUMBER - 1:
         RAM[index_in_RAM] = MAX_RAM_NUMBER - RAM[index_in_RAM]
-        print("Stack Overflow at RAM[%r], new int value is "%index_in_RAM)
+        print("Stack Overflow at RAM[%r]"%index_in_RAM)
 
 def validate_hex_file(file_hex, remove_empty_lines=True):
     print('Validating hex file...')
@@ -146,9 +146,19 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 4:  # GOTO (go to)
             GOTO = True
 
-        elif word0_second_half == 5:  # ALD (address load)
-            RAM[PC] = RAM[word1]
-            print('    LD RAM[%s] to RAM[%s]' %())
+        elif word0_second_half == 5:  # DIRECT LD (address load)
+            RAM[word0_first_half] = RAM[word1]
+            print('    LD RAM[%s] to RAM[%s]' %(PC, word1))
+
+        elif word0_second_half == 6:  # LD ADD (load add)
+            RAM[word0_first_half] += RAM[word1]
+            manage_stack_over_under_flow(word0_first_half)
+            print('    LD RAM[%s] to RAM[%s]' %(PC, word1))
+
+        elif word0_second_half == 7:  # LD SUB (load subtract)
+            RAM[word0_first_half] -= RAM[word1]
+            manage_stack_over_under_flow(word0_first_half)
+            print('    LD RAM[%s] to RAM[%s]' %(PC, word1))
 
         # increment program counter
         if GOTO:
