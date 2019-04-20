@@ -84,23 +84,23 @@ def manage_stack_over_under_flow(index_in_RAM):
 
 def validate_hex_file(file_hex, remove_empty_lines=True):
     print('Validating hex file...')
-    time.sleep(0.3)
+    time.sleep(0.2)
     lines = return_lines_from_file_hex(file_hex)
 
     assert len(lines) % 2 == 0, util.EVEN_NUMBER_OF_HEX_LINES_ERROR_MSG
     print('    - even number of hex lines (ok)')
-    time.sleep(0.4)
+    time.sleep(0.2)
 
     assert all(len(line) == 8 for line in lines), util.CHARS_PER_LINE_ERROR_MSG
     print('    - all lines in file.hex are 8 chars long (ok)')
-    time.sleep(0.4)
+    time.sleep(0.2)
 
     assert all(char in string.hexdigits + 'x' for char in "".join(lines)), util.VALID_HEX_VALUES_ERROR_MSG
     print('    - all chars are valid hexadecimal (ok)')
-    time.sleep(0.4)
+    time.sleep(0.2)
 
     print('Validation: PASS!\n')
-    time.sleep(1)
+    time.sleep(0.5)
 
 def exec(lines_from_file_hex):
     '''Execute lines in ROM'''
@@ -204,7 +204,7 @@ def exec(lines_from_file_hex):
             PC += 2
             print('    DIV RAM[%s] by RAM[%s]' %(word0_first_half, word1))
 
-        # REGISTER TO VALUE COMPARE == c
+        # COMPARE REGISTER TO VALUE  == c
         elif word0_second_half == 12:
             if RAM[word0_first_half] == word1:
                 PC += 2
@@ -212,7 +212,7 @@ def exec(lines_from_file_hex):
             else:
                 print('    PC DOESNT CHANGE')
 
-        # REGISTER TO REGISTER COMPARE == d
+        # COMPARE REGISTER TO REGISTER == d
         elif word0_second_half == 13:
             if RAM[word0_first_half] == RAM[word1]:
                 PC += 2
