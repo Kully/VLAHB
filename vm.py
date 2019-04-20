@@ -105,6 +105,7 @@ def validate_hex_file(file_hex, remove_empty_lines=True):
 def exec(lines_from_file_hex):
     '''Execute lines in ROM'''
     PC = 0
+    EXIT_LOOP = False
     while True:
         time.sleep(DELAY_BETWEEN_COMMANDS)
         # check if end of ROM
@@ -119,8 +120,6 @@ def exec(lines_from_file_hex):
         print('        %s'%ROM[PC])
         print('        %s'%ROM[PC+1])
 
-        GOTO = False
-
         # convert all hex to int
         word0_first_half = util.hex_to_int(ROM[PC][:4])
         word0_second_half = util.hex_to_int(ROM[PC][4:])
@@ -132,7 +131,6 @@ def exec(lines_from_file_hex):
 
         # GOTO == 1
         if word0_second_half == 1:
-            GOTO = True
             PC = word1
             print('    PC -> %s' %word1)
 
@@ -206,19 +204,26 @@ def exec(lines_from_file_hex):
 
         # COMPARE REGISTER TO VALUE  == c
         elif word0_second_half == 12:
+            print('    CMP RAM[%s] to %s' %(word0_first_half, word1))
             if RAM[word0_first_half] == word1:
                 PC += 2
-                print('    CMP RAM[%s] to %s' %(word0_first_half, word1))
+                print('     ...True')
             else:
-                print('    PC DOESNT CHANGE')
+                print('     ...False')
+
 
         # COMPARE REGISTER TO REGISTER == d
         elif word0_second_half == 13:
+            print('    CMP RAM[%s] to RAM[%s]' %(word0_first_half, word1))
             if RAM[word0_first_half] == RAM[word1]:
                 PC += 2
-                print('    CMP RAM[%s] to RAM[%s]' %(word0_first_half, word1))
+                print('     ...True')
             else:
-                print('    PC DOESNT CHANGE')
+                print('     ...False')
+
+        # EXIT VM == ffffffff
+        elif word0_second_half == MAX_RAM_VALUE:
+            EXIT_LOOP = True
 
         print('                     ')
         print('    RAM[0]: %s'%RAM[0])
@@ -227,6 +232,10 @@ def exec(lines_from_file_hex):
         print('    RAM[3]: %s'%RAM[3])
         print('    RAM[4]: %s'%RAM[4])
         print('                     ')
+
+        if EXIT_LOOP:
+            print('Exiting VM...')
+            break
 
 myHexFileName = 'file.hex'
 hex_lines = return_lines_from_file_hex(myHexFileName)
