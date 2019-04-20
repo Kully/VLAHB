@@ -221,8 +221,8 @@ def exec(lines_from_file_hex):
             else:
                 print('     ...False')
 
-        # EXIT VM == ffffffff
-        elif word0_second_half == MAX_RAM_VALUE:
+        # EXIT VM == ffff
+        elif word0_second_half == 2**16 - 1:
             EXIT_LOOP = True
 
         print('                     ')
