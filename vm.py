@@ -53,10 +53,9 @@ import util
 COMMANDS_PER_SEC = 10
 DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
 ROM = []
-# TODO: make RAM dynamic - index as I go
-RAM = ['-'] * 2**16
-RAM_SIZE = 128000  # units of 4 bytes // 512KB
-MAX_RAM_NUMBER = 2**32  # largest value in a slot of RAM (hhhhhhhh)
+RAM_NUM_OF_SLOTS = 128000  # units of 4 bytes // 512KB == Bill Gates Number
+MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhhhhhh)
+RAM = [0] * RAM_NUM_OF_SLOTS
 
 def return_lines_from_file_hex(file_hex, remove_empty_lines=True):
     f = open(file_hex, 'r')
@@ -72,28 +71,36 @@ def fill_ROM_with_hex_lines(hex_lines):
     for line in hex_lines:
         ROM.append(line)
 
+def reset_RAM_values_to_zero():
+    RAM = [0] * RAM_NUM_OF_SLOTS
+
 def manage_stack_over_under_flow(index_in_RAM):
     if RAM[index_in_RAM] < 0:
-        RAM[index_in_RAM] = MAX_RAM_NUMBER + RAM[index_in_RAM]
+        RAM[index_in_RAM] = MAX_RAM_VALUE + RAM[index_in_RAM]
         print("Stack Underflow at RAM[%r]"%index_in_RAM)
-    elif RAM[index_in_RAM] > MAX_RAM_NUMBER - 1:
-        RAM[index_in_RAM] = MAX_RAM_NUMBER - RAM[index_in_RAM]
+    elif RAM[index_in_RAM] > MAX_RAM_VALUE:
+        RAM[index_in_RAM] = MAX_RAM_VALUE - RAM[index_in_RAM]
         print("Stack Overflow at RAM[%r]"%index_in_RAM)
 
 def validate_hex_file(file_hex, remove_empty_lines=True):
     print('Validating hex file...')
+    time.sleep(0.3)
     lines = return_lines_from_file_hex(file_hex)
 
-    assert len(lines) % 2 == 0, util.EVEN_NUMBER_HEX_LINES_ERROR_MSG
+    assert len(lines) % 2 == 0, util.EVEN_NUMBER_OF_HEX_LINES_ERROR_MSG
     print('    - even number of hex lines (ok)')
+    time.sleep(0.4)
 
     assert all(len(line) == 8 for line in lines), util.CHARS_PER_LINE_ERROR_MSG
     print('    - all lines in file.hex are 8 chars long (ok)')
+    time.sleep(0.4)
 
     assert all(char in string.hexdigits + 'x' for char in "".join(lines)), util.VALID_HEX_VALUES_ERROR_MSG
     print('    - all chars are valid hexadecimal (ok)')
+    time.sleep(0.4)
 
     print('Validation: PASS!\n')
+    time.sleep(1)
 
 def exec(lines_from_file_hex):
     '''Execute lines in ROM'''
@@ -119,63 +126,110 @@ def exec(lines_from_file_hex):
         word0_second_half = util.hex_to_int(ROM[PC][4:])
         word1 = util.hex_to_int(ROM[PC+1])
 
-        if word0_second_half == 1:  # LD (load)
-            RAM[word0_first_half] = word1
-            print('\n    LD {} to RAM[{}]'.format(
-                word1, word0_first_half
-            ))
+        ############
+        # OP CODES #
+        ############
 
-        elif word0_second_half == 2:  # ADD
-            if RAM[word0_first_half] is '-':
-                RAM[word0_first_half] = 0
-            RAM[word0_first_half] += word1
-            print('    ADD {} to RAM[{}]'.format(
-                word1, word0_first_half
-            ))
-            manage_stack_over_under_flow(word0_first_half)
-
-        elif word0_second_half == 3:  # SUB (subtract)
-            if RAM[word0_first_half] is '-':
-                RAM[word0_first_half] = 0
-            RAM[word0_first_half] -= word1
-            print('    SUB {} from RAM[{}]={}'.format(
-                word1, word0_first_half, RAM[word0_first_half]
-            ))
-            manage_stack_over_under_flow(word0_first_half)
-
-        elif word0_second_half == 4:  # GOTO (go to)
+        # GOTO == 1
+        if word0_second_half == 1:
             GOTO = True
+            PC = word1
+            print('    PC -> %s' %word1)
 
-        elif word0_second_half == 5:  # DIRECT LD (address load)
+        # DIRECT LOAD == 2
+        elif word0_second_half == 2:
+            RAM[word0_first_half] = word1
+            PC += 2
+            print('\n    LD %s to RAM[%s]' %(word1, word0_first_half))
+
+        # DIRECT ADD == 3
+        elif word0_second_half == 3:
+            RAM[word0_first_half] += word1
+            PC += 2
+            manage_stack_over_under_flow(word0_first_half)
+            print('    ADD %s to RAM[%s]' %(word1, word0_first_half))
+
+        # DIRECT SUBTRACT == 4
+        elif word0_second_half == 4:
+            RAM[word0_first_half] -= word1
+            manage_stack_over_under_flow(word0_first_half)
+            PC += 2
+            print('    SUB %s from RAM[%s]' %(word1, word0_first_half))
+
+        # DIRECT MULTIPLY == 5
+        elif word0_second_half == 5:
+            RAM[word0_first_half] *= word1
+            manage_stack_over_under_flow(word0_first_half)
+            PC += 2
+            print('    MUL %s to RAM[%s]' %(word1, word0_first_half))
+
+        # DIRECT DIVIDE == 6
+        elif word0_second_half == 6:
+            RAM[word0_first_half] /= word1
+            manage_stack_over_under_flow(word0_first_half)
+            PC += 2
+            print('    DIV RAM[%s] by %s' %(word0_first_half, word1))
+
+        # REGISTER TO REGISTER LOAD == 7
+        elif word0_second_half == 7:
             RAM[word0_first_half] = RAM[word1]
-            print('    LD RAM[%s] to RAM[%s]' %(PC, word1))
+            PC += 2
+            print('    LD RAM[%s] to RAM[%s]' %(word1, word0_first_half))
 
-        elif word0_second_half == 6:  # LD ADD (load add)
+        # REGISTER TO REGISTER ADD == 8
+        elif word0_second_half == 8:
             RAM[word0_first_half] += RAM[word1]
             manage_stack_over_under_flow(word0_first_half)
-            print('    LD RAM[%s] to RAM[%s]' %(PC, word1))
+            PC += 2
+            print('    ADD RAM[%s] to RAM[%s]' %(word1, word0_first_half))
 
-        elif word0_second_half == 7:  # LD SUB (load subtract)
+        # REGISTER TO REGISTER SUBTRACT == 9
+        elif word0_second_half == 9:
             RAM[word0_first_half] -= RAM[word1]
             manage_stack_over_under_flow(word0_first_half)
-            print('    LD RAM[%s] to RAM[%s]' %(PC, word1))
-
-        # increment program counter
-        if GOTO:
-            PC = word1
-            print('    GOTO line %s' %word1)
-        else:
             PC += 2
+            print('    SUB RAM[%s] by RAM[%s]' %(word0_first_half, word1))
 
-        print('\n    RAM[0]: %s'%RAM[0])
+        # REGISTER TO REGISTER MULTIPLY == a
+        elif word0_second_half == 10:
+            RAM[word0_first_half] *= RAM[word1]
+            manage_stack_over_under_flow(word0_first_half)
+            PC += 2
+            print('    MUL RAM[%s] to RAM[%s]' %(word1, word0_first_half))
+
+        # REGISTER TO REGISTER DIVIDE == b
+        elif word0_second_half == 11:
+            RAM[word0_first_half] /= RAM[word1]
+            manage_stack_over_under_flow(word0_first_half)
+            PC += 2
+            print('    DIV RAM[%s] by RAM[%s]' %(word0_first_half, word1))
+
+        # REGISTER TO VALUE COMPARE == c
+        elif word0_second_half == 12:
+            if RAM[word0_first_half] == word1:
+                PC += 2
+                print('    CMP RAM[%s] to %s' %(word0_first_half, word1))
+            else:
+                print('    PC DOESNT CHANGE')
+
+        # REGISTER TO REGISTER COMPARE == d
+        elif word0_second_half == 13:
+            if RAM[word0_first_half] == RAM[word1]:
+                PC += 2
+                print('    CMP RAM[%s] to RAM[%s]' %(word0_first_half, word1))
+            else:
+                print('    PC DOESNT CHANGE')
+
+        print('                     ')
+        print('    RAM[0]: %s'%RAM[0])
         print('    RAM[1]: %s'%RAM[1])
         print('    RAM[2]: %s'%RAM[2])
         print('    RAM[3]: %s'%RAM[3])
         print('    RAM[4]: %s'%RAM[4])
+        print('                     ')
 
 myHexFileName = 'file.hex'
 hex_lines = return_lines_from_file_hex(myHexFileName)
 fill_ROM_with_hex_lines(hex_lines)
 validate_hex_file(myHexFileName)
-time.sleep(1)
 exec(hex_lines)
