@@ -236,7 +236,7 @@ for filename in os.listdir():
         hex_files.append(filename)
 
 input_msg = '''Type in the .hex filename you want to run
-    (hex files in dir: ''' + '{} '*len(hex_files) + ')\n>>> '
+    (.hex files:''' + ' {}'*len(hex_files) + ')\n>>> '
 myHexFileName = input(input_msg.format(*hex_files))
 
 if not myHexFileName.endswith('.hex'):
