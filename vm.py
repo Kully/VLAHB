@@ -45,6 +45,7 @@ RAM = []
 PC = 0  # program counter
 ```
 '''
+import os
 import string
 import time
 import util
@@ -229,7 +230,17 @@ def exec(lines_from_file_hex):
             print('Exiting VM...')
             break
 
-myHexFileName = 'file.hex'
+hex_files = []
+for filename in os.listdir():
+    if filename.endswith('.hex'):
+        hex_files.append(filename)
+
+input_msg = '''Type in the .hex filename you want to run
+    (hex files in dir: ''' + '{} '*len(hex_files) + ')\n>>> '
+myHexFileName = input(input_msg.format(*hex_files))
+
+if not myHexFileName.endswith('.hex'):
+    myHexFileName += '.hex'
 hex_lines = return_lines_from_file_hex(myHexFileName)
 fill_ROM_with_hex_lines(hex_lines)
 validate_hex_file(myHexFileName)
