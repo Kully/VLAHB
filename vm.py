@@ -125,6 +125,8 @@ def exec(lines_from_file_hex):
         word0_second_half = util.hex_to_int(ROM[PC][4:])
         word1 = util.hex_to_int(ROM[PC+1])
 
+        PC += 2
+
         ############
         # OP CODES #
         ############
@@ -137,13 +139,11 @@ def exec(lines_from_file_hex):
         # DIRECT LOAD == 2
         elif word0_second_half == 2:
             RAM[word0_first_half] = word1
-            PC += 2
             print('\n    LD %s to RAM[%s]' %(word1, word0_first_half))
 
         # DIRECT ADD == 3
         elif word0_second_half == 3:
             RAM[word0_first_half] += word1
-            PC += 2
             manage_stack_over_under_flow(word0_first_half)
             print('    ADD %s to RAM[%s]' %(word1, word0_first_half))
 
@@ -158,48 +158,41 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 5:
             RAM[word0_first_half] *= word1
             manage_stack_over_under_flow(word0_first_half)
-            PC += 2
             print('    MUL %s to RAM[%s]' %(word1, word0_first_half))
 
         # DIRECT DIVIDE == 6
         elif word0_second_half == 6:
             RAM[word0_first_half] /= word1
             manage_stack_over_under_flow(word0_first_half)
-            PC += 2
             print('    DIV RAM[%s] by %s' %(word0_first_half, word1))
 
         # REGISTER TO REGISTER LOAD == 7
         elif word0_second_half == 7:
             RAM[word0_first_half] = RAM[word1]
-            PC += 2
             print('    LD RAM[%s] to RAM[%s]' %(word1, word0_first_half))
 
         # REGISTER TO REGISTER ADD == 8
         elif word0_second_half == 8:
             RAM[word0_first_half] += RAM[word1]
             manage_stack_over_under_flow(word0_first_half)
-            PC += 2
             print('    ADD RAM[%s] to RAM[%s]' %(word1, word0_first_half))
 
         # REGISTER TO REGISTER SUBTRACT == 9
         elif word0_second_half == 9:
             RAM[word0_first_half] -= RAM[word1]
             manage_stack_over_under_flow(word0_first_half)
-            PC += 2
             print('    SUB RAM[%s] by RAM[%s]' %(word0_first_half, word1))
 
         # REGISTER TO REGISTER MULTIPLY == a
         elif word0_second_half == 10:
             RAM[word0_first_half] *= RAM[word1]
             manage_stack_over_under_flow(word0_first_half)
-            PC += 2
             print('    MUL RAM[%s] to RAM[%s]' %(word1, word0_first_half))
 
         # REGISTER TO REGISTER DIVIDE == b
         elif word0_second_half == 11:
             RAM[word0_first_half] /= RAM[word1]
             manage_stack_over_under_flow(word0_first_half)
-            PC += 2
             print('    DIV RAM[%s] by RAM[%s]' %(word0_first_half, word1))
 
         # COMPARE REGISTER TO VALUE  == c
@@ -207,19 +200,18 @@ def exec(lines_from_file_hex):
             print('    CMP RAM[%s] to %s' %(word0_first_half, word1))
             if RAM[word0_first_half] == word1:
                 PC += 2
-                print('     ...True')
+                print('    ...True')
             else:
-                print('     ...False')
-
+                print('    ...False')
 
         # COMPARE REGISTER TO REGISTER == d
         elif word0_second_half == 13:
             print('    CMP RAM[%s] to RAM[%s]' %(word0_first_half, word1))
             if RAM[word0_first_half] == RAM[word1]:
                 PC += 2
-                print('     ...True')
+                print('    ...True')
             else:
-                print('     ...False')
+                print('    ...False')
 
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:
