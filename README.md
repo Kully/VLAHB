@@ -3,7 +3,7 @@ Virtual Machine, Language, Assembler, Hexadecimal, Binary
 
 
 ## Op Codes (subject to change):
-GOTO == 1
+GOTO == 1 <br>
 DIRECT LOAD == 2
 DIRECT ADD == 3
 DIRECT SUBTRACT == 4
