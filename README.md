@@ -1,7 +1,6 @@
 # VLAHB
 Virtual Machine, Language, Assembler, Hexadecimal, Binary
 
-
 ## Op Codes (subject to change):
 GOTO == 1 <br>
 DIRECT LOAD == 2 <br>
