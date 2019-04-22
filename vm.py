@@ -259,6 +259,8 @@ slow_print('Type in the filename (.hex) you want to run:')
 myHexFileName = input('\n>>> ')
 if not myHexFileName.endswith('.hex'):
     myHexFileName += '.hex'
+if not myHexFileName.startswith('hex/'):
+    myHexFileName = 'hex/' + myHexFileName
 hex_lines = return_lines_from_file_hex(myHexFileName)
 fill_ROM_with_hex_lines(hex_lines)
 validate_hex_file(myHexFileName)
