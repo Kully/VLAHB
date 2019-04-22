@@ -1,8 +1,31 @@
 '''
 Util Functions for VLAHB
 '''
+import sys
+import time
+
 def hex_to_int(h):
 	return int(h, 16)
+
+def slow_print(msg, sleep_between_lines=0.02, sleep_after_msg=0.1, print_empty_line=False):
+    '''only works for one line eg. strings with no \n'''
+    for idx in range(1, len(msg) + 1):
+        sys.stdout.write('\r %s' %msg[:idx])
+        sys.stdout.flush()
+        time.sleep(sleep_between_lines)
+    if print_empty_line:
+        time.sleep(sleep_after_msg)
+        print('\n')
+
+def return_lines_from_file(file_hex, remove_empty_lines=True):
+    f = open(file_hex, 'r')
+    lines = f.read().split('\n')
+
+    if remove_empty_lines:
+        while '' in lines:
+            lines.remove('')
+    f.close()
+    return lines
 
 # Error Messages
 EVEN_NUMBER_OF_HEX_LINES_ERROR_MSG = (

@@ -59,16 +59,6 @@ RAM_NUM_OF_SLOTS = 128000  # units of 4 bytes // 512KB == Bill Gates Number
 MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhhhhhh)
 RAM = [0] * RAM_NUM_OF_SLOTS
 
-def slow_print(msg, sleep_between_lines=0.02, sleep_after_msg=0.1, print_empty_line=False):
-    '''only works for one line eg. strings with no \n'''
-    for idx in range(1, len(msg) + 1):
-        sys.stdout.write('\r %s' %msg[:idx])
-        sys.stdout.flush()
-        time.sleep(sleep_between_lines)
-    if print_empty_line:
-        time.sleep(sleep_after_msg)
-        print('\n')
-
 def return_lines_from_file_hex(file_hex, remove_empty_lines=True):
     f = open(file_hex, 'r')
     lines = f.read().split('\n')
@@ -95,7 +85,7 @@ def manage_stack_over_under_flow(index_in_RAM):
         print("Stack Overflow at RAM[%r]"%index_in_RAM)
 
 def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
-    slow_print('Validating hex file...')
+    util.slow_print('Validating hex file...')
     time.sleep(0.4)
     lines = return_lines_from_file_hex(file_hex)
 
@@ -120,7 +110,7 @@ def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
     sys.stdout.write('\r    (ok) \n')
     time.sleep(sleeptime*2)
 
-    slow_print('Validation: PASS!', print_empty_line=True)
+    util.slow_print('Validation: PASS!', print_empty_line=True)
     time.sleep(0.4)
 
 def exec(lines_from_file_hex):
@@ -247,7 +237,7 @@ def exec(lines_from_file_hex):
         print('                     ')
 
         if EXIT_LOOP:
-            slow_print('Exiting VM...', 0.11, print_empty_line=True)
+            util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
             break
 
 hex_files = []
@@ -255,13 +245,16 @@ for filename in os.listdir():
     if filename.endswith('.hex'):
         hex_files.append(filename)
 
-slow_print('Type in the filename (.hex) you want to run:')
-myHexFileName = input('\n>>> ')
-if not myHexFileName.endswith('.hex'):
-    myHexFileName += '.hex'
-if not myHexFileName.startswith('hex/'):
-    myHexFileName = 'hex/' + myHexFileName
-hex_lines = return_lines_from_file_hex(myHexFileName)
+util.slow_print('Type in the filename (.hex) you want to run:')
+hexfilename = input('\n>>> ')
+
+# clean hexfilename
+if not hexfilename.endswith('.hex'):
+    hexfilename += '.hex'
+if not hexfilename.startswith('hex/'):
+    hexfilename = 'hex/' + hexfilename
+
+hex_lines = return_lines_from_file_hex(hexfilename)
 fill_ROM_with_hex_lines(hex_lines)
-validate_hex_file(myHexFileName)
+validate_hex_file(hexfilename)
 exec(hex_lines)
