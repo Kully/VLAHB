@@ -2,8 +2,8 @@
 Virtual Machine, Language, Assembler, Hexadecimal, Binary
 
 ## Op Codes (subject to change):
-`1    == GOTO <br>`
-2    == DIRECT LOAD <br>
+`1    == GOTO` <br>
+`2    == DIRECT LOAD` <br>
 3    == DIRECT ADD <br>
 4    == DIRECT SUBTRACT <br>
 5    == DIRECT MULTIPLY <br>
