@@ -1,6 +1,7 @@
 # VLAHB
 Virtual Machine, Language, Assembler, Hexadecimal, Binary
 
+![](https://github.com/Kully/VLAHB/blob/master/demoforvlahb.gif/?raw=true?)
 
 ## Op Codes (subject to change):
 GOTO == 1 <br>
