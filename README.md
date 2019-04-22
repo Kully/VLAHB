@@ -3,7 +3,7 @@
 
 ## Op Codes for Hex
 
-```6502
+```
 1    == GOTO
 2    == DIRECT LOAD
 3    == DIRECT ADD
