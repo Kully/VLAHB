@@ -1,5 +1,5 @@
 # VLAHB
-Virtual Machine, Language, Assembler, Hexadecimal, Binary
+**V**irtual Machine, **L**anguage, **A**ssembler, **H**exadecimal, **B**inary
 
 ## Op Codes for Hex
 `1    == GOTO` <br>
