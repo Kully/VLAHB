@@ -94,7 +94,7 @@ def manage_stack_over_under_flow(index_in_RAM):
         RAM[index_in_RAM] = MAX_RAM_VALUE - RAM[index_in_RAM]
         print("Stack Overflow at RAM[%r]"%index_in_RAM)
 
-def validate_hex_file(file_hex, remove_empty_lines=True, pspeed=0.2):
+def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
     slow_print('Validating hex file...')
     time.sleep(0.4)
     lines = return_lines_from_file_hex(file_hex)
@@ -102,23 +102,23 @@ def validate_hex_file(file_hex, remove_empty_lines=True, pspeed=0.2):
     sys.stdout.write('\n\r    (  )  even number of hex lines')
     assert len(lines) % 2 == 0, util.EVEN_NUMBER_OF_HEX_LINES_ERROR_MSG
     sys.stdout.flush()
-    time.sleep(pspeed)
+    time.sleep(sleeptime)
     sys.stdout.write('\r    (ok) \n')
-    time.sleep(pspeed*2)
+    time.sleep(sleeptime*2)
 
     sys.stdout.write('\r    (  )  all lines in file.hex are 8 chars long')
     assert all(len(line) == 8 for line in lines), util.CHARS_PER_LINE_ERROR_MSG
     sys.stdout.flush()
-    time.sleep(pspeed)
+    time.sleep(sleeptime)
     sys.stdout.write('\r    (ok) \n')
-    time.sleep(pspeed*2)
+    time.sleep(sleeptime*2)
 
     sys.stdout.write('\r    (  )  all chars are valid hexadecimal')
     assert all(char in string.hexdigits + 'x' for char in "".join(lines)), util.VALID_HEX_VALUES_ERROR_MSG
     sys.stdout.flush()
-    time.sleep(pspeed)
+    time.sleep(sleeptime)
     sys.stdout.write('\r    (ok) \n')
-    time.sleep(pspeed*2)
+    time.sleep(pssleeptimepeed*2)
 
     slow_print('Validation: PASS!', print_empty_line=True)
     time.sleep(0.4)
