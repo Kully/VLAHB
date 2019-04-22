@@ -2,7 +2,8 @@
 **V**irtual Machine, **L**anguage, **A**ssembler, **H**exadecimal, **B**inary
 
 ## Op Codes for Hex
-```
+
+```python
 1    == GOTO
 2    == DIRECT LOAD
 3    == DIRECT ADD
