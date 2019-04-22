@@ -2,17 +2,20 @@
 **V**irtual Machine, **L**anguage, **A**ssembler, **H**exadecimal, **B**inary
 
 ## Op Codes for Hex
-`1    == GOTO` <br>
-`2    == DIRECT LOAD` <br>
-`3    == DIRECT ADD` <br>
-`4    == DIRECT SUBTRACT` <br>
-`5    == DIRECT MULTIPLY` <br>
-`6    == DIRECT DIVIDE` <br>
-`7    == REGISTER TO REGISTER LOAD` <br>
-`8    == REGISTER TO REGISTER ADD` <br>
-`9    == REGISTER TO REGISTER SUBTRACT` <br>
-`a    == REGISTER TO REGISTER MULTIPLY` <br>
-`b    == REGISTER TO REGISTER DIVIDE` <br>
-`c    == COMPARE REGISTER TO VALUE` <br>
-`d    == COMPARE REGISTER TO REGISTER` <br>
-`ffff == EXIT VM` <br>
+
+```
+1    == GOTO
+2    == DIRECT LOAD
+3    == DIRECT ADD
+4    == DIRECT SUBTRACT
+5    == DIRECT MULTIPLY
+6    == DIRECT DIVIDE
+7    == REGISTER TO REGISTER LOAD
+8    == REGISTER TO REGISTER ADD
+9    == REGISTER TO REGISTER SUBTRACT
+a    == REGISTER TO REGISTER MULTIPLY
+b    == REGISTER TO REGISTER DIVIDE
+c    == COMPARE REGISTER TO VALUE
+d    == COMPARE REGISTER TO REGISTER
+ffff == EXIT VM
+```
