@@ -118,7 +118,7 @@ def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
     sys.stdout.flush()
     time.sleep(sleeptime)
     sys.stdout.write('\r    (ok) \n')
-    time.sleep(pssleeptimepeed*2)
+    time.sleep(sleeptime*2)
 
     slow_print('Validation: PASS!', print_empty_line=True)
     time.sleep(0.4)
