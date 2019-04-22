@@ -16,3 +16,9 @@
 `c    == COMPARE REGISTER TO VALUE` <br>
 `d    == COMPARE REGISTER TO REGISTER` <br>
 `ffff == EXIT VM` <br>
+
+```
+a      =     f
+
+
+```
