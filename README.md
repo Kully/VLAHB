@@ -15,4 +15,4 @@ a    == REGISTER TO REGISTER MULTIPLY <br>
 b    == REGISTER TO REGISTER DIVIDE <br>
 c    == COMPARE REGISTER TO VALUE <br>
 d    == COMPARE REGISTER TO REGISTER <br>
-ffff == EXIT VM == ffff <br>
+ffff == EXIT VM <br>
