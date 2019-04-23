@@ -59,16 +59,6 @@ RAM_NUM_OF_SLOTS = 128000  # units of 4 bytes // 512KB == Bill Gates Number
 MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhhhhhh)
 RAM = [0] * RAM_NUM_OF_SLOTS
 
-def return_lines_from_file_hex(file_hex, remove_empty_lines=True):
-    f = open(file_hex, 'r')
-    lines = f.read().split('\n')
-
-    if remove_empty_lines:
-        while '' in lines:
-            lines.remove('')
-    f.close()
-    return lines
-
 def fill_ROM_with_hex_lines(hex_lines):
     for line in hex_lines:
         ROM.append(line)
@@ -87,7 +77,7 @@ def manage_stack_over_under_flow(index_in_RAM):
 def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
     util.slow_print('Validating hex file...')
     time.sleep(0.4)
-    lines = return_lines_from_file_hex(file_hex)
+    lines = util.return_lines_from_file(file_hex)
 
     sys.stdout.write('\n\r    (  )  even number of hex lines')
     assert len(lines) % 2 == 0, util.EVEN_NUMBER_OF_HEX_LINES_ERROR_MSG
@@ -254,7 +244,7 @@ if not hexfilename.endswith('.hex'):
 if not hexfilename.startswith('hex/'):
     hexfilename = 'hex/' + hexfilename
 
-hex_lines = return_lines_from_file_hex(hexfilename)
+hex_lines = util.return_lines_from_file(hexfilename)
 fill_ROM_with_hex_lines(hex_lines)
 validate_hex_file(hexfilename)
 exec(hex_lines)
