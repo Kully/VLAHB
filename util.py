@@ -7,6 +7,9 @@ import time
 def hex_to_int(h):
 	return int(h, 16)
 
+def int_to_hex(i):
+    return hex(int(i))[2:]
+
 def slow_print(msg, sleep_between_lines=0.02, sleep_after_msg=0.1, print_empty_line=False):
     '''only works for one line eg. strings with no \n'''
     for idx in range(1, len(msg) + 1):

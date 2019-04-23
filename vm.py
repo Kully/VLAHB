@@ -241,8 +241,6 @@ hexfilename = input('\n>>> ')
 # clean hexfilename
 if not hexfilename.endswith('.hex'):
     hexfilename += '.hex'
-if not hexfilename.startswith('hex/'):
-    hexfilename = 'hex/' + hexfilename
 
 hex_lines = util.return_lines_from_file(hexfilename)
 fill_ROM_with_hex_lines(hex_lines)
