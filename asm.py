@@ -154,6 +154,22 @@ for line in lines:
 			word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
 			word0_second_half = opcode_val.zfill(4)
 
+		if opcode == 'CMP':
+			if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
+				raise Exception(
+					exception_msg.format(opcode=opcode)
+				)
+			if re.search(r'R\[\d+]', args[1]):
+				opcode_val = op_codes_dict['COMPARE REGISTER TO REGISTER']
+				word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
+
+			else:
+				opcode_val = op_codes_dict['COMPARE REGISTER TO VALUE']
+				word1 = util.int_to_hex(args[1]).zfill(8)
+
+			word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
+			word0_second_half = opcode_val.zfill(4)
+
 		if opcode == 'EXIT':
 			opcode_val = op_codes_dict['EXIT']
 			word0_second_half = opcode_val.zfill(4)
