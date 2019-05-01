@@ -54,7 +54,11 @@ def run(file_asm, file_hex):
 		# add a NAME: check at the beginning of the line
 		# code
 
-		# re.match(r' *[A-Z]+:', code)
+		# find label
+		if re.match(r' *[A-Z]+:', code):
+			label = re.findall(r'[A-Z]+:', code)[0]
+			print('\nlabel: %s \n' %label)
+
 
 		# args in code
 		code_split = code.split(' ')
