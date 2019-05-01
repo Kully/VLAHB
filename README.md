@@ -1,6 +1,11 @@
 # VLAHB
 **V**irtual Machine, **L**anguage, **A**ssembler, **H**exadecimal, **B**inary
 
+## Instructions
+1. Edit/Write a `.asm` file
+2. Open `Makefile` to make sure all variables are correct
+3. Run `make` in root directory
+
 ## Op Codes for Hex
 
 ```
