@@ -58,6 +58,7 @@ ROM = []
 RAM_NUM_OF_SLOTS = 128000  # units of 4 bytes // 512KB == Bill Gates Number
 MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhhhhhh)
 RAM = [0] * RAM_NUM_OF_SLOTS
+PC = 0  # program counter
 
 def fill_ROM_with_hex_lines(hex_lines):
     for line in hex_lines:
@@ -105,7 +106,6 @@ def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
 
 def exec(lines_from_file_hex):
     '''Execute lines in ROM'''
-    PC = 0
     EXIT_LOOP = False
     while True:
         time.sleep(DELAY_BETWEEN_COMMANDS)
