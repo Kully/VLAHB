@@ -38,8 +38,6 @@ op_codes_dict = {
 }
 
 def run(file_asm, file_hex):
-	# file_asm = 'file.asm'
-	# file_hex = 'myfile.hex'
 	lines = util.return_lines_from_file(file_asm)
 
 	hex_file_str = ''
@@ -52,6 +50,11 @@ def run(file_asm, file_hex):
 		else:
 			comment = line[first_semicolon_idx+1:]
 			code = line[:first_semicolon_idx]
+
+		# add a NAME: check at the beginning of the line
+		# code
+
+		# re.match(r' *[A-Z]+:', code)
 
 		# args in code
 		code_split = code.split(' ')
