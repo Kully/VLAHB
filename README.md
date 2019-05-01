@@ -9,19 +9,50 @@
 ## Assembly Syntax
 The best way to understand the syntax is through example.
 
-RAM is a list
+Tips:
+- RAM is a list
+- all numerical values in your `file.asm` are integers
+  eg. 4 != 0x04
 
 `GOTO 4`<br>
 Set PC (program counter) to line 4
 
-`LD R[0] 4`
+`LD R[0] 4`<br>
 Load RAM[0] with value 4
 
-`LD R[0] R[2]`
+`LD R[0] R[2]`<br>
 Load RAM[0] with value of RAM[2]
 
-`ADD R[2] 8`
+`ADD R[2] 8`<br>
 Add 8 to RAM[2]
+
+`ADD R[2] R[6]`<br>
+Add value of R[6] to RAM[2]
+
+`SUB R[0] 3`<br>
+Subtract 3 from RAM[0]
+
+`MUL R[0] 2`<br>
+Multiply RAM[0] by 2
+
+`DIV R[0] 2`<br>
+Divide RAM[0] by 2
+
+`CMP R[0] R[1]`<br>
+Compare RAM[0] with RAM[1].
+
+`CMP R[0] 42`<br>
+Compare RAM[0] with value 42.
+
+```bash
+if they match:
+    skip next line in `.asm` (PC += 2)
+else:
+    go to next line
+```
+
+
+
 
 
 Example Program: "Clock"
