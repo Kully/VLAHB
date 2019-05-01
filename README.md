@@ -44,14 +44,12 @@ Compare RAM[0] with RAM[1].
 Compare RAM[0] with value 42.
 
 ```bash
-if they match:
+if (X == Y):
     skip next line in `.asm` (PC += 2)
-else:
-    go to next line
 ```
 
-
-
+`EXIT`<br>
+Exit virtual machine
 
 
 #### Example:
