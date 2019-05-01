@@ -51,17 +51,25 @@ if (X == Y):
 `EXIT`<br>
 Exit virtual machine
 
-
 #### Example:
 
 Let's write a program that emulates a fast ticking clock:
 
 clock.asm:
 ```
+; fast ticking clock
+ADD R[1] 1
+CMP [1] 60
+GOTO 0
+LD R[1] 0 ; reset minute to 0
+ADD R[0] 1
+CMP R[0] 23
+GOTO 0
+LD R[0] 0 ; reset hour to 0
+GOTO 0
+EXIT```
 
-```<br>
-
-I edit the `Makefile`
+I edit the Makefile
 ```
 file_asm = clock.asm
 file_hex = clock.hex
@@ -71,9 +79,7 @@ run :
 	python vm.py $(file_hex);
 ```<br>
 
-Now run `make`
-
-And watch your clock program run in the terminal!
+Now run `make` and watch your clock program run in the terminal!
 
 
 ## Hex - Op Codes
