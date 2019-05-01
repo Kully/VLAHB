@@ -45,7 +45,7 @@ Compare RAM[0] with value 42.
 
 ```bash
 if (X == Y):
-    skip next line in `.asm` (PC += 2)
+    skip next line in .asm (PC += 2)
 ```
 
 `EXIT`<br>
