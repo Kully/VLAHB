@@ -67,9 +67,11 @@ CMP R[0] 23
 GOTO 0
 LD R[0] 0 ; reset hour to 0
 GOTO 0
-EXIT```
+EXIT
+```
 
 I edit the Makefile
+
 ```
 file_asm = clock.asm
 file_hex = clock.hex
@@ -77,7 +79,7 @@ file_hex = clock.hex
 run :
 	python asm.py $(file_asm) $(file_hex);
 	python vm.py $(file_hex);
-```<br>
+```
 
 Now run `make` and watch your clock program run in the terminal!
 
