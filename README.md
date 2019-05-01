@@ -6,13 +6,12 @@
 2. Open `Makefile` to make sure all variables are correct
 3. Run `make` in root directory
 
-## Assembly Syntax
+## ASM - Syntax
 The best way to understand the syntax is through example.
 
 Tips:
 - RAM is a list
-- all numerical values in your `file.asm` are integers
-  eg. 4 != 0x04
+- all numerical values in your `file.asm` are integers eg. 4 != 0x04
 
 `GOTO 4`<br>
 Set PC (program counter) to line 4
@@ -55,15 +54,31 @@ else:
 
 
 
-Example Program: "Clock"
+#### Example:
+
+Let's write a program that emulates a fast ticking clock:
+
+clock.asm:
 ```
 
+```<br>
+
+I edit the `Makefile`
 ```
+file_asm = clock.asm
+file_hex = clock.hex
+
+run :
+	python asm.py $(file_asm) $(file_hex);
+	python vm.py $(file_hex);
+```<br>
+
+Now run `make`
+
+And watch your clock program run in the terminal!
 
 
-
-
-## Op Codes for Hex
+## Hex - Op Codes
 
 ```
 1    == GOTO
