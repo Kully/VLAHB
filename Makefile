@@ -1,5 +1,5 @@
-file_asm = file.asm
-file_hex = myfile.hex
+file_asm = file.asm  # the assembly file you want to turn into hex
+file_hex = myfile.hex  # target hex file to create from .asm
 
 run :
 	python asm.py $(file_asm) $(file_hex);

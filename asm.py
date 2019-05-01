@@ -189,8 +189,6 @@ def run(file_asm, file_hex):
 	f.close()
 
 if __name__ == "__main__":
-	# file_asm = 'file.asm'
-	# file_hex = 'myfile.hex'
 
     file_asm = sys.argv[1]
     file_hex = sys.argv[2]
