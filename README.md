@@ -1,10 +1,36 @@
 # VLAHB
 **V**irtual Machine, **L**anguage, **A**ssembler, **H**exadecimal, **B**inary
 
-## Instructions
+# Instructions
 1. Edit/Write a `.asm` file
 2. Open `Makefile` to make sure all variables are correct
 3. Run `make` in root directory
+
+## Assembly Syntax
+The best way to understand the syntax is through example.
+
+RAM is a list
+
+`GOTO 4`
+Set PC (program counter) to line 4
+
+`LD R[0] 4`
+Load RAM[0] with value 4
+
+`LD R[0] R[2]`
+Load RAM[0] with value of RAM[2]
+
+`ADD R[2] 8`
+Add 8 to RAM[2]
+
+
+Example Program: "Clock"
+```
+
+```
+
+
+
 
 ## Op Codes for Hex
 
