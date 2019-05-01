@@ -230,19 +230,9 @@ def exec(lines_from_file_hex):
             util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
             break
 
-hex_files = []
-for filename in os.listdir():
-    if filename.endswith('.hex'):
-        hex_files.append(filename)
-
-util.slow_print('Type in the filename (.hex) you want to run:')
-hexfilename = input('\n>>> ')
-
-# clean hexfilename
-if not hexfilename.endswith('.hex'):
-    hexfilename += '.hex'
-
-hex_lines = util.return_lines_from_file(hexfilename)
-fill_ROM_with_hex_lines(hex_lines)
-validate_hex_file(hexfilename)
-exec(hex_lines)
+if __name__ == "__main__":
+    hexfilename = sys.argv[1]
+    hex_lines = util.return_lines_from_file(hexfilename)
+    fill_ROM_with_hex_lines(hex_lines)
+    validate_hex_file(hexfilename)  # validate
+    exec(hex_lines)
