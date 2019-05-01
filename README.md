@@ -11,7 +11,7 @@ The best way to understand the syntax is through example.
 
 RAM is a list
 
-`GOTO 4`
+`GOTO 4`<br>
 Set PC (program counter) to line 4
 
 `LD R[0] 4`
