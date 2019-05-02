@@ -59,6 +59,8 @@ RAM_NUM_OF_SLOTS = 128000  # units of 4 bytes // 512KB == Bill Gates Number
 MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhhhhhh)
 RAM = [0] * RAM_NUM_OF_SLOTS
 
+STACK = []
+SP = 0  # Stack Pointer
 
 def fill_ROM_with_hex_lines(hex_lines):
     for line in hex_lines:
@@ -214,6 +216,19 @@ def exec(lines_from_file_hex):
                 print('    ...True')
             else:
                 print('    ...False')
+
+        # CALL == e
+        elif word0_second_half == 14:
+            PC = word1
+            STACK.append(word1)
+            print('    PC -> %s' %word1)
+            print('    Push %s to the Stack' %word1)
+
+        # RETURN == f
+        elif word0_second_half == 15:
+            PC = STACK.pop()
+            print('    PC -> %s' %PC)
+            print('    Pop %s from the Stack' %PC)
 
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:

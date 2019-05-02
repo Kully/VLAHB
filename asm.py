@@ -34,14 +34,17 @@ op_codes_dict = {
     'REGISTER TO REGISTER DIVIDE': 'b',
     'COMPARE REGISTER TO VALUE': 'c',
     'COMPARE REGISTER TO REGISTER': 'd',
+    'CALL': 'e',
+    'RETURN': 'f',
     'EXIT': 'ffff',
 }
 
 labels_to_pc = {}
 
-def label_compute(file_asm):
+# TODO: make PC a global variable
+def validate_code_and_compute_label_indices(file_asm):
     lines = util.return_lines_from_file(file_asm)
-
+    lines_sans_labels = []
     PC = 0
     for line in lines:
         first_semicolon_idx = line.find(';')
@@ -53,15 +56,19 @@ def label_compute(file_asm):
             comment = line[first_semicolon_idx+1:]
             code = line[:first_semicolon_idx]
 
-        # find label
+        # match label regex
         if re.match(r' *[A-Z]+:', code):
             label = re.findall(r'[A-Z]+:', code)[0][:-1]
             labels_to_pc[label] = PC
-        PC += 2
+        else:
+            lines_without_labels.append(line)
+            PC += 2
+    return lines_sans_labels
 
-def run(file_asm, file_hex):
-    lines = util.return_lines_from_file(file_asm)
+def run(lines, file_hex):
     hex_file_str = ''
+    PC = 0
+
     for line in lines:
         first_semicolon_idx = line.find(';')
 
@@ -207,22 +214,15 @@ def run(file_asm, file_hex):
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                 word0_second_half = opcode_val.zfill(4)
 
+            elif opcode == 'CALL':
+                pass
+
+            elif opcode == 'RETURN':
+                pass
+
             elif opcode == 'EXIT':
                 valid_opcode = True
                 opcode_val = op_codes_dict['EXIT']
-                word0_second_half = opcode_val.zfill(4)
-
-            else:
-                # check if label
-                print('xxx')
-                print(line)
-                print(labels_to_pc)
-                valid_opcode = True
-                if opcode not in labels_to_pc.keys():
-                    raise Exception('\nUnknown Label %s' %opcode)
-                word1 = util.int_to_hex(labels_to_pc[args[0]]).zfill(8)
-
-                opcode_val = op_codes_dict['GOTO']
                 word0_second_half = opcode_val.zfill(4)
 
             if valid_opcode:
@@ -244,5 +244,5 @@ def run(file_asm, file_hex):
 if __name__ == "__main__":
     file_asm = sys.argv[1]
     file_hex = sys.argv[2]
-    label_compute(file_asm)
-    run(file_asm, file_hex)
+    lines_sans_labels = validate_code_and_compute_label_indices(file_asm)
+    run(lines_sans_labels, file_hex)
