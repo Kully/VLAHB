@@ -14,6 +14,16 @@ goto_exception_msg = (
     'want to go to'
 )
 
+call_exception_msg = (
+    '\nThe Opcode CALL must be followed by 1 argument in '
+    'the form:\n    CALL LABEL\n where LABEL is the function '
+    ' name to move the PC to'
+)
+
+return_exception_msg = (
+    '\nThe Opcode RETURN requires no arguments afterwards'
+)
+
 exception_msg = (
     '\nThe Opcode {opcode} must be followed by 2 arguments '
     'either in the form:\n    {opcode} R[X] R[Y]\nor\n'
@@ -99,7 +109,7 @@ def run(lines, file_hex):
             valid_opcode = False
             if opcode == 'GOTO':
                 valid_opcode = True
-                if len(args) < 1:
+                if len(args) < 1:  # !=
                     raise Exception(goto_exception_msg)
 
                 opcode_val = op_codes_dict['GOTO']
@@ -215,10 +225,24 @@ def run(lines, file_hex):
                 word0_second_half = opcode_val.zfill(4)
 
             elif opcode == 'CALL':
-                pass
+                valid_opcode = True
+                if len(args) != 1:
+                    raise Exception(call_exception_msg)
+
+                opcode_val = op_codes_dict['CALL']
+                word0_second_half = opcode_val.zfill(4)
+
+                if args[0] not in labels_to_pc.keys():
+                    raise Exception('\nUnknown Label %s' %args[0])
+                word1 = util.int_to_hex(labels_to_pc[args[0]]).zfill(8)
 
             elif opcode == 'RETURN':
-                pass
+                valid_opcode = True
+                if len(args) > 0:
+                    raise Exception(return_exception_msg)
+
+                opcode_val = op_codes_dict['RETURN']
+                word0_second_half = opcode_val.zfill(4)
 
             elif opcode == 'EXIT':
                 valid_opcode = True
