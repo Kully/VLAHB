@@ -1,6 +1,9 @@
-file_asm = file_test.asm
-file_hex = file_test.hex
+file_asm = asm/recursion.asm
+file_hex = recursion.hex
 
-run :
+run:
 	python asm.py $(file_asm) $(file_hex);
 	python vm.py $(file_hex);
+
+clean:
+	rm -f *.hex

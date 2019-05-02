@@ -1,0 +1,11 @@
+GOTO MAIN
+
+FUN:
+    ADD R[0] 1
+    CMP R[0] 10
+    CALL FUN
+    RETURN
+
+MAIN:
+    CALL FUN
+    EXIT
