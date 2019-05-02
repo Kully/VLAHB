@@ -1,8 +1,12 @@
+GOTO MAIN
+
 FUNCTION:
     LD R[1] 2
-    RET
-; just a comment here
+    RETURN
+
 MAIN:
     LD R[0] 1
-    GOTO FUNCTION
+    CALL FUNCTION
     LD R[2] 3
+
+EXIT  ; the end of the program

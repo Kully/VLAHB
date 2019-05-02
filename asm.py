@@ -70,9 +70,17 @@ def validate_code_and_compute_label_indices(file_asm):
         if re.match(r' *[A-Z]+:', code):
             label = re.findall(r'[A-Z]+:', code)[0][:-1]
             labels_to_pc[label] = PC
-        else:
-            lines_without_labels.append(line)
+
+        elif not code.isspace():
+            lines_sans_labels.append(code)
             PC += 2
+
+    # print code
+    print('-> labels: %r' %labels_to_pc)
+    print('-> assembly without comments and labels:\n')
+    for l in lines_sans_labels:
+        print(l)
+    print('')
     return lines_sans_labels
 
 def run(lines, file_hex):
@@ -257,8 +265,8 @@ def run(lines, file_hex):
                 hex_file_str += '\n\n'
 
     # remove last empty line
-    if hex_file_str[-1] == '\n':
-        hex_file_str = hex_file_str[:-1]
+    # if hex_file_str[-1] == '\n':
+    #     hex_file_str = hex_file_str[:-1]
 
     # write file
     f = open(file_hex, 'w')

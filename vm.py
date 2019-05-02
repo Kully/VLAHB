@@ -138,70 +138,71 @@ def exec(lines_from_file_hex):
         # GOTO == 1
         if word0_second_half == 1:
             PC = word1
-            print('    PC -> %s' %word1)
+            print('    GOTO')
+            print('      PC -> %s' %word1)
 
         # DIRECT LOAD == 2
         elif word0_second_half == 2:
             RAM[word0_first_half] = word1
-            print('\n    LD %s to RAM[%s]' %(word1, word0_first_half))
+            print('\n    LD RAM[%s] %s' %(word0_first_half, word1))
 
         # DIRECT ADD == 3
         elif word0_second_half == 3:
             RAM[word0_first_half] += word1
             manage_stack_over_under_flow(word0_first_half)
-            print('    ADD %s to RAM[%s]' %(word1, word0_first_half))
+            print('    ADD RAM[%s] %s' %(word0_first_half, word1))
 
         # DIRECT SUBTRACT == 4
         elif word0_second_half == 4:
             RAM[word0_first_half] -= word1
             manage_stack_over_under_flow(word0_first_half)
             PC += 2
-            print('    SUB %s from RAM[%s]' %(word1, word0_first_half))
+            print('    SUB RAM[%s] %s' %(word0_first_half, word1))
 
         # DIRECT MULTIPLY == 5
         elif word0_second_half == 5:
             RAM[word0_first_half] *= word1
             manage_stack_over_under_flow(word0_first_half)
-            print('    MUL %s to RAM[%s]' %(word1, word0_first_half))
+            print('    MUL RAM[%s] %s' %(word0_first_half, word1))
 
         # DIRECT DIVIDE == 6
         elif word0_second_half == 6:
             RAM[word0_first_half] /= word1
             manage_stack_over_under_flow(word0_first_half)
-            print('    DIV RAM[%s] by %s' %(word0_first_half, word1))
+            print('    DIV RAM[%s] %s' %(word0_first_half, word1))
 
         # REGISTER TO REGISTER LOAD == 7
         elif word0_second_half == 7:
             RAM[word0_first_half] = RAM[word1]
-            print('    LD RAM[%s] to RAM[%s]' %(word1, word0_first_half))
+            print('    LD RAM[%s] RAM[%s]' %(word0_first_half, word1))
 
         # REGISTER TO REGISTER ADD == 8
         elif word0_second_half == 8:
             RAM[word0_first_half] += RAM[word1]
             manage_stack_over_under_flow(word0_first_half)
-            print('    ADD RAM[%s] to RAM[%s]' %(word1, word0_first_half))
+            print('    ADD RAM[%s] RAM[%s]' %(word0_first_half, word1))
 
         # REGISTER TO REGISTER SUBTRACT == 9
         elif word0_second_half == 9:
             RAM[word0_first_half] -= RAM[word1]
             manage_stack_over_under_flow(word0_first_half)
-            print('    SUB RAM[%s] by RAM[%s]' %(word0_first_half, word1))
+            print('    SUB RAM[%s] RAM[%s]' %(word0_first_half, word1))
 
         # REGISTER TO REGISTER MULTIPLY == a
         elif word0_second_half == 10:
             RAM[word0_first_half] *= RAM[word1]
             manage_stack_over_under_flow(word0_first_half)
-            print('    MUL RAM[%s] to RAM[%s]' %(word1, word0_first_half))
+            print('    MUL RAM[%s] RAM[%s]' %(word0_first_half, word1))
 
         # REGISTER TO REGISTER DIVIDE == b
         elif word0_second_half == 11:
             RAM[word0_first_half] /= RAM[word1]
             manage_stack_over_under_flow(word0_first_half)
-            print('    DIV RAM[%s] by RAM[%s]' %(word0_first_half, word1))
+            print('    DIV RAM[%s] RAM[%s]' %(word0_first_half, word1))
 
         # COMPARE REGISTER TO VALUE  == c
         elif word0_second_half == 12:
-            print('    CMP RAM[%s] to %s' %(word0_first_half, word1))
+            print('    CMP RAM[%s] %s' %(word0_first_half, word1))
             if RAM[word0_first_half] == word1:
                 PC += 2
                 print('    ...True')
@@ -210,7 +211,7 @@ def exec(lines_from_file_hex):
 
         # COMPARE REGISTER TO REGISTER == d
         elif word0_second_half == 13:
-            print('    CMP RAM[%s] to RAM[%s]' %(word0_first_half, word1))
+            print('    CMP RAM[%s] RAM[%s]' %(word0_first_half, word1))
             if RAM[word0_first_half] == RAM[word1]:
                 PC += 2
                 print('    ...True')
@@ -221,14 +222,16 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 14:
             PC = word1
             STACK.append(word1)
-            print('    PC -> %s' %word1)
-            print('    Push %s to the Stack' %word1)
+            print('    CALL')
+            print('      PC -> %s' %word1)
+            print('      Push %s to the Stack' %word1)
 
         # RETURN == f
         elif word0_second_half == 15:
             PC = STACK.pop()
-            print('    PC -> %s' %PC)
-            print('    Pop %s from the Stack' %PC)
+            print('    RETURN')
+            print('      PC -> %s' %PC)
+            print('      Pop %s from the Stack' %PC)
 
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:
