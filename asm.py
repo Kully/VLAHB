@@ -8,52 +8,11 @@ import sys
 import time
 import util
 
-goto_exception_msg = (
-    '\nThe Opcode GOTO must be followed by 1 argument in '
-    'the form:\n    GOTO X\n where X is the new PC that you '
-    'want to go to'
-)
-
-call_exception_msg = (
-    '\nThe Opcode CALL must be followed by 1 argument in '
-    'the form:\n    CALL LABEL\n where LABEL is the function '
-    ' name to move the PC to'
-)
-
-return_exception_msg = (
-    '\nThe Opcode RETURN requires no arguments afterwards'
-)
-
-exception_msg = (
-    '\nThe Opcode {opcode} must be followed by 2 arguments '
-    'either in the form:\n    {opcode} R[X] R[Y]\nor\n'
-    '    {opcode} R[X] Y'
-)
-
-op_codes_dict = {
-    'GOTO': '1',
-    'DIRECT LOAD': '2',
-    'DIRECT ADD': '3',
-    'DIRECT SUBTRACT': '4',
-    'DIRECT MULTIPLY': '5',
-    'DIRECT DIVIDE': '6',
-    'REGISTER TO REGISTER LOAD': '7',
-    'REGISTER TO REGISTER ADD': '8',
-    'REGISTER TO REGISTER SUBTRACT': '9',
-    'REGISTER TO REGISTER MULTIPLY': 'a',
-    'REGISTER TO REGISTER DIVIDE': 'b',
-    'COMPARE REGISTER TO VALUE': 'c',
-    'COMPARE REGISTER TO REGISTER': 'd',
-    'CALL': 'e',
-    'RETURN': 'f',
-    'EXIT': 'ffff',
-}
 
 labels_to_pc = {}
 
-
 # TODO: make PC a global variable
-def validate_code_and_compute_label_indices(file_asm):
+def compute_label_indices(file_asm):
     lines = util.return_lines_from_file(file_asm)
     lines_sans_labels = []
     PC = 0
@@ -81,7 +40,7 @@ def validate_code_and_compute_label_indices(file_asm):
     return lines_sans_labels
 
 
-def run(lines, file_hex):
+def validate_and_run(lines, file_hex):
     hex_file_str = ''
     PC = 0
 
@@ -115,10 +74,10 @@ def run(lines, file_hex):
             valid_opcode = False
             if opcode == 'GOTO':
                 valid_opcode = True
-                if len(args) < 1:  # !=
-                    raise Exception(goto_exception_msg)
+                if len(args) < 1:
+                    raise Exception(util.goto_exception_msg)
 
-                opcode_val = op_codes_dict['GOTO']
+                opcode_val = util.op_codes_dict['GOTO']
                 word0_second_half = opcode_val.zfill(4)
 
                 try:
@@ -132,14 +91,14 @@ def run(lines, file_hex):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        exception_msg.format(opcode=opcode)
+                        util.general_exception_msg.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
-                    opcode_val = op_codes_dict['REGISTER TO REGISTER LOAD']
+                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = op_codes_dict['DIRECT LOAD']
+                    opcode_val = util.op_codes_dict['DIRECT LOAD']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -149,14 +108,14 @@ def run(lines, file_hex):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        exception_msg.format(opcode=opcode)
+                        util.general_exception_msg.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
-                    opcode_val = op_codes_dict['REGISTER TO REGISTER ADD']
+                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER ADD']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = op_codes_dict['DIRECT ADD']
+                    opcode_val = util.op_codes_dict['DIRECT ADD']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -166,14 +125,14 @@ def run(lines, file_hex):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        exception_msg.format(opcode=opcode)
+                        util.general_exception_msg.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
-                    opcode_val = op_codes_dict['REGISTER TO REGISTER SUBTRACT']
+                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER SUBTRACT']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = op_codes_dict['DIRECT SUBTRACT']
+                    opcode_val = util.op_codes_dict['DIRECT SUBTRACT']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -183,14 +142,14 @@ def run(lines, file_hex):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        exception_msg.format(opcode=opcode)
+                        util.general_exception_msg.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
-                    opcode_val = op_codes_dict['REGISTER TO REGISTER MULTIPLY']
+                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER MULTIPLY']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = op_codes_dict['DIRECT MULTIPLY']
+                    opcode_val = util.op_codes_dict['DIRECT MULTIPLY']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -200,14 +159,14 @@ def run(lines, file_hex):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        exception_msg.format(opcode=opcode)
+                        util.general_exception_msg.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
-                    opcode_val = op_codes_dict['REGISTER TO REGISTER DIVIDE']
+                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER DIVIDE']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = op_codes_dict['DIRECT DIVIDE']
+                    opcode_val = util.op_codes_dict['DIRECT DIVIDE']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -217,14 +176,14 @@ def run(lines, file_hex):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        exception_msg.format(opcode=opcode)
+                        util.general_exception_msg.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
-                    opcode_val = op_codes_dict['COMPARE REGISTER TO REGISTER']
+                    opcode_val = util.op_codes_dict['COMPARE REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = op_codes_dict['COMPARE REGISTER TO VALUE']
+                    opcode_val = util.op_codes_dict['COMPARE REGISTER TO VALUE']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -233,9 +192,9 @@ def run(lines, file_hex):
             elif opcode == 'CALL':
                 valid_opcode = True
                 if len(args) != 1:
-                    raise Exception(call_exception_msg)
+                    raise Exception(util.call_exception_msg)
 
-                opcode_val = op_codes_dict['CALL']
+                opcode_val = util.op_codes_dict['CALL']
                 word0_second_half = opcode_val.zfill(4)
 
                 if args[0] not in labels_to_pc.keys():
@@ -245,14 +204,14 @@ def run(lines, file_hex):
             elif opcode == 'RETURN':
                 valid_opcode = True
                 if len(args) > 0:
-                    raise Exception(return_exception_msg)
+                    raise Exception(util.return_exception_msg)
 
-                opcode_val = op_codes_dict['RETURN']
+                opcode_val = util.op_codes_dict['RETURN']
                 word0_second_half = opcode_val.zfill(4)
 
             elif opcode == 'EXIT':
                 valid_opcode = True
-                opcode_val = op_codes_dict['EXIT']
+                opcode_val = util.op_codes_dict['EXIT']
                 word0_second_half = opcode_val.zfill(4)
 
             if valid_opcode:
@@ -271,5 +230,5 @@ def run(lines, file_hex):
 if __name__ == "__main__":
     file_asm = sys.argv[1]
     file_hex = sys.argv[2]
-    lines_sans_labels = validate_code_and_compute_label_indices(file_asm)
-    run(lines_sans_labels, file_hex)
+    lines_sans_labels = compute_label_indices(file_asm)
+    validate_and_run(lines_sans_labels, file_hex)

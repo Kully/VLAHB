@@ -30,7 +30,27 @@ def return_lines_from_file(file_hex, remove_empty_lines=True):
     f.close()
     return lines
 
+op_codes_dict = {
+    'GOTO': '1',
+    'DIRECT LOAD': '2',
+    'DIRECT ADD': '3',
+    'DIRECT SUBTRACT': '4',
+    'DIRECT MULTIPLY': '5',
+    'DIRECT DIVIDE': '6',
+    'REGISTER TO REGISTER LOAD': '7',
+    'REGISTER TO REGISTER ADD': '8',
+    'REGISTER TO REGISTER SUBTRACT': '9',
+    'REGISTER TO REGISTER MULTIPLY': 'a',
+    'REGISTER TO REGISTER DIVIDE': 'b',
+    'COMPARE REGISTER TO VALUE': 'c',
+    'COMPARE REGISTER TO REGISTER': 'd',
+    'CALL': 'e',
+    'RETURN': 'f',
+    'EXIT': 'ffff',
+}
+
 # Error Messages
+# HEX
 EVEN_NUMBER_OF_HEX_LINES_ERROR_MSG = (
 	'file.hex must contain exactly an even number of lines'
 )
@@ -42,4 +62,32 @@ CHARS_PER_LINE_ERROR_MSG = (
 )
 VALID_HEX_VALUES_ERROR_MSG = (
 	'all characters of file.hex must be a hexidecimal value from 0-f'
+)
+
+# ASM
+goto_exception_msg = (
+    '\nThe Opcode GOTO must be followed by 1 argument in '
+    'the form:\n    GOTO X\n where X is the new PC that you '
+    'want to go to'
+)
+
+call_exception_msg = (
+    '\nThe Opcode CALL must be followed by 1 argument in '
+    'the form:\n    CALL LABEL\n where LABEL is the function '
+    ' name to move the PC to'
+)
+
+return_exception_msg = (
+    '\nThe Opcode RETURN requires no arguments afterwards'
+)
+
+general_exception_msg = (
+    '\nThe Opcode {opcode} must be followed by 2 arguments '
+    'either in the form:\n    {opcode} R[X] R[Y]\nor\n'
+    '    {opcode} R[X] Y'
+)
+
+label_defined_more_than_once_exception_msg = (
+    '\nThe Label {label} is defined more than once. '
+    'Labels can only be defined once.'
 )
