@@ -68,8 +68,8 @@ def validate_code_and_compute_label_indices(file_asm):
             code = line[:first_semicolon_idx]
 
         # match label regex
-        if re.match(r' *[A-Z]+:', code):
-            label = re.findall(r'[A-Z]+:', code)[0][:-1]
+        if re.match(r' *[A-Z|\d]+:', code):
+            label = re.findall(r'[A-Z|\d]+:', code)[0][:-1]
             labels_to_pc[label] = PC
 
         elif not code.isspace() and code != '':
