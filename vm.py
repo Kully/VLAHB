@@ -60,7 +60,6 @@ MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhhhhhh)
 RAM = [0] * RAM_NUM_OF_SLOTS
 
 STACK = []
-SP = 0  # Stack Pointer
 
 def fill_ROM_with_hex_lines(hex_lines):
     for line in hex_lines:

@@ -51,6 +51,7 @@ op_codes_dict = {
 
 labels_to_pc = {}
 
+
 # TODO: make PC a global variable
 def validate_code_and_compute_label_indices(file_asm):
     lines = util.return_lines_from_file(file_asm)
@@ -71,17 +72,14 @@ def validate_code_and_compute_label_indices(file_asm):
             label = re.findall(r'[A-Z]+:', code)[0][:-1]
             labels_to_pc[label] = PC
 
-        elif not code.isspace():
+        elif not code.isspace() and code != '':
             lines_sans_labels.append(code)
             PC += 2
 
     # print code
     print('-> labels: %r' %labels_to_pc)
-    print('-> assembly without comments and labels:\n')
-    for l in lines_sans_labels:
-        print(l)
-    print('')
     return lines_sans_labels
+
 
 def run(lines, file_hex):
     hex_file_str = ''
@@ -264,14 +262,11 @@ def run(lines, file_hex):
                 hex_file_str += word1
                 hex_file_str += '\n\n'
 
-    # remove last empty line
-    # if hex_file_str[-1] == '\n':
-    #     hex_file_str = hex_file_str[:-1]
-
     # write file
     f = open(file_hex, 'w')
     f.write(hex_file_str)
     f.close()
+
 
 if __name__ == "__main__":
     file_asm = sys.argv[1]
