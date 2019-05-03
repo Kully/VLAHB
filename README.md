@@ -2,8 +2,8 @@
 **V**irtual Machine, **L**anguage, **A**ssembler, **H**exadecimal, **B**inary
 
 # Instructions
-1. Edit/Write a `.asm` file
-2. Open `Makefile` to make sure all variables are correct
+1. Write or Edit an `.asm` file
+2. Edit `file_asm` in the `Makefile` to match the `.asm` you wrote/editted
 3. Run `make` in root directory
 
 ## ASM - Syntax
