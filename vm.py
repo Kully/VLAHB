@@ -220,11 +220,11 @@ def exec(lines_from_file_hex):
 
         # CALL == e
         elif word0_second_half == 14:
-            PC = word1
-            STACK.append(word1)
             print('    CALL')
-            print('      PC -> %s' %word1)
+            STACK.append(PC)
             print('      Push %s to the Stack' %word1)
+            PC = word1
+            print('      PC -> %s' %word1)
 
         # RETURN == f
         elif word0_second_half == 15:
