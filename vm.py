@@ -137,8 +137,7 @@ def exec(lines_from_file_hex):
         # GOTO == 1
         if word0_second_half == 1:
             PC = word1
-            print('    GOTO')
-            print('      PC -> %s' %word1)
+            print('    GOTO: PC -> %s' %word1)
 
         # DIRECT LOAD == 2
         elif word0_second_half == 2:
@@ -201,48 +200,53 @@ def exec(lines_from_file_hex):
 
         # COMPARE REGISTER TO VALUE  == c
         elif word0_second_half == 12:
-            print('    CMP RAM[%s] %s' %(word0_first_half, word1))
+            cmp_true = 'false'
             if RAM[word0_first_half] == word1:
+                cmp_true = 'true'
                 PC += 2
-                print('    ...True')
-            else:
-                print('    ...False')
+            print('    CMP RAM[%s] %s -> %s' %(word0_first_half, word1, cmp_true))
 
         # COMPARE REGISTER TO REGISTER == d
         elif word0_second_half == 13:
-            print('    CMP RAM[%s] RAM[%s]' %(word0_first_half, word1))
+            cmp_true = 'false'
             if RAM[word0_first_half] == RAM[word1]:
                 PC += 2
-                print('    ...True')
-            else:
-                print('    ...False')
+                cmp_true = 'true'
+
+            print('    CMP RAM[%s] RAM[%s] -> %s' %(word0_first_half, word1, cmp_true))
 
         # CALL == e
         elif word0_second_half == 14:
-            print('    CALL')
             STACK.append(PC)
-            print('      Push %s to the Stack' %word1)
             PC = word1
-            print('      PC -> %s' %word1)
+            print('    CALL: Push %s to the Stack: PC -> %s' %(word1, word1))
 
         # RETURN == f
         elif word0_second_half == 15:
             PC = STACK.pop()
-            print('    RETURN')
-            print('      PC -> %s' %PC)
-            print('      Pop %s from the Stack' %PC)
+            print('    RETURN: Pop %s from the Stack: PC -> %s' %(PC, PC))
 
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:
             EXIT_LOOP = True
 
-        print('                     ')
-        print('    RAM[0]: %s'%RAM[0])
-        print('    RAM[1]: %s'%RAM[1])
-        print('    RAM[2]: %s'%RAM[2])
-        print('    RAM[3]: %s'%RAM[3])
-        print('    RAM[4]: %s'%RAM[4])
-        print('                     ')
+        # print statements
+        i_line_print = '   i:'
+        RAM_line_print = 'R[i]:'
+
+        int_width = 4
+        sep_space = ' ' * 2
+        for i in range(17):
+            i_line_print += sep_space
+            i_line_print += str(i).rjust(int_width)  # or str(i).zfill(int_width)
+
+            RAM_line_print += sep_space
+            RAM_line_print += str(RAM[i]).rjust(int_width)
+
+        print('')
+        print(RAM_line_print)
+        print(i_line_print)
+        print('')
 
         if EXIT_LOOP:
             util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
