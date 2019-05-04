@@ -218,11 +218,21 @@ def exec(lines_from_file_hex):
         # CALL == e
         elif word0_second_half == 14:
             STACK.append(PC)
+            index = len(STACK)
+            stack_frame_size = 16
+            a = stack_frame_size * (0 + index)
+            b = stack_frame_size * (1 + index)
+            RAM[a : b] = RAM[0 : stack_frame_size]
             PC = word1
             print('    CALL: Push %s to the Stack: PC -> %s' %(word1, word1))
 
         # RETURN == f
         elif word0_second_half == 15:
+            index = len(STACK)
+            stack_frame_size = 16
+            a = stack_frame_size * (0 + index)
+            b = stack_frame_size * (1 + index)
+            RAM[0 : stack_frame_size] = RAM[a : b]
             PC = STACK.pop()
             print('    RETURN: Pop %s from the Stack: PC -> %s' %(PC, PC))
 
