@@ -27,8 +27,8 @@ def compute_label_indices(file_asm):
             code = line[:first_semicolon_idx]
 
         # match label regex
-        if re.match(r' *[A-Z|\d]+:', code):
-            label = re.findall(r'[A-Z|\d]+:', code)[0][:-1]
+        if re.match(r' *[A-Z|\d|_]+:', code):
+            label = re.findall(r'[A-Z|\d|_]+:', code)[0][:-1]
             labels_to_pc[label] = PC
 
         elif not code.isspace() and code != '':
