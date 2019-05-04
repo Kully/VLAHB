@@ -3,92 +3,92 @@
 
 GOTO MAIN
 
-; var MATHADD(var a, var b)
+; var MATH_ADD(var a, var b)
 ; {
 ;     a += b
 ;     return a
 ; }
-MATHADD:
+MATH_ADD:
     ADD R[0] R[1]
     LD R[512] R[0]
     RETURN
 
-; var MATHSUB(var a, var b)
+; var MATH_SUB(var a, var b)
 ; {
 ;     a -= b
 ;     return a
 ; }
-MATHSUB:
+MATH_SUB:
     SUB R[0] R[1]
     LD R[512] R[0]
     RETURN
 
-; var MATHMUL(var a, var b)
+; var MATH_MUL(var a, var b)
 ; {
 ;     a *= b
 ;     return a
 ; }
-MATHMUL:
+MATH_MUL:
     MUL R[0] R[1]
     LD R[512] R[0]
     RETURN
 
-; var MATHDIV(var a, var b)
+; var MATH_DIV(var a, var b)
 ; {
 ;     a /= b
 ;     return a
 ; }
-MATHDIV:
+MATH_DIV:
     DIV R[0] R[1]
     LD R[512] R[0]
     RETURN
 
-; var MATHLONGWINDED(var a, var b)
+; var MATH_LONG_WINDED(var a, var b)
 ; {
-;     b = MATHADD(a, b)
-;     b = MATHADD(a, b)
-;     b = MATHADD(a, b)
-;     b = MATHADD(a, b)
+;     b = MATH_ADD(a, b)
+;     b = MATH_ADD(a, b)
+;     b = MATH_ADD(a, b)
+;     b = MATH_ADD(a, b)
 ;     return b;
 ; }
-MATHLONGWINDED:
-    CALL MATHADD
+MATH_LONG_WINDED:
+    CALL MATH_ADD
     LD R[1] R[512] ; 15
-    CALL MATHADD
+    CALL MATH_ADD
     LD R[1] R[512] ; 25
-    CALL MATHADD
+    CALL MATH_ADD
     LD R[1] R[512] ; 35
-    CALL MATHADD
+    CALL MATH_ADD
     RETURN ; 45
 
 ; void MAIN()
 ; {
 ;   var a = 10
 ;   var b = 5
-;   var c = MATHADD(a, b)
-;   var d = MATHSUB(a, b)
-;   var e = MATHMUL(a, b)
-;   var f = MATHDIV(a, b)
-;   var g = MATHLONGWINDED(a, b)
+;   var c = MATH_ADD(a, b)
+;   var d = MATH_SUB(a, b)
+;   var e = MATH_MUL(a, b)
+;   var f = MATH_DIV(a, b)
+;   var g = MATH_LONG_WINDED(a, b)
 ; }
 MAIN:
     LD R[0] 10
 
     LD R[1] 5
 
-    CALL MATHADD
+    CALL MATH_ADD
     LD R[2] R[512]
 
-    CALL MATHSUB
+    CALL MATH_SUB
     LD R[3] R[512]
 
-    CALL MATHMUL
+    CALL MATH_MUL
     LD R[4] R[512]
 
-    CALL MATHDIV
+    CALL MATH_DIV
     LD R[5] R[512]
 
-    CALL MATHLONGWINDED
+    CALL MATH_LONG_WINDED
     LD R[6] R[512]
 
     EXIT
