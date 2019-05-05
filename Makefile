@@ -1,5 +1,5 @@
-file_asm = asm/fibo.asm
-file_hex = fibo.hex
+file_asm = asm/math.asm
+file_hex = math.hex
 
 run:
 	python asm.py $(file_asm) $(file_hex);
