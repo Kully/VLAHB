@@ -70,29 +70,29 @@ VALID_HEX_VALUES_ERROR_MSG = (
 )
 
 # ASM
-goto_exception_msg = (
+GOTO_EXCEPTION_MSG = (
     '\nThe Opcode GOTO must be followed by 1 argument in '
     'the form:\n    GOTO X\n where X is the new PC that you '
     'want to go to'
 )
 
-call_exception_msg = (
+CALL_EXCEPTION_MSG = (
     '\nThe Opcode CALL must be followed by 1 argument in '
     'the form:\n    CALL LABEL\n where LABEL is the function '
     ' name to move the PC to'
 )
 
-return_exception_msg = (
+RETURN_EXCEPTION_MSG = (
     '\nThe Opcode RETURN requires no arguments afterwards'
 )
 
-general_exception_msg = (
+GENERAL_EXCEPTION_MSG = (
     '\nThe Opcode {opcode} must be followed by 2 arguments '
     'either in the form:\n    {opcode} R[X] R[Y]\nor\n'
     '    {opcode} R[X] Y'
 )
 
-label_defined_more_than_once_exception_msg = (
+LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG = (
     '\nThe Label {label} is defined more than once. '
     'Labels can only be defined once.'
 )

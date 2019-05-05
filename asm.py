@@ -75,7 +75,7 @@ def validate_and_run(lines, file_hex):
             if opcode == 'GOTO':
                 valid_opcode = True
                 if len(args) < 1:
-                    raise Exception(util.goto_exception_msg)
+                    raise Exception(util.GOTO_EXCEPTION_MSG)
 
                 opcode_val = util.op_codes_dict['GOTO']
                 word0_second_half = opcode_val.zfill(4)
@@ -91,7 +91,7 @@ def validate_and_run(lines, file_hex):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.general_exception_msg.format(opcode=opcode)
+                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
@@ -108,7 +108,7 @@ def validate_and_run(lines, file_hex):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.general_exception_msg.format(opcode=opcode)
+                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER ADD']
@@ -125,7 +125,7 @@ def validate_and_run(lines, file_hex):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.general_exception_msg.format(opcode=opcode)
+                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER SUBTRACT']
@@ -142,7 +142,7 @@ def validate_and_run(lines, file_hex):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.general_exception_msg.format(opcode=opcode)
+                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER MULTIPLY']
@@ -159,7 +159,7 @@ def validate_and_run(lines, file_hex):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.general_exception_msg.format(opcode=opcode)
+                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER DIVIDE']
@@ -176,7 +176,7 @@ def validate_and_run(lines, file_hex):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.general_exception_msg.format(opcode=opcode)
+                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['COMPARE REGISTER TO REGISTER']
@@ -192,7 +192,7 @@ def validate_and_run(lines, file_hex):
             elif opcode == 'CALL':
                 valid_opcode = True
                 if len(args) != 1:
-                    raise Exception(util.call_exception_msg)
+                    raise Exception(util.CALL_EXCEPTION_MSG)
 
                 opcode_val = util.op_codes_dict['CALL']
                 word0_second_half = opcode_val.zfill(4)
@@ -204,7 +204,7 @@ def validate_and_run(lines, file_hex):
             elif opcode == 'RETURN':
                 valid_opcode = True
                 if len(args) > 0:
-                    raise Exception(util.return_exception_msg)
+                    raise Exception(util.RETURN_EXCEPTION_MSG)
 
                 opcode_val = util.op_codes_dict['RETURN']
                 word0_second_half = opcode_val.zfill(4)
