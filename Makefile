@@ -1,9 +1,8 @@
-file_asm = asm/math.asm
-file_hex = hex/math.hex
+filename = math
 
 run:
-	python asm.py $(file_asm) $(file_hex);
-	python vm.py $(file_hex);
+	python asm.py $(filename);
+	python vm.py hex/$(filename).hex;
 
 clean:
 	rm -f hex/*.hex

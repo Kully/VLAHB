@@ -248,7 +248,7 @@ def exec(lines_from_file_hex):
         sep_space = ' ' * 2
         for i in range(17):
             i_line_print += sep_space
-            i_line_print += str(i).rjust(int_width)  # or str(i).zfill(int_width)
+            i_line_print += str(i).rjust(int_width)
 
             RAM_line_print += sep_space
             RAM_line_print += str(RAM[i]).rjust(int_width)

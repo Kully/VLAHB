@@ -35,11 +35,10 @@ def compute_label_indices(file_asm):
             lines_sans_labels.append(code)
             PC += 2
 
-    # print code
     return lines_sans_labels
 
 
-def validate_and_run(lines, file_hex):
+def validate_and_generate_hexfile(lines, file_hex):
     hex_file_str = ''
     PC = 0
 
@@ -227,7 +226,27 @@ def validate_and_run(lines, file_hex):
 
 
 if __name__ == "__main__":
-    file_asm = sys.argv[1]
-    file_hex = sys.argv[2]
-    lines_sans_labels = compute_label_indices(file_asm)
-    validate_and_run(lines_sans_labels, file_hex)
+    filename = sys.argv[1]
+
+    # compute all labels of all asm files
+    all_files_in_asm_folder = os.listdir('./asm')
+    all_asm_files = []
+
+    for filename in all_files_in_asm_folder:
+        if filename.endswith('.asm'):
+            all_asm_files.append(filename)
+
+    # run through all asm in alphabetical order
+    all_asm_files = sorted(all_asm_files)
+
+    for asm_filename in  all_asm_files:
+        file_asm = 'asm/%s' %asm_filename
+        file_hex = 'hex/%s' %asm_filename
+        file_hex = file_hex.replace('.asm', '.hex')
+
+        print(file_asm)
+        print(file_hex)
+        print('\n')
+
+        lines_sans_labels = compute_label_indices(file_asm)
+        validate_and_generate_hexfile(lines_sans_labels, file_hex)
