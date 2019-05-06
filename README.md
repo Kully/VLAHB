@@ -4,7 +4,7 @@
 # Instructions
 1. Write or Edit an `.asm` file
 2. Edit `file_asm` in the `Makefile` to match the `.asm` you wrote/editted
-3. Run `make` in root directory
+3. Run `make` in root directory (you must be here for linking to work properly)
 
 ## ASM - Syntax
 The best way to understand the syntax is through example.
