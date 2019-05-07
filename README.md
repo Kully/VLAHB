@@ -1,9 +1,9 @@
 # VLAHB
-## **V**irtual Machine
-## **L**anguage
-## **A**ssembler
-## **H**exadecimal
-## **B**inary
+**V**irtual Machine
+**L**anguage
+**A**ssembler
+**H**exadecimal
+**B**inary
 
 # Instructions
 1. Write or Edit an `.asm` file
