@@ -16,7 +16,7 @@ def int_to_hex(i):
 def slow_print(msg, sleep_between_lines=0.02, sleep_after_msg=0.1, print_empty_line=False):
     '''only works for one line eg. strings with no \n'''
     for idx in range(1, len(msg) + 1):
-        sys.stdout.write('\r %s' %msg[:idx])
+        sys.stdout.write('\r%s' %msg[:idx])
         sys.stdout.flush()
         time.sleep(sleep_between_lines)
     if print_empty_line:
