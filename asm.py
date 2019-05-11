@@ -9,13 +9,14 @@ import time
 import util
 
 
-labels_to_pc = {}
+LABELS_TO_PC = {}
 
 # TODO: make PC a global variable
-def compute_label_indices(file_asm):
+def compute_label_indices(file_asm, global_hex_line):
+    '''line = code ; comment'''
     lines = util.return_lines_from_file(file_asm)
     lines_sans_labels = []
-    PC = 0
+    # PC = 0
     for line in lines:
         first_semicolon_idx = line.find(';')
 
@@ -29,13 +30,17 @@ def compute_label_indices(file_asm):
         # match label regex
         if re.match(util.REGEX_LABEL_PATTERN, code):
             label = re.findall(util.REGEX_LABEL_PATTERN[2:], code)[0][:-1]
-            labels_to_pc[label] = PC
+
+            if label in LABELS_TO_PC.keys():
+                raise Exception(util.LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG.format(label=label))
+
+            LABELS_TO_PC[label] = global_hex_line
 
         elif not code.isspace() and code != '':
             lines_sans_labels.append(code)
-            PC += 2
+            global_hex_line += 2
 
-    return lines_sans_labels
+    return lines_sans_labels, global_hex_line
 
 
 def validate_and_generate_hexfile(lines, file_hex):
@@ -81,9 +86,9 @@ def validate_and_generate_hexfile(lines, file_hex):
                 try:
                     word1 = util.int_to_hex(args[0]).zfill(8)
                 except ValueError:
-                    if args[0] not in labels_to_pc.keys():
+                    if args[0] not in LABELS_TO_PC.keys():
                         raise Exception('\nUnknown Label %s' %args[0])
-                    word1 = util.int_to_hex(labels_to_pc[args[0]]).zfill(8)
+                    word1 = util.int_to_hex(LABELS_TO_PC[args[0]]).zfill(8)
 
             elif opcode == 'LD':
                 valid_opcode = True
@@ -195,9 +200,9 @@ def validate_and_generate_hexfile(lines, file_hex):
                 opcode_val = util.op_codes_dict['CALL']
                 word0_second_half = opcode_val.zfill(4)
 
-                if args[0] not in labels_to_pc.keys():
+                if args[0] not in LABELS_TO_PC.keys():
                     raise Exception('\nUnknown Label %s' %args[0])
-                word1 = util.int_to_hex(labels_to_pc[args[0]]).zfill(8)
+                word1 = util.int_to_hex(LABELS_TO_PC[args[0]]).zfill(8)
 
             elif opcode == 'RETURN':
                 valid_opcode = True
@@ -228,25 +233,29 @@ def validate_and_generate_hexfile(lines, file_hex):
 if __name__ == "__main__":
     filename = sys.argv[1]
 
-    # compute all labels of all asm files
-    all_files_in_asm_folder = os.listdir('./asm')
+    # collect, sort all .asm files
     all_asm_files = []
-
+    all_files_in_asm_folder = os.listdir('./asm')
     for filename in all_files_in_asm_folder:
         if filename.endswith('.asm'):
             all_asm_files.append(filename)
-
-    # run through all asm in alphabetical order
     all_asm_files = sorted(all_asm_files)
 
-    for asm_filename in  all_asm_files:
-        file_asm = 'asm/%s' %asm_filename
-        file_hex = 'hex/%s' %asm_filename
+    # generate all asm->hex files
+    global_hex_line = 0
+    for asm_f in  all_asm_files:
+        file_asm = 'asm/%s' %asm_f
+        file_hex = 'hex/%s' %asm_f
         file_hex = file_hex.replace('.asm', '.hex')
 
-        print(file_asm)
-        print(file_hex)
-        print('\n')
+        print('%s, %s' %(file_asm, file_hex))
 
-        lines_sans_labels = compute_label_indices(file_asm)
-        validate_and_generate_hexfile(lines_sans_labels, file_hex)
+        lines_sans_labels, global_hex_line = compute_label_indices(
+            file_asm, global_hex_line
+        )
+        validate_and_generate_hexfile(
+            lines_sans_labels, file_hex
+        )
+        print(LABELS_TO_PC)
+        print(global_hex_line)
+        print('\n')

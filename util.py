@@ -94,7 +94,7 @@ GENERAL_EXCEPTION_MSG = (
 
 LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG = (
     '\nThe Label {label} is defined more than once. '
-    'Labels can only be defined once.'
+    'Labels can only be defined once across all asm files in ./asm'
 )
 
 REGEX_LABEL_PATTERN = r' *[A-Z|\d|_]+:'
