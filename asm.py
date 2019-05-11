@@ -12,7 +12,7 @@ import util
 
 LABELS_TO_PC = {}
 
-def compute_label_indices(file_asm, global_hex_line):
+def compute_label_indices(file_asm, cumsum_hex_lines):
     '''line = code ; comment'''
     lines = util.return_lines_from_file(file_asm)
     lines_sans_labels = []
@@ -34,16 +34,16 @@ def compute_label_indices(file_asm, global_hex_line):
                 raise Exception(
                     util.LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG.format(label=label)
                 )
-            LABELS_TO_PC[label] = global_hex_line
+            LABELS_TO_PC[label] = cumsum_hex_lines
 
         elif not code.isspace() and code != '':
             lines_sans_labels.append(code)
-            global_hex_line += 2
+            cumsum_hex_lines += 2
 
-    return lines_sans_labels, global_hex_line
+    return lines_sans_labels, cumsum_hex_lines
 
 
-def validate_and_generate_hexfile(lines, file_hex):
+def validate_and_make_hexfile(lines):
     hex_file_str = ''
 
     for line in lines:
@@ -223,10 +223,7 @@ def validate_and_generate_hexfile(lines, file_hex):
                 hex_file_str += word1
                 hex_file_str += '\n\n'
 
-    # write file
-    f = open(file_hex, 'w')
-    f.write(hex_file_str)
-    f.close()
+    return hex_file_str
 
 
 if __name__ == "__main__":
@@ -235,26 +232,36 @@ if __name__ == "__main__":
     # collect, sort all .asm files
     all_asm_files = []
     all_files_in_asm_folder = os.listdir('./asm')
-    for filename in all_files_in_asm_folder:
-        if filename.endswith('.asm'):
-            all_asm_files.append(filename)
+    for f_name in all_files_in_asm_folder:
+        if f_name.endswith('.asm'):
+            all_asm_files.append(f_name)
     all_asm_files = sorted(all_asm_files)
 
     # generate all asm->hex files
-    global_hex_line = 0
+    cumsum_hex_lines = 0
+    where_PC_starts = None
+    giant_hex_file_str = ''
     for asm_f in  all_asm_files:
         file_asm = 'asm/%s' %asm_f
-        file_hex = 'hex/%s' %asm_f
-        file_hex = file_hex.replace('.asm', '.hex')
 
-        print('%s, %s' %(file_asm, file_hex))
+        if filename + '.asm' == asm_f:
+            print(filename)
+            where_PC_starts = cumsum_hex_lines
 
-        lines_sans_labels, global_hex_line = compute_label_indices(
-            file_asm, global_hex_line
+        lines_sans_labels, cumsum_hex_lines = compute_label_indices(
+            file_asm, cumsum_hex_lines
         )
-        validate_and_generate_hexfile(lines_sans_labels, file_hex)
 
-    # write labels_to_pc as JSON
-    f = open('labels_to_pc.json', 'w')
-    f.write(json.dumps(LABELS_TO_PC))
+        hex_file_str = validate_and_make_hexfile(lines_sans_labels)
+        giant_hex_file_str += hex_file_str
+
+    # write giant hex file
+    # statically linked files FTW!
+    f = open('hex/file.hex', 'w')
+    f.write(giant_hex_file_str)
+    f.close()
+
+    # record starting PC
+    f = open('start_pc.txt', 'w')
+    f.write(str(where_PC_starts))
     f.close()
