@@ -61,12 +61,22 @@ RAM = [0] * RAM_NUM_OF_SLOTS
 
 STACK = []
 
+
+def starting_PC():
+    f = open('start_pc.txt', 'r')
+    PC = int(f.readlines()[0])
+    f.close()
+    return PC
+
+
 def fill_ROM_with_hex_lines(hex_lines):
     for line in hex_lines:
         ROM.append(line)
 
+
 def reset_RAM_values_to_zero():
     RAM = [0] * RAM_NUM_OF_SLOTS
+
 
 def manage_stack_over_under_flow(index_in_RAM):
     if RAM[index_in_RAM] < 0:
@@ -75,6 +85,7 @@ def manage_stack_over_under_flow(index_in_RAM):
     elif RAM[index_in_RAM] > MAX_RAM_VALUE:
         RAM[index_in_RAM] = MAX_RAM_VALUE - RAM[index_in_RAM]
         print("Stack Overflow at RAM[%r]"%index_in_RAM)
+
 
 def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
     util.slow_print('Validating hex file...')
@@ -105,13 +116,16 @@ def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
     util.slow_print('Validation: PASS!', print_empty_line=True)
     time.sleep(0.4)
 
+
 def exec(lines_from_file_hex):
     '''Execute lines in ROM'''
-    PC = 0  # program counter
+    # PC = 0
+    PC = starting_PC()  # program counter
     EXIT_LOOP = False
     while True:
         time.sleep(DELAY_BETWEEN_COMMANDS)
         # check if end of ROM
+        # TODO: Should we remove below? - EXIT takes care of breaking out of loop
         try:
             ROM[PC]
             ROM[PC+1]
@@ -248,7 +262,7 @@ def exec(lines_from_file_hex):
         sep_space = ' ' * 2
         for i in range(17):
             i_line_print += sep_space
-            i_line_print += str(i).rjust(int_width)  # or str(i).zfill(int_width)
+            i_line_print += str(i).rjust(int_width)
 
             RAM_line_print += sep_space
             RAM_line_print += str(RAM[i]).rjust(int_width)
@@ -263,8 +277,10 @@ def exec(lines_from_file_hex):
             break
 
 if __name__ == "__main__":
-    hexfilename = sys.argv[1]
+    # hexfilename = sys.argv[1]
+    hexfilename = 'hex/file.hex'
     hex_lines = util.return_lines_from_file(hexfilename)
     fill_ROM_with_hex_lines(hex_lines)
-    validate_hex_file(hexfilename)  # validate
+    validate_hex_file(hexfilename)
+
     exec(hex_lines)
