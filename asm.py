@@ -1,6 +1,7 @@
 '''
 Assembler: asm -> hex
 '''
+import json
 import os
 import re
 import string
@@ -251,9 +252,9 @@ if __name__ == "__main__":
         lines_sans_labels, global_hex_line = compute_label_indices(
             file_asm, global_hex_line
         )
-        validate_and_generate_hexfile(
-            lines_sans_labels, file_hex
-        )
-        print(LABELS_TO_PC)
-        print(global_hex_line)
-        print('\n')
+        validate_and_generate_hexfile(lines_sans_labels, file_hex)
+
+    # write labels_to_pc as JSON
+    f = open('labels_to_pc.json', 'w')
+    f.write(json.dumps(LABELS_TO_PC))
+    f.close()
