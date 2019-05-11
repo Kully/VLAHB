@@ -1,4 +1,4 @@
-GOTO MAIN
+GOTO MAIN_RECU
 
 FUN:
     ADD R[0] 1
@@ -6,6 +6,6 @@ FUN:
     CALL FUN
     RETURN
 
-MAIN:
+MAIN_RECU:
     CALL FUN
     EXIT

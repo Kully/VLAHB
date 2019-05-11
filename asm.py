@@ -11,12 +11,10 @@ import util
 
 LABELS_TO_PC = {}
 
-# TODO: make PC a global variable
 def compute_label_indices(file_asm, global_hex_line):
     '''line = code ; comment'''
     lines = util.return_lines_from_file(file_asm)
     lines_sans_labels = []
-    # PC = 0
     for line in lines:
         first_semicolon_idx = line.find(';')
 
@@ -32,8 +30,9 @@ def compute_label_indices(file_asm, global_hex_line):
             label = re.findall(util.REGEX_LABEL_PATTERN[2:], code)[0][:-1]
 
             if label in LABELS_TO_PC.keys():
-                raise Exception(util.LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG.format(label=label))
-
+                raise Exception(
+                    util.LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG.format(label=label)
+                )
             LABELS_TO_PC[label] = global_hex_line
 
         elif not code.isspace() and code != '':
@@ -45,7 +44,6 @@ def compute_label_indices(file_asm, global_hex_line):
 
 def validate_and_generate_hexfile(lines, file_hex):
     hex_file_str = ''
-    PC = 0
 
     for line in lines:
         first_semicolon_idx = line.find(';')
