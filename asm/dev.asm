@@ -1,3 +1,4 @@
-LD R[0] 1
-ADD R[0] 4
+LD R[0] 2
+DIV R[0] 2
+SUB R[0] 1
 EXIT

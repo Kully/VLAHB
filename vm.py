@@ -81,10 +81,10 @@ def reset_RAM_values_to_zero():
 def manage_stack_over_under_flow(index_in_RAM):
     if RAM[index_in_RAM] < 0:
         RAM[index_in_RAM] = MAX_RAM_VALUE + RAM[index_in_RAM]
-        print("Stack Underflow at RAM[%r]"%index_in_RAM)
+        print('    Stack Underflow at RAM[%r]'%index_in_RAM)
     elif RAM[index_in_RAM] > MAX_RAM_VALUE:
         RAM[index_in_RAM] = MAX_RAM_VALUE - RAM[index_in_RAM]
-        print("Stack Overflow at RAM[%r]"%index_in_RAM)
+        print('    Stack Overflow at RAM[%r]'%index_in_RAM)
 
 
 def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
@@ -161,27 +161,26 @@ def exec(lines_from_file_hex):
         # DIRECT ADD == 3
         elif word0_second_half == 3:
             RAM[word0_first_half] += word1
-            manage_stack_over_under_flow(word0_first_half)
             print('    ADD RAM[%s] %s' %(word0_first_half, word1))
+            manage_stack_over_under_flow(word0_first_half)
 
         # DIRECT SUBTRACT == 4
         elif word0_second_half == 4:
             RAM[word0_first_half] -= word1
-            manage_stack_over_under_flow(word0_first_half)
-            PC += 2
             print('    SUB RAM[%s] %s' %(word0_first_half, word1))
+            manage_stack_over_under_flow(word0_first_half)
 
         # DIRECT MULTIPLY == 5
         elif word0_second_half == 5:
             RAM[word0_first_half] *= word1
-            manage_stack_over_under_flow(word0_first_half)
             print('    MUL RAM[%s] %s' %(word0_first_half, word1))
+            manage_stack_over_under_flow(word0_first_half)
 
         # DIRECT DIVIDE == 6
         elif word0_second_half == 6:
             RAM[word0_first_half] /= word1
-            manage_stack_over_under_flow(word0_first_half)
             print('    DIV RAM[%s] %s' %(word0_first_half, word1))
+            manage_stack_over_under_flow(word0_first_half)
 
         # REGISTER TO REGISTER LOAD == 7
         elif word0_second_half == 7:
@@ -191,26 +190,26 @@ def exec(lines_from_file_hex):
         # REGISTER TO REGISTER ADD == 8
         elif word0_second_half == 8:
             RAM[word0_first_half] += RAM[word1]
-            manage_stack_over_under_flow(word0_first_half)
             print('    ADD RAM[%s] RAM[%s]' %(word0_first_half, word1))
+            manage_stack_over_under_flow(word0_first_half)
 
         # REGISTER TO REGISTER SUBTRACT == 9
         elif word0_second_half == 9:
             RAM[word0_first_half] -= RAM[word1]
-            manage_stack_over_under_flow(word0_first_half)
             print('    SUB RAM[%s] RAM[%s]' %(word0_first_half, word1))
+            manage_stack_over_under_flow(word0_first_half)
 
         # REGISTER TO REGISTER MULTIPLY == a
         elif word0_second_half == 10:
             RAM[word0_first_half] *= RAM[word1]
-            manage_stack_over_under_flow(word0_first_half)
             print('    MUL RAM[%s] RAM[%s]' %(word0_first_half, word1))
+            manage_stack_over_under_flow(word0_first_half)
 
         # REGISTER TO REGISTER DIVIDE == b
         elif word0_second_half == 11:
             RAM[word0_first_half] /= RAM[word1]
-            manage_stack_over_under_flow(word0_first_half)
             print('    DIV RAM[%s] RAM[%s]' %(word0_first_half, word1))
+            manage_stack_over_under_flow(word0_first_half)
 
         # COMPARE REGISTER TO VALUE  == c
         elif word0_second_half == 12:
