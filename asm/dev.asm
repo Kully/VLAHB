@@ -1,3 +1,3 @@
 LD R[0] 1
-SUB R[0] 1
+ADD R[0] 4
 EXIT

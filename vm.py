@@ -253,6 +253,7 @@ def exec(lines_from_file_hex):
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:
             EXIT_LOOP = True
+            print('    EXIT')
 
         # print statements
         i_line_print = '   i:'
