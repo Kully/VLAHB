@@ -1,4 +1,4 @@
-filename = goose_math  # name of file in /asm w/o .asm
+filename = goose_math.asm  # name of file in /asm w/o .asm
 
 run:
 	python asm.py $(filename);

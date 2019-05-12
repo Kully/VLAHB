@@ -233,6 +233,13 @@ if __name__ == "__main__":
     # collect, sort all .asm files
     all_asm_files = []
     all_files_in_asm_folder = os.listdir('./asm')
+
+    # check if picked valid filename
+    if filename not in all_files_in_asm_folder:
+        raise Exception(util.NO_FILE_FOUND_EXCEPTION_MSG.format(
+            filename, all_files_in_asm_folder
+        ))
+
     for f_name in all_files_in_asm_folder:
         if f_name.endswith('.asm'):
             all_asm_files.append(f_name)
@@ -245,8 +252,7 @@ if __name__ == "__main__":
     for asm_f in  all_asm_files:
         file_asm = 'asm/%s' %asm_f
 
-        if filename + '.asm' == asm_f:
-            print(filename)
+        if filename == asm_f:
             where_PC_starts = cumsum_hex_lines
 
         lines_for_program, cumsum_hex_lines = compute_label_indices(

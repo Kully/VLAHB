@@ -70,6 +70,11 @@ VALID_HEX_VALUES_ERROR_MSG = (
 )
 
 # ASM
+NO_FILE_FOUND_EXCEPTION_MSG = (
+    '"{}" is not a file in the /asm folder.\n\nHere is a list '
+    'of assembly files in this folder:\n{}'
+)
+
 GOTO_EXCEPTION_MSG = (
     '\nThe Opcode GOTO must be followed by 1 argument in '
     'the form:\n    GOTO X\n where X is the new PC that you '
