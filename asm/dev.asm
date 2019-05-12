@@ -1,0 +1,3 @@
+LD R[0] 1
+SUB R[0] 1
+EXIT

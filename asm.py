@@ -1,5 +1,14 @@
 '''
 Assembler: asm -> hex
+
+Notes/Best Practices about ASM:
+1. ALWAYS use LABELS - do not say GOTO 42
+2. If you do not EXIT at the end of your program
+   the next lines in the giant hex file will run
+3. The giant file.hex in /hex is a statically
+   linked hex file containing the assembled
+   hex from all assembly files in /asm in
+   alphabetical order
 '''
 import json
 import os
