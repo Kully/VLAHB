@@ -3,6 +3,7 @@ Assembler: asm -> hex
 '''
 import json
 import os
+import pprint
 import re
 import string
 import sys
@@ -15,7 +16,7 @@ LABELS_TO_PC = {}
 def compute_label_indices(file_asm, cumsum_hex_lines):
     '''line = code ; comment'''
     lines = util.return_lines_from_file(file_asm)
-    lines_sans_labels = []
+    lines_for_program = []  # all but comments, blank and comments
     for line in lines:
         first_semicolon_idx = line.find(';')
 
@@ -37,10 +38,10 @@ def compute_label_indices(file_asm, cumsum_hex_lines):
             LABELS_TO_PC[label] = cumsum_hex_lines
 
         elif not code.isspace() and code != '':
-            lines_sans_labels.append(code)
+            lines_for_program.append(code)
             cumsum_hex_lines += 2
 
-    return lines_sans_labels, cumsum_hex_lines
+    return lines_for_program, cumsum_hex_lines
 
 
 def validate_and_make_hexfile(lines):
@@ -237,10 +238,10 @@ if __name__ == "__main__":
             all_asm_files.append(f_name)
     all_asm_files = sorted(all_asm_files)
 
-    # generate all asm->hex files
+    # gather all labels across hex files
     cumsum_hex_lines = 0
-    where_PC_starts = None
     giant_hex_file_str = ''
+    all_lines_for_programs = []
     for asm_f in  all_asm_files:
         file_asm = 'asm/%s' %asm_f
 
@@ -248,20 +249,22 @@ if __name__ == "__main__":
             print(filename)
             where_PC_starts = cumsum_hex_lines
 
-        lines_sans_labels, cumsum_hex_lines = compute_label_indices(
+        lines_for_program, cumsum_hex_lines = compute_label_indices(
             file_asm, cumsum_hex_lines
         )
+        all_lines_for_programs.append(lines_for_program) 
 
-        hex_file_str = validate_and_make_hexfile(lines_sans_labels)
+    # generate all asm -> hex files
+    for lines_for_program in all_lines_for_programs:
+        hex_file_str = validate_and_make_hexfile(lines_for_program)
         giant_hex_file_str += hex_file_str
 
-    # write giant hex file
-    # statically linked files FTW!
+    # write statically linked hex file
     f = open('hex/file.hex', 'w')
     f.write(giant_hex_file_str)
     f.close()
 
-    # record starting PC
+    # write PC for program
     f = open('start_pc.txt', 'w')
     f.write(str(where_PC_starts))
     f.close()
