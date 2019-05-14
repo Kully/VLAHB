@@ -201,6 +201,23 @@ def validate_and_make_hexfile(lines):
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                 word0_second_half = opcode_val.zfill(4)
 
+            elif opcode == 'LT':
+                valid_opcode = True
+                if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
+                    raise Exception(
+                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
+                    )
+                if re.search(r'R\[\d+]', args[1]):
+                    opcode_val = util.op_codes_dict['LESS THAN REGISTER TO REGISTER']
+                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
+
+                else:
+                    opcode_val = util.op_codes_dict['LESS THAN REGISTER TO VALUE']
+                    word1 = util.int_to_hex(args[1]).zfill(8)
+
+                word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
+                word0_second_half = opcode_val.zfill(4)
+
             elif opcode == 'CALL':
                 valid_opcode = True
                 if len(args) != 1:

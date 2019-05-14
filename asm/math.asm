@@ -58,3 +58,25 @@ MATH_LONG_WINDED:
     LD R[1] R[512] ; 35
     CALL MATH_ADD
     RETURN ; 45
+
+; x < y
+; 0 if false
+; 1 if true
+; only works with ints
+MATH_INT_LESS_THAN:
+    LD R[512] 0
+    LD R[2] R[0]
+    LD R[3] R[1]
+    DIV R[2] R[1]
+    DIV R[3] R[0]
+    SUB R[2] 1
+    SUB R[3] 1
+    CMP R[2] 4294967294
+    LD R[512] 0
+    RETURN
+
+MATH_CEIL:
+    GOTO MATH_CEIL
+
+MATH_FLOOR:
+    GOTO MATH_FLOOR

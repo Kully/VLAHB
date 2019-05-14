@@ -51,6 +51,8 @@ op_codes_dict = {
     'COMPARE REGISTER TO REGISTER': 'd',
     'CALL': 'e',
     'RETURN': 'f',
+    'LESS THAN REGISTER TO VALUE': '10',
+    'LESS THAN REGISTER TO REGISTER': '11',
     'EXIT': 'ffff',
 }
 

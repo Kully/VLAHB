@@ -156,59 +156,59 @@ def exec(lines_from_file_hex):
         # DIRECT LOAD == 2
         elif word0_second_half == 2:
             RAM[word0_first_half] = word1
-            print('\n    LD RAM[%s] %s' %(word0_first_half, word1))
+            print('\n    LD R[%s] %s' %(word0_first_half, word1))
 
         # DIRECT ADD == 3
         elif word0_second_half == 3:
             RAM[word0_first_half] += word1
-            print('    ADD RAM[%s] %s' %(word0_first_half, word1))
+            print('    ADD R[%s] %s' %(word0_first_half, word1))
             manage_stack_over_under_flow(word0_first_half)
 
         # DIRECT SUBTRACT == 4
         elif word0_second_half == 4:
             RAM[word0_first_half] -= word1
-            print('    SUB RAM[%s] %s' %(word0_first_half, word1))
+            print('    SUB R[%s] %s' %(word0_first_half, word1))
             manage_stack_over_under_flow(word0_first_half)
 
         # DIRECT MULTIPLY == 5
         elif word0_second_half == 5:
             RAM[word0_first_half] *= word1
-            print('    MUL RAM[%s] %s' %(word0_first_half, word1))
+            print('    MUL R[%s] %s' %(word0_first_half, word1))
             manage_stack_over_under_flow(word0_first_half)
 
         # DIRECT DIVIDE == 6
         elif word0_second_half == 6:
             RAM[word0_first_half] /= word1
-            print('    DIV RAM[%s] %s' %(word0_first_half, word1))
+            print('    DIV R[%s] %s' %(word0_first_half, word1))
             manage_stack_over_under_flow(word0_first_half)
 
         # REGISTER TO REGISTER LOAD == 7
         elif word0_second_half == 7:
             RAM[word0_first_half] = RAM[word1]
-            print('    LD RAM[%s] RAM[%s]' %(word0_first_half, word1))
+            print('    LD R[%s] R[%s]' %(word0_first_half, word1))
 
         # REGISTER TO REGISTER ADD == 8
         elif word0_second_half == 8:
             RAM[word0_first_half] += RAM[word1]
-            print('    ADD RAM[%s] RAM[%s]' %(word0_first_half, word1))
+            print('    ADD R[%s] R[%s]' %(word0_first_half, word1))
             manage_stack_over_under_flow(word0_first_half)
 
         # REGISTER TO REGISTER SUBTRACT == 9
         elif word0_second_half == 9:
             RAM[word0_first_half] -= RAM[word1]
-            print('    SUB RAM[%s] RAM[%s]' %(word0_first_half, word1))
+            print('    SUB R[%s] R[%s]' %(word0_first_half, word1))
             manage_stack_over_under_flow(word0_first_half)
 
         # REGISTER TO REGISTER MULTIPLY == a
         elif word0_second_half == 10:
             RAM[word0_first_half] *= RAM[word1]
-            print('    MUL RAM[%s] RAM[%s]' %(word0_first_half, word1))
+            print('    MUL R[%s] R[%s]' %(word0_first_half, word1))
             manage_stack_over_under_flow(word0_first_half)
 
         # REGISTER TO REGISTER DIVIDE == b
         elif word0_second_half == 11:
             RAM[word0_first_half] /= RAM[word1]
-            print('    DIV RAM[%s] RAM[%s]' %(word0_first_half, word1))
+            print('    DIV R[%s] R[%s]' %(word0_first_half, word1))
             manage_stack_over_under_flow(word0_first_half)
 
         # COMPARE REGISTER TO VALUE  == c
@@ -217,7 +217,7 @@ def exec(lines_from_file_hex):
             if RAM[word0_first_half] == word1:
                 cmp_true = 'true'
                 PC += 2
-            print('    CMP RAM[%s] %s -> %s' %(word0_first_half, word1, cmp_true))
+            print('    CMP R[%s] %s -> %s' %(word0_first_half, word1, cmp_true))
 
         # COMPARE REGISTER TO REGISTER == d
         elif word0_second_half == 13:
@@ -226,7 +226,7 @@ def exec(lines_from_file_hex):
                 PC += 2
                 cmp_true = 'true'
 
-            print('    CMP RAM[%s] RAM[%s] -> %s' %(word0_first_half, word1, cmp_true))
+            print('    CMP R[%s] R[%s] -> %s' %(word0_first_half, word1, cmp_true))
 
         # CALL == e
         elif word0_second_half == 14:
@@ -248,6 +248,22 @@ def exec(lines_from_file_hex):
             RAM[0 : stack_frame_size] = RAM[a : b]
             PC = STACK.pop()
             print('    RETURN: Pop %s from the Stack: PC -> %s' %(PC, PC))
+
+        # STRICT LESS THAN REGISTER TO DIRECT == 10
+        elif word0_second_half == 16:
+            less_than = 'false'
+            if RAM[word0_first_half] < word1:
+                less_than = 'true'
+                PC += 2
+            print('    LT R[%s] %s -> %s' %(word0_first_half, word1, less_than))
+
+        # STRICT LESS THAN REGISTER TO REGISTER == 11
+        elif word0_second_half == 17:
+            less_than = 'false'
+            if RAM[word0_first_half] < RAM[word1]:
+                less_than = 'true'
+                PC += 2
+            print('    LT R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
 
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:
