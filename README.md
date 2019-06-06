@@ -14,7 +14,7 @@
 The best way to understand the syntax is through example.
 
 Tips:
-- RAM is a list
+- RAM is a pythonic list
 - all numerical values in your `file.asm` are integers eg. 4 != 0x04
 
 `GOTO 4`<br>
