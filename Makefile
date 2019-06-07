@@ -1,8 +1,8 @@
-filename = fun.asm  # name of file in /asm
+filename = lt_test.asm  # name of file in /asm you want to run
 
 run:
 	python asm.py $(filename);
 	python vm.py
 
-clean:
+clean:  # remove all hex files in /hex
 	rm -f hex/*.hex

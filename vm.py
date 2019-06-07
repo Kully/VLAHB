@@ -265,12 +265,70 @@ def exec(lines_from_file_hex):
                 PC += 2
             print('    LT R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
 
+        # LESS THAN OR EQUAL REGISTER TO DIRECT == 12
+        elif word0_second_half == 18:
+            less_than = 'false'
+            if RAM[word0_first_half] <= word1:
+                less_than = 'true'
+                PC += 2
+            print('    LTE R[%s] %s -> %s' %(word0_first_half, word1, less_than))
+
+        # LESS THAN OR EQUAL REGISTER TO REGISTER == 13
+        elif word0_second_half == 19:
+            less_than = 'false'
+            if RAM[word0_first_half] <= RAM[word1]:
+                less_than = 'true'
+                PC += 2
+            print('    LTE R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
+
+        # STRICT GREATER THAN REGISTER TO DIRECT == 14
+        elif word0_second_half == 20:
+            less_than = 'false'
+            if RAM[word0_first_half] > word1:
+                less_than = 'true'
+                PC += 2
+            print('    GT R[%s] %s -> %s' %(word0_first_half, word1, less_than))
+
+        # STRICT GREATER THAN REGISTER TO REGISTER == 15
+        elif word0_second_half == 21:
+            less_than = 'false'
+            if RAM[word0_first_half] > RAM[word1]:
+                less_than = 'true'
+                PC += 2
+            print('    GT R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
+
+        # GREATER THAN OR EQUAL REGISTER TO DIRECT == 16
+        elif word0_second_half == 22:
+            less_than = 'false'
+            if RAM[word0_first_half] >= word1:
+                less_than = 'true'
+                PC += 2
+            print('    GTE R[%s] %s -> %s' %(word0_first_half, word1, less_than))
+
+        # GREATER THAN OR EQUAL REGISTER TO REGISTER == 17
+        elif word0_second_half == 23:
+            less_than = 'false'
+            if RAM[word0_first_half] >= RAM[word1]:
+                less_than = 'true'
+                PC += 2
+            print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
+
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:
             EXIT_LOOP = True
             print('    EXIT')
 
         # print statements
+        # TODO - improve these print statements - very clunky right now and
+        # they take up too much space in the terminal window
+        #
+        # idea:
+        # opcode LD R[0] R[4]
+        # RAM: [0, 0, 4, 2, 1, 0, ...]
+        # 
+        # and find a way for the lines to get replaces
+        # or to toggle between replace lines or not and
+        # perhaps put that in the MakeFile
         i_line_print = '   i:'
         RAM_line_print = 'R[i]:'
 
