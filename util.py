@@ -36,6 +36,11 @@ def return_lines_from_file(file_hex, remove_empty_lines=True):
     return lines
 
 
+# TODO - match the terminology across op_codes_dict,
+# comments above opcodes in vm.py, and the README.md
+# 
+# eg. REGISTER TO VALUE -> REGISTER TO DIRECT
+# 
 op_codes_dict = {
     'GOTO': '1',
     'DIRECT LOAD': '2',
@@ -54,6 +59,12 @@ op_codes_dict = {
     'RETURN': 'f',
     'LESS THAN REGISTER TO VALUE': '10',
     'LESS THAN REGISTER TO REGISTER': '11',
+    'LESS THAN OR EQUAL REGISTER TO DIRECT': '12',
+    'LESS THAN OR EQUAL REGISTER TO REGISTER': '13',
+    'STRICT GREATER THAN REGISTER TO DIRECT': '14',
+    'STRICT GREATER THAN REGISTER TO REGISTER': '15',
+    'GREATER THAN OR EQUAL REGISTER TO DIRECT': '16',
+    'GREATER THAN OR EQUAL REGISTER TO REGISTER': '17',
     'EXIT': 'ffff',
 }
 

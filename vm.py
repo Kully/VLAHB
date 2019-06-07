@@ -211,7 +211,7 @@ def exec(lines_from_file_hex):
             print('    DIV R[%s] R[%s]' %(word0_first_half, word1))
             manage_stack_over_under_flow(word0_first_half)
 
-        # COMPARE REGISTER TO VALUE  == c
+        # COMPARE REGISTER TO DIRECT  == c
         elif word0_second_half == 12:
             cmp_true = 'false'
             if RAM[word0_first_half] == word1:
