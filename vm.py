@@ -61,6 +61,7 @@ RAM = [0] * RAM_NUM_OF_SLOTS
 
 STACK = []
 
+stack_frame_size = 16
 
 def starting_PC():
     f = open('start_pc.txt', 'r')
@@ -329,22 +330,37 @@ def exec(lines_from_file_hex):
         # and find a way for the lines to get replaces
         # or to toggle between replace lines or not and
         # perhaps put that in the MakeFile
-        i_line_print = '   i:'
-        RAM_line_print = 'R[i]:'
 
-        int_width = 4
-        sep_space = ' ' * 2
-        for i in range(17):
-            i_line_print += sep_space
-            i_line_print += str(i).rjust(int_width)
 
-            RAM_line_print += sep_space
-            RAM_line_print += str(RAM[i]).rjust(int_width)
+        
+        #############
+        # old print #
+        #############
 
-        print('')
-        print(RAM_line_print)
-        print(i_line_print)
-        print('')
+        # i_line_print = '   i:'
+        # RAM_line_print = 'R[i]:'
+
+        # int_width = 4
+        # sep_space = ' ' * 2
+        # for i in range(17):
+        #     i_line_print += sep_space
+        #     i_line_print += str(i).rjust(int_width)
+
+        #     RAM_line_print += sep_space
+        #     RAM_line_print += str(RAM[i]).rjust(int_width)
+
+        # print('')
+        # print(RAM_line_print)
+        # print(i_line_print)
+        # print('')
+
+
+        #############
+        # NEW print #
+        #############
+        print(
+            'RAM = [%s, %s, %s, %s, ...]\n' %(RAM[0], RAM[1], RAM[2], RAM[3])
+        )
 
         if EXIT_LOOP:
             util.slow_print('Exiting VM...', 0.11, print_empty_line=True)

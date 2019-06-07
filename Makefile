@@ -1,7 +1,7 @@
-filename = lt_test.asm  # name of file in /asm you want to run
+filename = clock.asm  # name of file in /asm you want to run
 
 run:
-	python asm.py $(filename);
+	python asm.py $(filename)
 	python vm.py
 
 clean:  # remove all hex files in /hex

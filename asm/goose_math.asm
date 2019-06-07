@@ -1,13 +1,13 @@
-; void MAIN()
-; {
-;   var a = 10
-;   var b = 5
-;   var c = MATH_ADD(a, b)
-;   var d = MATH_SUB(a, b)
-;   var e = MATH_MUL(a, b)
-;   var f = MATH_DIV(a, b)
-;   var g = MATH_LONG_WINDED(a, b)
-; }
+// void MAIN()
+// {
+//   var a = 10
+//   var b = 5
+//   var c = MATH_ADD(a, b)
+//   var d = MATH_SUB(a, b)
+//   var e = MATH_MUL(a, b)
+//   var f = MATH_DIV(a, b)
+//   var g = MATH_LONG_WINDED(a, b)
+// }
 MAIN:
     LD R[0] 10
 

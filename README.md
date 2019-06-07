@@ -67,15 +67,15 @@ Let's write a program that emulates a fast ticking clock:
 
 clock.asm:
 ```
-; fast ticking clock
+// fast ticking clock
 ADD R[1] 1
 CMP [1] 60
 GOTO 0
-LD R[1] 0 ; reset minute to 0
+LD R[1] 0 // reset minute to 0
 ADD R[0] 1
 CMP R[0] 23
 GOTO 0
-LD R[0] 0 ; reset hour to 0
+LD R[0] 0 // reset hour to 0
 GOTO 0
 EXIT
 ```
@@ -87,8 +87,8 @@ file_asm = clock.asm
 file_hex = clock.hex
 
 run :
-	python asm.py $(file_asm) $(file_hex);
-	python vm.py $(file_hex);
+	python asm.py $(file_asm) $(file_hex)//
+	python vm.py $(file_hex)//
 ```
 
 Now run `make` and watch your clock program run in the terminal!

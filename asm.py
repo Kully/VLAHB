@@ -22,12 +22,36 @@ import util
 
 LABELS_TO_PC = {}
 
+
+# WIP for DRY
+def return_hex_instruction_lines(opcode, args, word0_first_half,
+                                 word0_second_half, word1,
+                                 to_register_key, to_direct_key):
+    valid_opcode = True
+    if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
+        raise Exception(
+            util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
+        )
+    if re.search(r'R\[\d+]', args[1]):
+        opcode_val = util.op_codes_dict[to_register_key]
+        word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
+
+    else:
+        opcode_val = util.op_codes_dict[to_direct_key]
+        word1 = util.int_to_hex(args[1]).zfill(8)
+
+    word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
+    word0_second_half = opcode_val.zfill(4)
+
+    return word0_first_half, word0_second_half, word1
+
+
 def compute_label_indices(file_asm, cumsum_hex_lines):
-    '''line = code ; comment'''
+    '''line = code // comment'''
     lines = util.return_lines_from_file(file_asm)
     lines_for_program = []  # all but comments, blank and comments
     for line in lines:
-        first_semicolon_idx = line.find(';')
+        first_semicolon_idx = line.find('//')
 
         if first_semicolon_idx == -1:
             comment = ''
@@ -57,7 +81,7 @@ def validate_and_make_hexfile(lines):
     hex_file_str = ''
 
     for line in lines:
-        first_semicolon_idx = line.find(';')
+        first_semicolon_idx = line.find('//')
 
         if first_semicolon_idx == -1:
             comment = ''
