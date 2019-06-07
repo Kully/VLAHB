@@ -87,8 +87,8 @@ file_asm = clock.asm
 file_hex = clock.hex
 
 run :
-	python asm.py $(file_asm) $(file_hex)//
-	python vm.py $(file_hex)//
+	python asm.py $(file_asm) $(file_hex)
+	python vm.py $(file_hex)
 ```
 
 Now run `make` and watch your clock program run in the terminal!
