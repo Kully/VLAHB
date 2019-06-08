@@ -340,12 +340,13 @@ def exec(lines_from_file_hex):
         # or to toggle between replace lines or not and
         # perhaps put that in the MakeFile
 
-        print(
-            'RAM = [%s, %s, %s, %s, ...]\n' %(RAM[0], RAM[1], RAM[2], RAM[3])
+        print('')
+        print('RAM = [%s, %s, %s, %s, %s, %s, %s, %s, ...]' %(
+            RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
         )
-
-        print('RAM[0]: %r' %RAM[128])
-        print('RAM[0]: %r' %RAM[128])
+        print('RAM[4100]: %r  # return slot' %RAM[4100])
+        print('STACK: %r' %STACK)
+        print('')
 
         if EXIT_LOOP:
             util.slow_print('Exiting VM...', 0.11, print_empty_line=True)

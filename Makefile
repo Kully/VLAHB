@@ -1,4 +1,4 @@
-filename = goose_math.asm  # name of file in /asm you want to run
+filename = adam123.asm  # name of file in /asm you want to run
 
 run:
 	python asm.py $(filename)
