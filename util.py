@@ -83,6 +83,10 @@ VALID_HEX_VALUES_ERROR_MSG = (
 	'all characters of file.hex must be a hexidecimal value from 0-f'
 )
 
+STACK_OVERFLOW_ERROR_MSG = (
+    'stack overflow: the maximum size of the stack is {}'    
+)
+
 # ASM
 NO_FILE_FOUND_EXCEPTION_MSG = (
     '"{}" is not a file in the /asm folder.\n\nHere is a list '

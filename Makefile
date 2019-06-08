@@ -1,4 +1,4 @@
-filename = test_inequality_operations.asm  # name of file in /asm you want to run
+filename = adam123.asm  # name of file in /asm you want to run
 
 run:
 	python asm.py $(filename)

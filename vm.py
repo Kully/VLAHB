@@ -60,8 +60,8 @@ MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhhhhhh)
 RAM = [0] * RAM_NUM_OF_SLOTS
 
 STACK = []
-
-STACK_FRAME_SIZE = 16
+STACK_FRAME_SIZE = 128
+STACK_MAX_SIZE = 32
 
 def starting_PC():
     f = open('start_pc.txt', 'r')
@@ -79,13 +79,17 @@ def reset_RAM_values_to_zero():
     RAM = [0] * RAM_NUM_OF_SLOTS
 
 
-def manage_stack_over_under_flow(index_in_RAM):
+def manage_ram_slot_overunder_flow(index_in_RAM):
     if RAM[index_in_RAM] < 0:
         RAM[index_in_RAM] = MAX_RAM_VALUE + RAM[index_in_RAM]
         print('    Stack Underflow at RAM[%r]'%index_in_RAM)
     elif RAM[index_in_RAM] > MAX_RAM_VALUE:
         RAM[index_in_RAM] = MAX_RAM_VALUE - RAM[index_in_RAM]
         print('    Stack Overflow at RAM[%r]'%index_in_RAM)
+
+
+def manage_stack_size_overflow():
+    assert len(STACK) <= STACK_MAX_SIZE, util.STACK_OVERFLOW_ERROR_MSG.format(STACK_MAX_SIZE)
 
 
 def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
@@ -163,25 +167,25 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 3:
             RAM[word0_first_half] += word1
             print('    ADD R[%s] %s' %(word0_first_half, word1))
-            manage_stack_over_under_flow(word0_first_half)
+            manage_ram_slot_overunder_flow(word0_first_half)
 
         # DIRECT SUBTRACT == 4
         elif word0_second_half == 4:
             RAM[word0_first_half] -= word1
             print('    SUB R[%s] %s' %(word0_first_half, word1))
-            manage_stack_over_under_flow(word0_first_half)
+            manage_ram_slot_overunder_flow(word0_first_half)
 
         # DIRECT MULTIPLY == 5
         elif word0_second_half == 5:
             RAM[word0_first_half] *= word1
             print('    MUL R[%s] %s' %(word0_first_half, word1))
-            manage_stack_over_under_flow(word0_first_half)
+            manage_ram_slot_overunder_flow(word0_first_half)
 
         # DIRECT DIVIDE == 6
         elif word0_second_half == 6:
             RAM[word0_first_half] /= word1
             print('    DIV R[%s] %s' %(word0_first_half, word1))
-            manage_stack_over_under_flow(word0_first_half)
+            manage_ram_slot_overunder_flow(word0_first_half)
 
         # REGISTER TO REGISTER LOAD == 7
         elif word0_second_half == 7:
@@ -192,25 +196,25 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 8:
             RAM[word0_first_half] += RAM[word1]
             print('    ADD R[%s] R[%s]' %(word0_first_half, word1))
-            manage_stack_over_under_flow(word0_first_half)
+            manage_ram_slot_overunder_flow(word0_first_half)
 
         # REGISTER TO REGISTER SUBTRACT == 9
         elif word0_second_half == 9:
             RAM[word0_first_half] -= RAM[word1]
             print('    SUB R[%s] R[%s]' %(word0_first_half, word1))
-            manage_stack_over_under_flow(word0_first_half)
+            manage_ram_slot_overunder_flow(word0_first_half)
 
         # REGISTER TO REGISTER MULTIPLY == a
         elif word0_second_half == 10:
             RAM[word0_first_half] *= RAM[word1]
             print('    MUL R[%s] R[%s]' %(word0_first_half, word1))
-            manage_stack_over_under_flow(word0_first_half)
+            manage_ram_slot_overunder_flow(word0_first_half)
 
         # REGISTER TO REGISTER DIVIDE == b
         elif word0_second_half == 11:
             RAM[word0_first_half] /= RAM[word1]
             print('    DIV R[%s] R[%s]' %(word0_first_half, word1))
-            manage_stack_over_under_flow(word0_first_half)
+            manage_ram_slot_overunder_flow(word0_first_half)
 
         # COMPARE REGISTER TO DIRECT  == c
         elif word0_second_half == 12:
@@ -232,18 +236,23 @@ def exec(lines_from_file_hex):
         # CALL == e
         elif word0_second_half == 14:
             STACK.append(PC)
+
+            manage_stack_size_overflow()
+
             index = len(STACK)
-            STACK_FRAME_SIZE = 16
+            # STACK_FRAME_SIZE = 16
             a = STACK_FRAME_SIZE * (0 + index)
             b = STACK_FRAME_SIZE * (1 + index)
             RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
             PC = word1
             print('    CALL: Push %s to the Stack: PC -> %s' %(word1, word1))
 
-        # RETURN == f
+        # RETURN == nf
         elif word0_second_half == 15:
             index = len(STACK)
-            STACK_FRAME_SIZE = 16
+
+            manage_stack_size_overflow()
+            # STACK_FRAME_SIZE = 16
             a = STACK_FRAME_SIZE * (0 + index)
             b = STACK_FRAME_SIZE * (1 + index)
             RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
@@ -331,36 +340,13 @@ def exec(lines_from_file_hex):
         # or to toggle between replace lines or not and
         # perhaps put that in the MakeFile
 
-
-        
-        #############
-        # old print #
-        #############
-
-        # i_line_print = '   i:'
-        # RAM_line_print = 'R[i]:'
-
-        # int_width = 4
-        # sep_space = ' ' * 2
-        # for i in range(17):
-        #     i_line_print += sep_space
-        #     i_line_print += str(i).rjust(int_width)
-
-        #     RAM_line_print += sep_space
-        #     RAM_line_print += str(RAM[i]).rjust(int_width)
-
-        # print('')
-        # print(RAM_line_print)
-        # print(i_line_print)
-        # print('')
-
-
-        #############
-        # NEW print #
-        #############
-        print(
-            'RAM = [%s, %s, %s, %s, ...]\n' %(RAM[0], RAM[1], RAM[2], RAM[3])
+        print('')
+        print('RAM = [%s, %s, %s, %s, %s, %s, %s, %s, ...]' %(
+            RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
         )
+        print('RAM[4100]: %r  # return slot' %RAM[4100])
+        print('STACK: %r' %STACK)
+        print('')
 
         if EXIT_LOOP:
             util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
