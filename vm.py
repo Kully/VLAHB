@@ -46,10 +46,16 @@ PC = 0  # program counter
 ```
 '''
 import os
+# import pygame
 import string
 import sys
 import time
 import util
+
+
+import contextlib
+with contextlib.redirect_stdout(None):
+    import pygame
 
 # CPU constants and data structures
 COMMANDS_PER_SEC = 10
@@ -59,9 +65,27 @@ RAM_NUM_OF_SLOTS = 128000  # units of 4 bytes // 512KB == Bill Gates Number
 MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhhhhhh)
 RAM = [0] * RAM_NUM_OF_SLOTS
 
+# stack
 STACK = []
 STACK_FRAME_SIZE = 128
 STACK_MAX_SIZE = 32
+
+##########
+# PyGame #
+##########
+
+# variables
+display_width = 880
+display_height = int(RAM_NUM_OF_SLOTS / display_width) + 1
+title = 'VLAHB'
+
+# functions
+
+# def return_color_for_pixel(x, y)
+
+
+
+# helper functions
 
 def starting_PC():
     f = open('start_pc.txt', 'r')
@@ -124,7 +148,14 @@ def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
 
 def exec(lines_from_file_hex):
     '''Execute lines in ROM'''
-    # PC = 0
+
+    # pygame init
+    pygame.init()
+
+    pygame.display.set_caption(title)
+    gameDisplay = pygame.display.set_mode((display_width, display_height))
+    clock = pygame.time.Clock()
+
     PC = starting_PC()  # program counter
     EXIT_LOOP = False
     while True:
@@ -348,7 +379,18 @@ def exec(lines_from_file_hex):
         print('STACK: %r' %STACK)
         print('')
 
+        # pygame --------------------
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                EXIT_LOOP = True
+
+        # update frame
+        pygame.display.update()
+        clock.tick(60)
+
+
         if EXIT_LOOP:
+            pygame.quit()
             util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
             break
 
@@ -359,4 +401,4 @@ if __name__ == "__main__":
     fill_ROM_with_hex_lines(hex_lines)
     validate_hex_file(hexfilename)
 
-    exec(hex_lines)
+    exec(hex_lines)  # with pygame visualization
