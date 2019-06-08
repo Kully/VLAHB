@@ -8,7 +8,7 @@
 // }
 MATH_ADD:
     ADD R[0] R[1]
-    LD R[512] R[0]
+    LD R[4100] R[0]
     RETURN
 
 // var MATH_SUB(var a, var b)
@@ -18,7 +18,7 @@ MATH_ADD:
 // }
 MATH_SUB:
     SUB R[0] R[1]
-    LD R[512] R[0]
+    LD R[4100] R[0]
     RETURN
 
 // var MATH_MUL(var a, var b)
@@ -28,7 +28,7 @@ MATH_SUB:
 // }
 MATH_MUL:
     MUL R[0] R[1]
-    LD R[512] R[0]
+    LD R[4100] R[0]
     RETURN
 
 // var MATH_DIV(var a, var b)
@@ -38,7 +38,7 @@ MATH_MUL:
 // }
 MATH_DIV:
     DIV R[0] R[1]
-    LD R[512] R[0]
+    LD R[4100] R[0]
     RETURN
 
 // var MATH_LONG_WINDED(var a, var b)
@@ -51,10 +51,10 @@ MATH_DIV:
 // }
 MATH_LONG_WINDED:
     CALL MATH_ADD
-    LD R[1] R[512] // 15
+    LD R[1] R[4100] // 15
     CALL MATH_ADD
-    LD R[1] R[512] // 25
+    LD R[1] R[4100] // 25
     CALL MATH_ADD
-    LD R[1] R[512] // 35
+    LD R[1] R[4100] // 35
     CALL MATH_ADD
     RETURN // 45

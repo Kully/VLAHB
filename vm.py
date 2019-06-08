@@ -61,7 +61,7 @@ RAM = [0] * RAM_NUM_OF_SLOTS
 
 STACK = []
 STACK_FRAME_SIZE = 128
-STACK_MAX_SIZE = 60
+STACK_MAX_SIZE = 32
 
 def starting_PC():
     f = open('start_pc.txt', 'r')
@@ -343,6 +343,9 @@ def exec(lines_from_file_hex):
         print(
             'RAM = [%s, %s, %s, %s, ...]\n' %(RAM[0], RAM[1], RAM[2], RAM[3])
         )
+
+        print('RAM[0]: %r' %RAM[128])
+        print('RAM[0]: %r' %RAM[128])
 
         if EXIT_LOOP:
             util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
