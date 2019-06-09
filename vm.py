@@ -46,16 +46,15 @@ PC = 0  # program counter
 ```
 '''
 import os
-# import pygame
 import string
 import sys
 import time
 import util
 
-
 import contextlib
 with contextlib.redirect_stdout(None):
     import pygame
+    from pygame import gfxdraw
 
 # CPU constants and data structures
 COMMANDS_PER_SEC = 10
@@ -74,18 +73,20 @@ STACK_MAX_SIZE = 32
 # PyGame #
 ##########
 
-# variables
 display_width = 880
 display_height = int(RAM_NUM_OF_SLOTS / display_width) + 1
 title = 'VLAHB'
-
-# functions
-
-# def return_color_for_pixel(x, y)
+pixels_per_cell_width = 1
 
 
+def return_intermediate_color(value):
+    fraction = (value) / (RAM_NUM_OF_SLOTS)
+    return (0, int(fraction * 255), 0)
 
-# helper functions
+
+####################
+# Helper Functions #
+####################
 
 def starting_PC():
     f = open('start_pc.txt', 'r')
@@ -384,18 +385,38 @@ def exec(lines_from_file_hex):
             if event.type == pygame.QUIT:
                 EXIT_LOOP = True
 
+
+        # update display
+        x = 0
+        y = 0
+        for ram_value in RAM:
+            if ram_value > 0:
+                color = (0, 255, 0)
+            else:
+                color = (0,0,0)
+
+            # draw
+
+            gfxdraw.pixel(gameDisplay, x, y, color)
+
+            # manage x and y
+            if x >= display_width:
+                x = 0
+                y += 1
+            else:
+                x += 1
+
         # update frame
         pygame.display.update()
         clock.tick(60)
-
 
         if EXIT_LOOP:
             pygame.quit()
             util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
             break
 
+
 if __name__ == "__main__":
-    # hexfilename = sys.argv[1]
     hexfilename = 'hex/file.hex'
     hex_lines = util.return_lines_from_file(hexfilename)
     fill_ROM_with_hex_lines(hex_lines)
