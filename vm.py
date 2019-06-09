@@ -51,13 +51,29 @@ import sys
 import time
 import util
 
-# CPU constants and data structures
+# constants and data structures
 COMMANDS_PER_SEC = 10
 DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
+
 ROM = []
+
 RAM_NUM_OF_SLOTS = 128000  # units of 4 bytes // 512KB == Bill Gates Number
-MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhhhhhh)
+MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhh hhhh) - 4 bytes
 RAM = [0] * RAM_NUM_OF_SLOTS
+
+# display in pixels
+WIDTH_DISPLAY_PIXELS = 800
+HEIGHT_DISPLAY_PIXELS = 600
+
+# load VRAM with a bunch of rgbas=(0,0,0,255)
+# where 0 < alpha < 255
+
+# VRAM[x + y * 800] <- for indexing
+VRAM = []
+for x in range(WIDTH_DISPLAY_PIXELS):
+    for y in range(HEIGHT_DISPLAY_PIXELS):
+        VRAM.append(255)
+
 
 STACK = []
 STACK_FRAME_SIZE = 128
@@ -127,6 +143,7 @@ def exec(lines_from_file_hex):
     # PC = 0
     PC = starting_PC()  # program counter
     EXIT_LOOP = False
+
     while True:
         time.sleep(DELAY_BETWEEN_COMMANDS)
         # check if end of ROM
@@ -135,6 +152,7 @@ def exec(lines_from_file_hex):
             ROM[PC]
             ROM[PC+1]
         except IndexError:
+            util.slow_print('PC out of range...exiting vm', 0.14, print_empty_line=True)
             break
 
         print('PC: %r'%PC)
@@ -240,19 +258,17 @@ def exec(lines_from_file_hex):
             manage_stack_size_overflow()
 
             index = len(STACK)
-            # STACK_FRAME_SIZE = 16
             a = STACK_FRAME_SIZE * (0 + index)
             b = STACK_FRAME_SIZE * (1 + index)
             RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
             PC = word1
             print('    CALL: Push %s to the Stack: PC -> %s' %(word1, word1))
 
-        # RETURN == nf
+        # RETURN == f
         elif word0_second_half == 15:
             index = len(STACK)
 
             manage_stack_size_overflow()
-            # STACK_FRAME_SIZE = 16
             a = STACK_FRAME_SIZE * (0 + index)
             b = STACK_FRAME_SIZE * (1 + index)
             RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
@@ -323,22 +339,39 @@ def exec(lines_from_file_hex):
                 PC += 2
             print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
 
+        ########
+        # VRAM #
+        ########
+
+        # LD VRAM == 18
+        elif word0_second_half == 24:
+            VRAM[word0_first_half] = word1
+            print('\n    LD V[%s] %s' %(word0_first_half, word1))
+
+
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:
             EXIT_LOOP = True
             print('    EXIT')
 
-        # print statements
-        # TODO - improve these print statements - very clunky right now and
-        # they take up too much space in the terminal window
-        #
-        # idea:
-        # opcode LD R[0] R[4]
-        # RAM: [0, 0, 4, 2, 1, 0, ...]
-        # 
-        # and find a way for the lines to get replaces
-        # or to toggle between replace lines or not and
-        # perhaps put that in the MakeFile
+
+        # Draw the pixels
+        print('enter...')
+        for x in range(WIDTH_DISPLAY_PIXELS):
+            for y in range(HEIGHT_DISPLAY_PIXELS):
+                color_hex = util.int_to_hex(VRAM[x + y * 800]).zfill(8)
+
+                rgba = (
+                    util.hex_to_int(color_hex[ :2]),
+                    util.hex_to_int(color_hex[2:4]),
+                    util.hex_to_int(color_hex[4:6]),
+                    util.hex_to_int(color_hex[6: ]),
+                )
+
+                # color pixel
+
+
+
 
         print('')
         print('RAM = [%s, %s, %s, %s, %s, %s, %s, %s, ...]' %(
@@ -346,6 +379,9 @@ def exec(lines_from_file_hex):
         )
         print('RAM[4100]: %r  # return slot' %RAM[4100])
         print('STACK: %r' %STACK)
+        print('VRAM = [%s, %s, %s, %s, ...]' %(
+            VRAM[0], VRAM[1], VRAM[2], VRAM[3])
+        )
         print('')
 
         if EXIT_LOOP:
