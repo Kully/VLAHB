@@ -353,7 +353,6 @@ def exec(lines_from_file_hex):
             break
 
 if __name__ == "__main__":
-    # hexfilename = sys.argv[1]
     hexfilename = 'hex/file.hex'
     hex_lines = util.return_lines_from_file(hexfilename)
     fill_ROM_with_hex_lines(hex_lines)

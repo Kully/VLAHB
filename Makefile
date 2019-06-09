@@ -1,4 +1,4 @@
-filename = adam123.asm  # name of file in /asm you want to run
+filename = clock.asm  # name of file in /asm you want to run
 
 run:
 	python asm.py $(filename)
