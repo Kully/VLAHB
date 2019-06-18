@@ -50,6 +50,7 @@ import string
 import sys
 import time
 import util
+import pygame
 
 # constants and data structures
 COMMANDS_PER_SEC = 10
@@ -62,8 +63,8 @@ MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhh hhhh) - 4 byte
 RAM = [0] * RAM_NUM_OF_SLOTS
 
 # display in pixels
-WIDTH_DISPLAY_PIXELS = 800
-HEIGHT_DISPLAY_PIXELS = 600
+WIDTH_DISPLAY_PIXELS = 80
+HEIGHT_DISPLAY_PIXELS = 60
 
 # load VRAM with a bunch of rgbas=(0,0,0,255)
 # where 0 < alpha < 255
@@ -346,6 +347,9 @@ def exec(lines_from_file_hex):
         # LD VRAM == 18
         elif word0_second_half == 24:
             VRAM[word0_first_half] = word1
+
+            # update the output
+
             print('\n    LD V[%s] %s' %(word0_first_half, word1))
 
 
@@ -355,11 +359,15 @@ def exec(lines_from_file_hex):
             print('    EXIT')
 
 
-        # Draw the pixels
+
+
+
+        # Draw the pixels - makes clock run slower
+        # TODO - consider only updating changed pixels to run faster
         print('enter...')
         for x in range(WIDTH_DISPLAY_PIXELS):
             for y in range(HEIGHT_DISPLAY_PIXELS):
-                color_hex = util.int_to_hex(VRAM[x + y * 800]).zfill(8)
+                color_hex = util.int_to_hex(VRAM[x + y * WIDTH_DISPLAY_PIXELS]).zfill(8)
 
                 rgba = (
                     util.hex_to_int(color_hex[ :2]),
@@ -369,9 +377,6 @@ def exec(lines_from_file_hex):
                 )
 
                 # color pixel
-
-
-
 
         print('')
         print('RAM = [%s, %s, %s, %s, %s, %s, %s, %s, ...]' %(
