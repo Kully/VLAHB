@@ -52,7 +52,14 @@ import time
 import util
 import pygame
 
-# constants and data structures
+
+import contextlib
+with contextlib.redirect_stdout(None):
+    import pygame
+    from pygame import gfxdraw
+
+
+# CPU constants and data structures
 COMMANDS_PER_SEC = 10
 DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
 
@@ -61,6 +68,7 @@ ROM = []
 RAM_NUM_OF_SLOTS = 128000  # units of 4 bytes // 512KB == Bill Gates Number
 MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhh hhhh) - 4 bytes
 RAM = [0] * RAM_NUM_OF_SLOTS
+
 
 # display in pixels
 WIDTH_DISPLAY_PIXELS = 80
@@ -76,9 +84,29 @@ for x in range(WIDTH_DISPLAY_PIXELS):
         VRAM.append(255)
 
 
+# stack
 STACK = []
 STACK_FRAME_SIZE = 128
 STACK_MAX_SIZE = 32
+
+##########
+# PyGame #
+##########
+
+display_width = 880
+display_height = int(RAM_NUM_OF_SLOTS / display_width) + 1
+title = 'VLAHB'
+pixels_per_cell_width = 1
+
+
+def return_intermediate_color(value):
+    fraction = (value) / (RAM_NUM_OF_SLOTS)
+    return (0, int(fraction * 255), 0)
+
+
+####################
+# Helper Functions #
+####################
 
 def starting_PC():
     f = open('start_pc.txt', 'r')
@@ -141,7 +169,14 @@ def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
 
 def exec(lines_from_file_hex):
     '''Execute lines in ROM'''
-    # PC = 0
+
+    # pygame init
+    pygame.init()
+
+    pygame.display.set_caption(title)
+    gameDisplay = pygame.display.set_mode((display_width, display_height))
+    clock = pygame.time.Clock()
+
     PC = starting_PC()  # program counter
     EXIT_LOOP = False
 
@@ -340,10 +375,6 @@ def exec(lines_from_file_hex):
                 PC += 2
             print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
 
-        ########
-        # VRAM #
-        ########
-
         # LD VRAM == 18
         elif word0_second_half == 24:
             VRAM[word0_first_half] = word1
@@ -360,7 +391,9 @@ def exec(lines_from_file_hex):
 
 
 
-
+        ##########################
+        # VRAM AND SCREEN OUTPUT #
+        ##########################
 
         # Draw the pixels - makes clock run slower
         # TODO - consider only updating changed pixels to run faster
@@ -389,9 +422,42 @@ def exec(lines_from_file_hex):
         )
         print('')
 
+
+        # pygame --------------------
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                EXIT_LOOP = True
+
+
+        # update display
+        x = 0
+        y = 0
+        for ram_value in RAM:
+            if ram_value > 0:
+                color = (0, 255, 0)
+            else:
+                color = (0,0,0)
+
+            # draw
+
+            gfxdraw.pixel(gameDisplay, x, y, color)
+
+            # manage x and y
+            if x >= display_width:
+                x = 0
+                y += 1
+            else:
+                x += 1
+
+        # update frame
+        pygame.display.update()
+        clock.tick(60)
+
         if EXIT_LOOP:
+            pygame.quit()
             util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
             break
+
 
 if __name__ == "__main__":
     hexfilename = 'hex/file.hex'
@@ -399,4 +465,4 @@ if __name__ == "__main__":
     fill_ROM_with_hex_lines(hex_lines)
     validate_hex_file(hexfilename)
 
-    exec(hex_lines)
+    exec(hex_lines)  # with pygame visualization
