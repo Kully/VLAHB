@@ -50,8 +50,6 @@ import string
 import sys
 import time
 import util
-import pygame
-
 
 import contextlib
 with contextlib.redirect_stdout(None):
@@ -63,56 +61,39 @@ with contextlib.redirect_stdout(None):
 COMMANDS_PER_SEC = 10
 DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
 
-ROM = []
-
 RAM_NUM_OF_SLOTS = 128000  # units of 4 bytes // 512KB == Bill Gates Number
 MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhh hhhh) - 4 bytes
 RAM = [0] * RAM_NUM_OF_SLOTS
 
-
-# display in pixels
-WIDTH_DISPLAY_PIXELS = 80
-HEIGHT_DISPLAY_PIXELS = 60
-
-# load VRAM with a bunch of rgbas=(0,0,0,255)
-# where 0 < alpha < 255
-
-# VRAM[x + y * 800] <- for indexing
-VRAM = []
-for x in range(WIDTH_DISPLAY_PIXELS):
-    for y in range(HEIGHT_DISPLAY_PIXELS):
-        VRAM.append(255)
-
-
-# stack
 STACK = []
 STACK_FRAME_SIZE = 128
 STACK_MAX_SIZE = 32
 
-##########
-# PyGame #
-##########
+ROM = []
 
-display_width = 880
-display_height = int(RAM_NUM_OF_SLOTS / display_width) + 1
+
+# for pygame
+WIDTH_DISPLAY_PIXELS = 80
+HEIGHT_DISPLAY_PIXELS = 60
 title = 'VLAHB'
 pixels_per_cell_width = 1
 
+VRAM = []  # load VRAM with rgba(0,0,0,255)
+for x in range(WIDTH_DISPLAY_PIXELS):
+    for y in range(HEIGHT_DISPLAY_PIXELS):
+        VRAM.append(255)
 
-def return_intermediate_color(value):
-    fraction = (value) / (RAM_NUM_OF_SLOTS)
-    return (0, int(fraction * 255), 0)
-
-
-####################
-# Helper Functions #
-####################
 
 def starting_PC():
     f = open('start_pc.txt', 'r')
     PC = int(f.readlines()[0])
     f.close()
     return PC
+
+
+def return_intermediate_color(value):
+    fraction = (value) / (RAM_NUM_OF_SLOTS)
+    return (0, int(fraction * 255), 0)
 
 
 def fill_ROM_with_hex_lines(hex_lines):
@@ -174,7 +155,9 @@ def exec(lines_from_file_hex):
     pygame.init()
 
     pygame.display.set_caption(title)
-    gameDisplay = pygame.display.set_mode((display_width, display_height))
+    gameDisplay = pygame.display.set_mode(
+        (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
+    )
     clock = pygame.time.Clock()
 
     PC = starting_PC()  # program counter
@@ -389,15 +372,11 @@ def exec(lines_from_file_hex):
             EXIT_LOOP = True
             print('    EXIT')
 
+        ########
+        # VRAM #
+        ########
 
-
-        ##########################
-        # VRAM AND SCREEN OUTPUT #
-        ##########################
-
-        # Draw the pixels - makes clock run slower
-        # TODO - consider only updating changed pixels to run faster
-        print('enter...')
+        # TODO - only update changed pixels
         for x in range(WIDTH_DISPLAY_PIXELS):
             for y in range(HEIGHT_DISPLAY_PIXELS):
                 color_hex = util.int_to_hex(VRAM[x + y * WIDTH_DISPLAY_PIXELS]).zfill(8)
@@ -410,44 +389,22 @@ def exec(lines_from_file_hex):
                 )
 
                 # color pixel
+                gfxdraw.pixel(gameDisplay, x, y, rgba)
 
-        print('')
-        print('RAM = [%s, %s, %s, %s, %s, %s, %s, %s, ...]' %(
-            RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
-        )
-        print('RAM[4100]: %r  # return slot' %RAM[4100])
-        print('STACK: %r' %STACK)
-        print('VRAM = [%s, %s, %s, %s, ...]' %(
-            VRAM[0], VRAM[1], VRAM[2], VRAM[3])
-        )
-        print('')
-
-
-        # pygame --------------------
+        # exit pygame
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 EXIT_LOOP = True
 
-
-        # update display
-        x = 0
-        y = 0
-        for ram_value in RAM:
-            if ram_value > 0:
-                color = (0, 255, 0)
-            else:
-                color = (0,0,0)
-
-            # draw
-
-            gfxdraw.pixel(gameDisplay, x, y, color)
-
-            # manage x and y
-            if x >= display_width:
-                x = 0
-                y += 1
-            else:
-                x += 1
+        # debug print
+        print('\nRAM = [%s, %s, %s, %s, %s, %s, %s, %s, ...]' %(
+            RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
+        )
+        print('RAM[4100]: %r  # return slot' %RAM[4100])
+        print('STACK: %r' %STACK)
+        print('VRAM = [%s, %s, %s, %s, ...]\n' %(
+            VRAM[0], VRAM[1], VRAM[2], VRAM[3])
+        )
 
         # update frame
         pygame.display.update()
