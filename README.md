@@ -110,6 +110,16 @@ hex     op code
 ffff == EXIT
 ```
 
+| hex           | op code        |
+| ------------- |----------------|
+| 01            | GOTO  |
+| 02            | DIRECT LOAD       |
+| 03            | DIRECT ADD       |
+
+
+
+
+
 ## About the RAM Slots
 
 - a "slot in RAM" is a location in RAM that can be identified with an index eg RAM[i]
