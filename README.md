@@ -6,16 +6,31 @@
 **B**inary <br>
 
 # Instructions
-1. Write or Edit an `.asm` file
-2. Edit `file_asm` in the `Makefile` to match the `.asm` you want to run
-3. Run `make` in root directory (you must be here for linking to work properly)
+1. Choose a filename in the `Makefile` to match the `.asm` you want to run
+
+```
+filename = draw.asm  # name of file in /asm you want to run
+
+run:
+	python asm.py $(filename)
+	python vm.py
+
+clean:  # remove all hex files in /hex
+	rm -f hex/*.hex
+
+```
+
+2. Run `make` in root directory (you must be here for linking to work properly)
+
+3. Sit back and enjoy the magic of code! :tada: 
 
 ## ASM - Syntax
-The best way to understand the syntax is through example.
+An easy way to understand any syntax is through example.
 
 Tips:
-- RAM is a pythonic list
-- all numerical values in your `file.asm` are integers eg. 4 != 0x04
+- `RAM` is a pythonic list
+- `VRAM` is also a pythonic list
+- all numerical values in any `file.asm` are integers eg. 4 != 0x04
 
 `GOTO 4`<br>
 Set PC (program counter) to line 4.
@@ -61,38 +76,6 @@ Pop the number from the Stack and set PC to that value.
 `EXIT`<br>
 Exit virtual machine.
 
-#### Example:
-
-Let's write a program that emulates a fast ticking clock:
-
-clock.asm:
-```
-// fast ticking clock
-ADD R[1] 1
-CMP [1] 60
-GOTO 0
-LD R[1] 0 // reset minute to 0
-ADD R[0] 1
-CMP R[0] 23
-GOTO 0
-LD R[0] 0 // reset hour to 0
-GOTO 0
-EXIT
-```
-
-I edit the Makefile
-
-```
-file_asm = clock.asm
-file_hex = clock.hex
-
-run :
-	python asm.py $(file_asm) $(file_hex)
-	python vm.py $(file_hex)
-```
-
-Now run `make` and watch your clock program run in the terminal!
-
 
 ## Hex - Op Codes
 
@@ -121,6 +104,18 @@ hex     op code
 15   == STRICT GREATER THAN REGISTER TO REGISTER
 16   == GREATER THAN OR EQUAL REGISTER TO DIRECT
 17   == GREATER THAN OR EQUAL REGISTER TO REGISTER
+18   == VRAM DIRECT LOAD
+19   == VRAM REGISTER TO REGISTER LOAD
 
 ffff == EXIT
 ```
+
+## About the RAM Slots
+
+- a "slot in RAM" is a location in RAM that can be identified with an index eg RAM[i]
+- RAM is 512KB in size, which means RAM has 128000 slots
+
+#### Slots - WIP
+- Slots from `RAM[0] to RAM[4095]` are dedicated to the parameters of functions
+- Slots `RAM[4096], RAM[4097], RAM[4098], RAM[4099]` are dedicated to VRAM
+- Slot at index `4100` is dedicated to the return value of functions
