@@ -1,22 +1,14 @@
-// first drawing program
+// LD R[0] 270
+// LD R[1] 10
+// LD R[2] 20
+// LD R[3] 90000
 
-GOTO DRAW_1
 
-DRAW_1:
-	LD V[0] 0,255,0,255
-	LD V[1] 0,255,0,255
-	
-	LD V[2] 0,255,0,255
+// CALL ENCODE_RGBA_TO_INT
 
-	//can i add this later???
-	//LD V[8] R[0],R[5],R[66],R[44]
+LD R[0] 44
+LD R[1] 4
+// CALL MATH_FLOOR_DIV
+CALL MATH_MODULO
 
-	LD V[9] V[0]
-	LD V[10] V[0]
-	LD V[11] V[0]
-	LD V[12] V[0]
-	LD V[13] V[0]
-	LD V[14] V[0]
-	LD V[15] V[0]
-
-	EXIT
+EXIT

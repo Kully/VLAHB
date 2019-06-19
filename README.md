@@ -5,6 +5,12 @@
 **H**exadecimal <br>
 **B**inary <br>
 
+# Why VLAHB?
+
+1. An opportunity to learn more about how hardware works
+2. Build cool asm programs
+3. The love of learning
+
 # Instructions
 1. Choose a filename in the `Makefile` to match the `.asm` you want to run
 
@@ -122,5 +128,4 @@ Exit virtual machine.
 
 #### Slot Dedication
 - Slots from `RAM[0] to RAM[4095]` are dedicated to the parameters of functions
-- Slots `RAM[4096], RAM[4097], RAM[4098], RAM[4099]` are dedicated to VRAM
 - Slot at index `4100` is dedicated to the return value of functions

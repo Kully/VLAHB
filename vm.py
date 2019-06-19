@@ -58,10 +58,11 @@ with contextlib.redirect_stdout(None):
 
 
 # CPU constants and data structures
-COMMANDS_PER_SEC = 10  # consider speeding up CPU instead of threading
+
+COMMANDS_PER_SEC = 10  # bump to 100
 DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
 
-RAM_NUM_OF_SLOTS = 128000  # units of 4 bytes // 512KB == Bill Gates Number
+RAM_NUM_OF_SLOTS = 128000  # 512KB == Bill Gates Number
 MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhh hhhh) - 4 bytes
 RAM = [0] * RAM_NUM_OF_SLOTS
 
@@ -309,67 +310,67 @@ def exec(lines_from_file_hex):
 
         # STRICT LESS THAN REGISTER TO DIRECT == 10
         elif word0_second_half == 16:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] < word1:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    LT R[%s] %s -> %s' %(word0_first_half, word1, less_than))
+            print('    LT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # STRICT LESS THAN REGISTER TO REGISTER == 11
         elif word0_second_half == 17:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] < RAM[word1]:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    LT R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
+            print('    LT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
         # LESS THAN OR EQUAL REGISTER TO DIRECT == 12
         elif word0_second_half == 18:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] <= word1:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    LTE R[%s] %s -> %s' %(word0_first_half, word1, less_than))
+            print('    LTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # LESS THAN OR EQUAL REGISTER TO REGISTER == 13
         elif word0_second_half == 19:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] <= RAM[word1]:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    LTE R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
+            print('    LTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
         # STRICT GREATER THAN REGISTER TO DIRECT == 14
         elif word0_second_half == 20:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] > word1:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    GT R[%s] %s -> %s' %(word0_first_half, word1, less_than))
+            print('    GT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # STRICT GREATER THAN REGISTER TO REGISTER == 15
         elif word0_second_half == 21:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] > RAM[word1]:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    GT R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
+            print('    GT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
         # GREATER THAN OR EQUAL REGISTER TO DIRECT == 16
         elif word0_second_half == 22:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] >= word1:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    GTE R[%s] %s -> %s' %(word0_first_half, word1, less_than))
+            print('    GTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # GREATER THAN OR EQUAL REGISTER TO REGISTER == 17
         elif word0_second_half == 23:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] >= RAM[word1]:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
+            print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
         # VRAM DIRECT LOAD == 18
         elif word0_second_half == 24:
@@ -415,12 +416,12 @@ def exec(lines_from_file_hex):
                 EXIT_LOOP = True
 
         # debug print
-        print('\nRAM = [%s, %s, %s, %s, %s, %s, %s, %s, ...]' %(
+        print('\n    RAM = [%s, %s, %s, %s, %s, %s, %s, %s, ...]' %(
             RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
         )
-        print('RAM[4100]: %r  # return slot' %RAM[4100])
-        print('STACK: %r' %STACK)
-        print('VRAM = [%s, %s, %s, %s, ...]\n' %(
+        print('    RAM[4100]: %r  # return slot' %RAM[4100])
+        print('    STACK: %r' %STACK)
+        print('    VRAM = [%s, %s, %s, %s, ...]\n' %(
             VRAM[0], VRAM[1], VRAM[2], VRAM[3])
         )
 

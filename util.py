@@ -131,19 +131,17 @@ TWO_ARGS_EXCEPTION_MSG = (
 
 LD_EXCEPTION_MSG = (
     '\nThe Opcode LD is used to load values into RAM slots or '
-    'VRAM slots. LD must be followed by 2 arguments exactly:'
-    ''
-    'Syntax for RAM:'
-    ''
-    '    1. LD R[i] j'
-    '    2. LD R[i] R[j]'
-    ''
-    'Syntax for VRAM:'
-    ''
-    '    1. LD V[i] j,k,l,m'
-    '    2. LD V[i] V[j]'
-    '    3. LD R[i] R[j],R[k],R[l],R[m]'
-    ''
+    'VRAM slots.\nLD must be followed by 2 arguments exactly:'
+    '\n'
+    '\nSyntax for RAM:'
+    '\n    1. LD R[i] j'
+    '\n    2. LD R[i] R[j]'
+    '\n'
+    '\nSyntax for VRAM:'
+    '\n    1. LD V[i] j,k,l,m'
+    '\n    2. LD V[i] V[j]'
+    '\n    3. LD R[i] R[j],R[k],R[l],R[m]'
+    '\n'
 )
 
 LD_VRAM_EXCEPTION_MSG = (

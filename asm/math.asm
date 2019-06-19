@@ -58,3 +58,27 @@ MATH_LONG_WINDED:
     LD R[1] R[4100] // 35
     CALL MATH_ADD
     RETURN // 45
+
+
+MATH_FLOOR_DIV:
+    // Python: R[0] // R[1]
+    GTE R[0] R[1]
+    RETURN
+    ADD R[4100] 1
+    SUB R[0] R[1]
+    GOTO MATH_FLOOR_DIV
+
+
+// not complete
+MATH_MODULO:
+    // Python: R[0] % R[1]
+    GTE R[0] R[1]
+    RETURN
+    LD R[4100] R[0]
+    SUB R[0] R[1]
+    GOTO MATH_MODULO
+
+
+
+
+
