@@ -30,7 +30,7 @@ def return_hex_instruction_lines(opcode, args, word0_first_half,
     valid_opcode = True
     if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
         raise Exception(
-            util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
+            util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
         )
     if re.search(r'R\[\d+]', args[1]):
         opcode_val = util.op_codes_dict[to_register_key]
@@ -123,28 +123,78 @@ def validate_and_make_hexfile(lines):
                         raise Exception('\nUnknown Label %s' %args[0])
                     word1 = util.int_to_hex(LABELS_TO_PC[args[0]]).zfill(8)
 
-            elif opcode == 'LD':
+            elif opcode == 'LD':  # RAM and VRAM
                 valid_opcode = True
-                if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
-                    raise Exception(
-                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
-                    )
-                if re.search(r'R\[\d+]', args[1]):
+
+                if len(args) < 2 or not re.search(r'[RV]\[\d+]', args[0]):
+                    raise Exception(util.LD_EXCEPTION_MSG)
+
+                #######
+                # RAM #
+                #######
+
+                # 1. R[i] R[j]
+                if re.search(r'R\[\d+]', args[0]) and re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
-                else:
+                # 2. R[i] j
+                elif re.search(r'R\[\d+]', args[0]) and re.search(r'\d+', args[1]):
                     opcode_val = util.op_codes_dict['DIRECT LOAD']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
+                ########
+                # VRAM #
+                ########
+
+                # 1. V[i] j,k,l,m
+                elif re.search(r'V\[\d+]', args[0]) and re.search(util.REGEX_RGBA_PATTERN, args[1]):
+                    opcode_val = util.op_codes_dict['VRAM DIRECT LOAD']
+
+                    list_of_rgba_values = re.findall(r'\d+', args[1])
+
+                    word1 = ''
+                    for val in list_of_rgba_values:
+                        word1 += util.int_to_hex(val).zfill(2)
+
+                # 2. V[i] R[j],R[k],R[l],R[m]
+                elif re.search(r'V\[\d+]', args[0]) and re.search(util.REGEX_VRAM_FROM_RAM_PATTERN, args[1]):
+                    pass
+
+                # 3. V[i] V[j]
+                elif re.search(r'V\[\d+]', args[0]) and re.search(r'V\[\d+]', args[1]):
+                    opcode_val = util.op_codes_dict['VRAM REGISTER TO REGISTER LOAD']
+                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
+
+                else:
+                    raise Exception(util.LD_EXCEPTION_MSG)
+
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                 word0_second_half = opcode_val.zfill(4)
+
+                # elif re.search(r'V\[\d+]', args[0]):
+
+                #     if re.search(r'V\[\d+]', args[1]):
+                #         opcode_val = util.op_codes_dict['VRAM REGISTER TO REGISTER LOAD']
+                #         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
+
+                #     else:
+                #         opcode_val = util.op_codes_dict['VRAM DIRECT LOAD']
+
+                #         list_of_rgba_values = re.findall(r'\d+', args[1])
+
+                #         word1 = ''
+                #         for val in list_of_rgba_values:
+                #             word1 += util.int_to_hex(val).zfill(2)
+
+                #     word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
+                #     word0_second_half = opcode_val.zfill(4)
 
             elif opcode == 'ADD':
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
+                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER ADD']
@@ -161,7 +211,7 @@ def validate_and_make_hexfile(lines):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
+                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER SUBTRACT']
@@ -178,7 +228,7 @@ def validate_and_make_hexfile(lines):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
+                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER MULTIPLY']
@@ -195,7 +245,7 @@ def validate_and_make_hexfile(lines):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
+                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER DIVIDE']
@@ -213,7 +263,7 @@ def validate_and_make_hexfile(lines):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
+                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['COMPARE REGISTER TO REGISTER']
@@ -231,7 +281,7 @@ def validate_and_make_hexfile(lines):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
+                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['LESS THAN REGISTER TO REGISTER']
@@ -249,7 +299,7 @@ def validate_and_make_hexfile(lines):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
+                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['LESS THAN OR EQUAL REGISTER TO REGISTER']
@@ -267,7 +317,7 @@ def validate_and_make_hexfile(lines):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
+                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['STRICT GREATER THAN REGISTER TO REGISTER']
@@ -285,7 +335,7 @@ def validate_and_make_hexfile(lines):
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
                     raise Exception(
-                        util.GENERAL_EXCEPTION_MSG.format(opcode=opcode)
+                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['GREATER THAN OR EQUAL REGISTER TO REGISTER']

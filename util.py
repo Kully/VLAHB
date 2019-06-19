@@ -13,6 +13,18 @@ def int_to_hex(i):
     return hex(int(i))[2:]
 
 
+def int_to_rgba_tuple(i):
+    '''eg. 146581 -> (240,0,150,255)'''
+    color_hex = int_to_hex(i).zfill(8)
+
+    return (
+        hex_to_int(color_hex[ :2]),
+        hex_to_int(color_hex[2:4]),
+        hex_to_int(color_hex[4:6]),
+        hex_to_int(color_hex[6: ]),
+    )
+
+
 def slow_print(msg, sleep_between_lines=0.02, sleep_after_msg=0.1,
                print_empty_line=False):
     '''only works for one line eg. strings with no \n'''
@@ -65,6 +77,8 @@ op_codes_dict = {
     'STRICT GREATER THAN REGISTER TO REGISTER': '15',
     'GREATER THAN OR EQUAL REGISTER TO DIRECT': '16',
     'GREATER THAN OR EQUAL REGISTER TO REGISTER': '17',
+    'VRAM DIRECT LOAD': '18',
+    'VRAM REGISTER TO REGISTER LOAD': '19',
     'EXIT': 'ffff',
 }
 
@@ -109,10 +123,34 @@ RETURN_EXCEPTION_MSG = (
     '\nThe Opcode RETURN requires no arguments afterwards'
 )
 
-GENERAL_EXCEPTION_MSG = (
+TWO_ARGS_EXCEPTION_MSG = (
     '\nThe Opcode {opcode} must be followed by 2 arguments '
     'either in the form:\n    {opcode} R[X] R[Y]\nor\n'
     '    {opcode} R[X] Y'
+)
+
+LD_EXCEPTION_MSG = (
+    '\nThe Opcode LD is used to load values into RAM slots or '
+    'VRAM slots. LD must be followed by 2 arguments exactly:'
+    ''
+    'Syntax for RAM:'
+    ''
+    '    1. LD R[i] j'
+    '    2. LD R[i] R[j]'
+    ''
+    'Syntax for VRAM:'
+    ''
+    '    1. LD V[i] j,k,l,m'
+    '    2. LD V[i] V[j]'
+    '    3. LD R[i] R[j],R[k],R[l],R[m]'
+    ''
+)
+
+LD_VRAM_EXCEPTION_MSG = (
+    '\nWhen loading VRAM, LD must be followed by 2 arguments '
+    'either in the form:\n    LD V[X] V[Y]\nor\n'
+    '    LD V[X] (R,G,B,A) for direct load and where '
+    'R,G,B,A are between 0 and 255 inclusive'
 )
 
 LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG = (
@@ -120,4 +158,7 @@ LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG = (
     'Labels can only be defined once across all asm files in ./asm'
 )
 
+# regex
 REGEX_LABEL_PATTERN = r' *[A-Z|\d|_]+:'
+REGEX_RGBA_PATTERN = r'\d{1,3},\d{1,3},\d{1,3},\d{1,3}'
+REGEX_VRAM_FROM_RAM_PATTERN = r'R\[\d+],R\[\d+],R\[\d+],R\[\d+]'

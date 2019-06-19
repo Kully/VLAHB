@@ -58,7 +58,7 @@ with contextlib.redirect_stdout(None):
 
 
 # CPU constants and data structures
-COMMANDS_PER_SEC = 10
+COMMANDS_PER_SEC = 10  # consider speeding up CPU instead of threading
 DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
 
 RAM_NUM_OF_SLOTS = 128000  # units of 4 bytes // 512KB == Bill Gates Number
@@ -358,13 +358,31 @@ def exec(lines_from_file_hex):
                 PC += 2
             print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
 
-        # LD VRAM == 18
+        # VRAM DIRECT LOAD == 18
         elif word0_second_half == 24:
             VRAM[word0_first_half] = word1
 
-            # update the output
+            # update pixel colors
+            x = word0_first_half % WIDTH_DISPLAY_PIXELS
+            y = int((word0_first_half - x) / WIDTH_DISPLAY_PIXELS)
+            rgba_tuple = util.int_to_rgba_tuple(word1)
+
+            gfxdraw.pixel(gameDisplay, x, y, rgba_tuple)
 
             print('\n    LD V[%s] %s' %(word0_first_half, word1))
+
+        # VRAM REGISTER TO REGISTER LOAD == 19
+        elif word0_second_half == 25:
+            VRAM[word0_first_half] = VRAM[word1]
+
+            # update pixel colors
+            x = word0_first_half % WIDTH_DISPLAY_PIXELS
+            y = int((word0_first_half - x) / WIDTH_DISPLAY_PIXELS)
+            rgba_tuple = util.int_to_rgba_tuple(VRAM[word1])
+
+            gfxdraw.pixel(gameDisplay, x, y, rgba_tuple)
+
+            print('\n    LD V[%s] V[%s]' %(word0_first_half, word1))
 
 
         # EXIT VM == ffff
@@ -372,24 +390,10 @@ def exec(lines_from_file_hex):
             EXIT_LOOP = True
             print('    EXIT')
 
+
         ########
         # VRAM #
         ########
-
-        # TODO - only update changed pixels
-        for x in range(WIDTH_DISPLAY_PIXELS):
-            for y in range(HEIGHT_DISPLAY_PIXELS):
-                color_hex = util.int_to_hex(VRAM[x + y * WIDTH_DISPLAY_PIXELS]).zfill(8)
-
-                rgba = (
-                    util.hex_to_int(color_hex[ :2]),
-                    util.hex_to_int(color_hex[2:4]),
-                    util.hex_to_int(color_hex[4:6]),
-                    util.hex_to_int(color_hex[6: ]),
-                )
-
-                # color pixel
-                gfxdraw.pixel(gameDisplay, x, y, rgba)
 
         # exit pygame
         for event in pygame.event.get():
@@ -408,7 +412,6 @@ def exec(lines_from_file_hex):
 
         # update frame
         pygame.display.update()
-        clock.tick(60)
 
         if EXIT_LOOP:
             pygame.quit()
