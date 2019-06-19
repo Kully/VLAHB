@@ -76,9 +76,9 @@ ROM = []
 WIDTH_DISPLAY_PIXELS = 80
 HEIGHT_DISPLAY_PIXELS = 60
 title = 'VLAHB'
-pixels_per_cell_width = 1
+PIXELS_PER_GRID_CELL_WIDTH = 4
 
-VRAM = []  # load VRAM with rgba(0,0,0,255)
+VRAM = []  # load all pixels with black color
 for x in range(WIDTH_DISPLAY_PIXELS):
     for y in range(HEIGHT_DISPLAY_PIXELS):
         VRAM.append(255)
@@ -103,6 +103,15 @@ def fill_ROM_with_hex_lines(hex_lines):
 
 def reset_RAM_values_to_zero():
     RAM = [0] * RAM_NUM_OF_SLOTS
+
+
+def update_one_pixel_color(gameDisplay, word0_first_half, word1):
+    # word0_first_half is the index of VRAM
+    x = word0_first_half % WIDTH_DISPLAY_PIXELS
+    y = int((word0_first_half - x) / WIDTH_DISPLAY_PIXELS)
+    rgba_tuple = util.int_to_rgba_tuple(VRAM[word1])
+
+    gfxdraw.pixel(gameDisplay, x, y, rgba_tuple)
 
 
 def manage_ram_slot_overunder_flow(index_in_RAM):
@@ -166,12 +175,16 @@ def exec(lines_from_file_hex):
     while True:
         time.sleep(DELAY_BETWEEN_COMMANDS)
         # check if end of ROM
-        # TODO: Should we remove below? - EXIT takes care of breaking out of loop
+        # TODO: Should we remove below?
+        # EXIT takes care of breaking out of loop
         try:
             ROM[PC]
             ROM[PC+1]
         except IndexError:
-            util.slow_print('PC out of range...exiting vm', 0.14, print_empty_line=True)
+            util.slow_print(
+                'PC out of range...exiting vm',
+                0.14, print_empty_line=True
+            )
             break
 
         print('PC: %r'%PC)
@@ -362,7 +375,8 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 24:
             VRAM[word0_first_half] = word1
 
-            # update pixel colors
+            # update_one_pixel_color(gameDisplay, word0_first_half, word1)
+
             x = word0_first_half % WIDTH_DISPLAY_PIXELS
             y = int((word0_first_half - x) / WIDTH_DISPLAY_PIXELS)
             rgba_tuple = util.int_to_rgba_tuple(word1)
@@ -375,7 +389,7 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 25:
             VRAM[word0_first_half] = VRAM[word1]
 
-            # update pixel colors
+            # update pixel color
             x = word0_first_half % WIDTH_DISPLAY_PIXELS
             y = int((word0_first_half - x) / WIDTH_DISPLAY_PIXELS)
             rgba_tuple = util.int_to_rgba_tuple(VRAM[word1])
