@@ -27,7 +27,7 @@ clean:  # remove all hex files in /hex
 ## ASM - Syntax
 An easy way to understand any syntax is through example.
 
-Tips:
+Notes:
 - `RAM` is a pythonic list
 - `VRAM` is also a pythonic list
 - all numerical values in any `file.asm` are integers eg. 4 != 0x04
@@ -40,6 +40,12 @@ Load RAM[0] with value 4.
 
 `LD R[0] R[2]`<br>
 Load RAM[0] with value of RAM[2].
+
+`LD V[0] 255,0,0,255`<br>
+Load VRAM[0] with the color red
+
+`LD V[3] V[5]`<br>
+Load VRAM[3] with the value of VRAM[5]
 
 `ADD R[2] 8`<br>
 Add 8 to RAM[2].
@@ -77,7 +83,7 @@ Pop the number from the Stack and set PC to that value.
 Exit virtual machine.
 
 
-## Hex - Op Codes
+## Opcodes
 
 | HEX  | Opcode         |
 | ---- |----------------|
@@ -109,12 +115,12 @@ Exit virtual machine.
 | ffff | EXIT  |
 
 
-## About the RAM Slots
+## About the RAM Slots - WIP
 
 - a "slot in RAM" is a location in RAM that can be identified with an index eg RAM[i]
 - RAM is 512KB in size, which means RAM has 128000 slots
 
-#### Slots - WIP
+#### Slot Dedication
 - Slots from `RAM[0] to RAM[4095]` are dedicated to the parameters of functions
 - Slots `RAM[4096], RAM[4097], RAM[4098], RAM[4099]` are dedicated to VRAM
 - Slot at index `4100` is dedicated to the return value of functions
