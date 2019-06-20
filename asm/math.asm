@@ -60,24 +60,48 @@ MATH_LONG_WINDED:
     RETURN // 45
 
 
+// TODO: what should happen if you divide by 0?
+
+
+// Python: R[0] // R[1]
 MATH_FLOOR_DIV:
-    // Python: R[0] // R[1]
     GTE R[0] R[1]
     RETURN
     ADD R[4100] 1
     SUB R[0] R[1]
     GOTO MATH_FLOOR_DIV
 
-
-// not complete
-MATH_MODULO:
-    // Python: R[0] % R[1]
-    GTE R[0] R[1]
+// Python: R[0] % R[1]
+MATH_DIV_REMAINDER:
+    CALL MATH_FLOOR_DIV
+    LD R[3] R[1]
+    MUL R[3] R[4100]
+    
+    LD R[4] R[0]
+    SUB R[4] R[3]  // stack underflow
+    
+    LD R[4100] R[4]
     RETURN
-    LD R[4100] R[0]
-    SUB R[0] R[1]
-    GOTO MATH_MODULO
 
+// Python: R[0] // 16
+MATH_FLOOR_DIV_16:
+    GTE R[0] 16
+        RETURN
+    ADD R[4100] 1
+    SUB R[0] 16
+    GOTO MATH_FLOOR_DIV_16
+
+// Python: R[0] % 16
+MATH_DIV_REMAINDER_16:
+    CALL MATH_FLOOR_DIV_16
+    LD R[3] 16
+    MUL R[3] R[4100]
+    
+    LD R[4] 16
+    SUB R[4] R[3]  // stack underflow
+    
+    LD R[4100] R[4]
+    RETURN
 
 
 

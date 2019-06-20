@@ -11,7 +11,8 @@
 
 // make sure the R[0:4] are not greater than 255
 // play in R[4]
-ENCODE_RGBA_TO_INT:
+
+ENCODE_RGBA_TO_INT_FOO_BAR:
 	LTE R[0] 255
 	LD R[0] 255
 	LTE R[1] 255
@@ -21,14 +22,15 @@ ENCODE_RGBA_TO_INT:
 	LTE R[3] 255
 	LD R[3] 255
 
-	// do the encoding math here
-	LD R[4100] 0
+	// encoding math below
+	LD R[1] 16
+	CALL MATH_FLOOR_DIV
+	LD R[4] R[4100]
 
-	DIV R[0] 16
+	LD R[1] 16
+	CALL MATH_DIV_REMAINDER
+	LD R[5] R[4100]
+
+
 
 	RETURN
-
-
-
-
-

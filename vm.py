@@ -175,23 +175,17 @@ def exec(lines_from_file_hex):
 
     while True:
         time.sleep(DELAY_BETWEEN_COMMANDS)
+        
         # check if end of ROM
-        # TODO: Should we remove below?
-        # EXIT takes care of breaking out of loop
         try:
             ROM[PC]
             ROM[PC+1]
         except IndexError:
-            util.slow_print(
-                'PC out of range...exiting vm',
-                0.14, print_empty_line=True
-            )
+            util.slow_print('PC out of range...exiting vm',
+                            0.1, print_empty_line=True)
             break
 
         print('PC: %r'%PC)
-        print('    ROM lines:')
-        print('        %s'%ROM[PC])
-        print('        %s'%ROM[PC+1])
 
         # convert all hex to int
         word0_first_half = util.hex_to_int(ROM[PC][:4])
@@ -212,7 +206,7 @@ def exec(lines_from_file_hex):
         # DIRECT LOAD == 2
         elif word0_second_half == 2:
             RAM[word0_first_half] = word1
-            print('\n    LD R[%s] %s' %(word0_first_half, word1))
+            print('    LD R[%s] %s' %(word0_first_half, word1))
 
         # DIRECT ADD == 3
         elif word0_second_half == 3:
@@ -302,6 +296,7 @@ def exec(lines_from_file_hex):
             index = len(STACK)
 
             manage_stack_size_overflow()
+
             a = STACK_FRAME_SIZE * (0 + index)
             b = STACK_FRAME_SIZE * (1 + index)
             RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
@@ -384,7 +379,7 @@ def exec(lines_from_file_hex):
 
             gfxdraw.pixel(gameDisplay, x, y, rgba_tuple)
 
-            print('\n    LD V[%s] %s' %(word0_first_half, word1))
+            print('    LD V[%s] %s' %(word0_first_half, word1))
 
         # VRAM REGISTER TO REGISTER LOAD == 19
         elif word0_second_half == 25:
@@ -397,7 +392,7 @@ def exec(lines_from_file_hex):
 
             gfxdraw.pixel(gameDisplay, x, y, rgba_tuple)
 
-            print('\n    LD V[%s] V[%s]' %(word0_first_half, word1))
+            print('    LD V[%s] V[%s]' %(word0_first_half, word1))
 
 
         # EXIT VM == ffff
@@ -415,15 +410,18 @@ def exec(lines_from_file_hex):
             if event.type == pygame.QUIT:
                 EXIT_LOOP = True
 
-        # debug print
-        print('\n    RAM = [%s, %s, %s, %s, %s, %s, %s, %s, ...]' %(
+        # debug prints
+        print('')
+        print('    %s'%ROM[PC])
+        print('    %s'%ROM[PC+1])
+        print('')
+        print('    RAM[0-7]:    [%s, %s, %s, %s, %s, %s, %s, %s]' %(
             RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
         )
-        print('    RAM[4100]: %r  # return slot' %RAM[4100])
-        print('    STACK: %r' %STACK)
-        print('    VRAM = [%s, %s, %s, %s, ...]\n' %(
-            VRAM[0], VRAM[1], VRAM[2], VRAM[3])
-        )
+        print('    RAM[12-15]:  [%s, %s, %s, %s]' %(RAM[12], RAM[13], RAM[14], RAM[15]))
+        print('    STACK:       %r' %STACK)
+        print('    RAM[4100]:   %r  # return value' %RAM[4100])
+        print('')
 
         # update frame
         pygame.display.update()
