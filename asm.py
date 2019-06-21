@@ -126,19 +126,22 @@ def validate_and_make_hexfile(lines):
             elif opcode == 'LD':  # RAM and VRAM
                 valid_opcode = True
 
-                if len(args) < 2 or not re.search(r'[RV]\[\d+]', args[0]):
-                    raise Exception(util.LD_EXCEPTION_MSG)
+                # invalid_LD_R_condition = len(args) < 2 or re.search(r'R\[\d+]', args[0])
+                # invalid_LD_V_condition = len(args) < 1 or re.search(r'V\[\d+]', args[0])
+
+                # if invalid_LD_R_condition or invalid_LD_V_condition:
+                #     raise Exception(util.LD_EXCEPTION_MSG)
 
                 #######
                 # RAM #
                 #######
 
-                # 1. R[i] R[j]
+                # 1. LD R[i] R[j]
                 if re.search(r'R\[\d+]', args[0]) and re.search(r'R\[\d+]', args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
-                # 2. R[i] j
+                # 2. LD R[i] j
                 elif re.search(r'R\[\d+]', args[0]) and re.search(r'\d+', args[1]):
                     opcode_val = util.op_codes_dict['DIRECT LOAD']
                     word1 = util.int_to_hex(args[1]).zfill(8)
@@ -147,24 +150,19 @@ def validate_and_make_hexfile(lines):
                 # VRAM #
                 ########
 
-                # 1. V[i] j,k,l,m
-                elif re.search(r'V\[\d+]', args[0]) and re.search(util.REGEX_RGBA_PATTERN, args[1]):
+                # 1. LD V[i]  <- load from slots R[4096-4099]
+                elif re.search(r'V\[\d+]', args[0]) and len(args) == 1:
                     opcode_val = util.op_codes_dict['VRAM DIRECT LOAD']
 
-                    list_of_rgba_values = re.findall(r'\d+', args[1])
-
-                    word1 = ''
-                    for val in list_of_rgba_values:
-                        word1 += util.int_to_hex(val).zfill(2)
-
-                # 2. V[i] R[j],R[k],R[l],R[m]
-                elif re.search(r'V\[\d+]', args[0]) and re.search(util.REGEX_VRAM_FROM_RAM_PATTERN, args[1]):
-                    pass
-
-                # 3. V[i] V[j]
+                # 2. V[i] V[j]
                 elif re.search(r'V\[\d+]', args[0]) and re.search(r'V\[\d+]', args[1]):
-                    opcode_val = util.op_codes_dict['VRAM REGISTER TO REGISTER LOAD']
+                    opcode_val = util.op_codes_dict['VRAM TO VRAM REGISTER LOAD']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
+
+                # 3. LD V[i] R[j]
+                elif re.search(r'V\[\d+]', args[0]) and re.search(r'R\[\d+]', args[1]):
+                    opcode_val = util.op_codes_dict['RAM TO VRAM REGISTER LOAD']
+                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)                   
 
                 else:
                     raise Exception(util.LD_EXCEPTION_MSG)
@@ -172,23 +170,6 @@ def validate_and_make_hexfile(lines):
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                 word0_second_half = opcode_val.zfill(4)
 
-                # elif re.search(r'V\[\d+]', args[0]):
-
-                #     if re.search(r'V\[\d+]', args[1]):
-                #         opcode_val = util.op_codes_dict['VRAM REGISTER TO REGISTER LOAD']
-                #         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
-
-                #     else:
-                #         opcode_val = util.op_codes_dict['VRAM DIRECT LOAD']
-
-                #         list_of_rgba_values = re.findall(r'\d+', args[1])
-
-                #         word1 = ''
-                #         for val in list_of_rgba_values:
-                #             word1 += util.int_to_hex(val).zfill(2)
-
-                #     word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
-                #     word0_second_half = opcode_val.zfill(4)
 
             elif opcode == 'ADD':
                 valid_opcode = True

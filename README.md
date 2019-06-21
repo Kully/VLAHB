@@ -124,8 +124,17 @@ Exit virtual machine.
 ## About the RAM Slots - WIP
 
 - a "slot in RAM" is a location in RAM that can be identified with an index eg RAM[i]
-- RAM is 512KB in size, which means RAM has 128000 slots
+- RAM is 512KB in size => RAM has `128000` slots
 
 #### Slot Dedication
-- Slots from `RAM[0] to RAM[4095]` are dedicated to the parameters of functions
-- Slot at index `4100` is dedicated to the return value of functions
+
+The indices in the table below are of the form `x-y` which correspond to the standard list indexing of Python. This means the values of RAM with the range of indices `x-y` are `RAM[x], RAM[x+1], ... , RAM[y]`.
+
+| Indices in RAM  | Dedication |
+| ------------- |----------------|
+| 0-4095  | function inputs  |
+| 4096-4099   | values for R,G,B,A respectively*  |
+| 4100   | Return slot for function outputs |
+| 4101 | Index for |
+
+* This is very wasteful space but optimizing this is a TODO for later

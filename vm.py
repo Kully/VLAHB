@@ -118,10 +118,11 @@ def update_one_pixel_color(gameDisplay, word0_first_half, word1):
 def manage_ram_slot_overunder_flow(index_in_RAM):
     if RAM[index_in_RAM] < 0:
         RAM[index_in_RAM] = MAX_RAM_VALUE + RAM[index_in_RAM]
-        print('    Stack Underflow at RAM[%r]'%index_in_RAM)
+        print('    ***Stack Underflow at RAM[%r]***'%index_in_RAM)
+
     elif RAM[index_in_RAM] > MAX_RAM_VALUE:
         RAM[index_in_RAM] = MAX_RAM_VALUE - RAM[index_in_RAM]
-        print('    Stack Overflow at RAM[%r]'%index_in_RAM)
+        print('    ***Stack Overflow at RAM[%r]***'%index_in_RAM)
 
 
 def manage_stack_size_overflow():
@@ -174,7 +175,7 @@ def exec(lines_from_file_hex):
     EXIT_LOOP = False
 
     while True:
-        time.sleep(DELAY_BETWEEN_COMMANDS)
+        # time.sleep(DELAY_BETWEEN_COMMANDS)
         
         # check if end of ROM
         try:
@@ -369,23 +370,38 @@ def exec(lines_from_file_hex):
 
         # VRAM DIRECT LOAD == 18
         elif word0_second_half == 24:
-            VRAM[word0_first_half] = word1
 
-            # update_one_pixel_color(gameDisplay, word0_first_half, word1)
+            # load RAM slots 4096-4099
+            r = RAM[4096]
+            g = RAM[4097]
+            b = RAM[4098]
+            a = RAM[4099]
+
+            # convert r,g,b,a to 4 byte hex string
+            rgba_as_int = util.rgba_tuple_to_int(r,g,b,a)
+            VRAM[word0_first_half] = rgba_as_int
+
+            # draw
 
             x = word0_first_half % WIDTH_DISPLAY_PIXELS
             y = int((word0_first_half - x) / WIDTH_DISPLAY_PIXELS)
-            rgba_tuple = util.int_to_rgba_tuple(word1)
+
+            # rgba_tuple = util.int_to_rgba_tuple(word1)
+            rgba_tuple = (r,g,b,a)
 
             gfxdraw.pixel(gameDisplay, x, y, rgba_tuple)
 
             print('    LD V[%s] %s' %(word0_first_half, word1))
 
-        # VRAM REGISTER TO REGISTER LOAD == 19
+
+
+
+        # VRAM TO VRAM REGISTER LOAD == 19
         elif word0_second_half == 25:
             VRAM[word0_first_half] = VRAM[word1]
 
-            # update pixel color
+            # draw
+
             x = word0_first_half % WIDTH_DISPLAY_PIXELS
             y = int((word0_first_half - x) / WIDTH_DISPLAY_PIXELS)
             rgba_tuple = util.int_to_rgba_tuple(VRAM[word1])
@@ -393,6 +409,9 @@ def exec(lines_from_file_hex):
             gfxdraw.pixel(gameDisplay, x, y, rgba_tuple)
 
             print('    LD V[%s] V[%s]' %(word0_first_half, word1))
+
+        # RAM TO VRAM REGISTER LOAD == 20
+        # stuff here...
 
 
         # EXIT VM == ffff
@@ -418,10 +437,10 @@ def exec(lines_from_file_hex):
         print('    RAM[0-7]:    [%s, %s, %s, %s, %s, %s, %s, %s]' %(
             RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
         )
-        print('    RAM[12-15]:  [%s, %s, %s, %s]' %(RAM[12], RAM[13], RAM[14], RAM[15]))
+        print('    RAM[4096-4099]:  [%s, %s, %s, %s]' %(RAM[4096], RAM[4097], RAM[4098], RAM[4099]))
         print('    STACK:       %r' %STACK)
         print('    RAM[4100]:   %r  # return value' %RAM[4100])
-        print('')
+        print('\n\n')
 
         # update frame
         pygame.display.update()

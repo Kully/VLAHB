@@ -24,6 +24,24 @@ def int_to_rgba_tuple(i):
         hex_to_int(color_hex[6: ]),
     )
 
+def rgba_tuple_to_int(r,g,b,a):
+    if r > 255:
+        r = 255
+    if g > 255:
+        g = 255
+    if b > 255:
+        b = 255
+    if a > 255:
+        a = 255
+
+    r_hex = int_to_hex(r).zfill(2)
+    g_hex = int_to_hex(g).zfill(2)
+    b_hex = int_to_hex(b).zfill(2)
+    a_hex = int_to_hex(a).zfill(2)
+    rgba_hex = r_hex + g_hex + b_hex + a_hex
+
+    return hex_to_int(rgba_hex)
+
 
 def slow_print(msg, sleep_between_lines=0.02, sleep_after_msg=0.1,
                print_empty_line=False):
@@ -78,7 +96,8 @@ op_codes_dict = {
     'GREATER THAN OR EQUAL REGISTER TO DIRECT': '16',
     'GREATER THAN OR EQUAL REGISTER TO REGISTER': '17',
     'VRAM DIRECT LOAD': '18',
-    'VRAM REGISTER TO REGISTER LOAD': '19',
+    'VRAM TO VRAM REGISTER LOAD': '19',
+    'RAM TO VRAM REGISTER LOAD': '20',
     'EXIT': 'ffff',
 }
 

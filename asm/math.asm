@@ -97,12 +97,10 @@ MATH_DIV_REMAINDER_16:
     LD R[3] 16
     MUL R[3] R[4100]
     
-    LD R[4] 16
+    LD R[4] R[0]
     SUB R[4] R[3]  // stack underflow
     
     LD R[4100] R[4]
     RETURN
-
-
 
 
