@@ -95,9 +95,7 @@ op_codes_dict = {
     'STRICT GREATER THAN REGISTER TO REGISTER': '15',
     'GREATER THAN OR EQUAL REGISTER TO DIRECT': '16',
     'GREATER THAN OR EQUAL REGISTER TO REGISTER': '17',
-    'VRAM DIRECT LOAD': '18',
-    'VRAM TO VRAM REGISTER LOAD': '19',
-    'RAM TO VRAM REGISTER LOAD': '20',
+    'BLIT': '18',
     'EXIT': 'ffff',
 }
 
@@ -149,17 +147,14 @@ TWO_ARGS_EXCEPTION_MSG = (
 )
 
 LD_EXCEPTION_MSG = (
-    '\nThe Opcode LD is used to load values into RAM slots or '
-    'VRAM slots.\nLD must be followed by 2 arguments exactly:'
+    '\nThe Opcode LD is used to load values into RAM slots\nLD '
+    'must be followed by 2 exactly arguments:'
     '\n'
-    '\nSyntax for RAM:'
+    '\nSyntax:'
     '\n    1. LD R[i] j'
     '\n    2. LD R[i] R[j]'
-    '\n'
-    '\nSyntax for VRAM:'
-    '\n    1. LD V[i] j,k,l,m'
-    '\n    2. LD V[i] V[j]'
-    '\n    3. LD R[i] R[j],R[k],R[l],R[m]'
+    '\n    3. LD R[i:j] x'
+    '\n    4. LD R[i:j] R[k:l]'
     '\n'
 )
 
@@ -178,4 +173,3 @@ LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG = (
 # regex
 REGEX_LABEL_PATTERN = r' *[A-Z|\d|_]+:'
 REGEX_RGBA_PATTERN = r'\d{1,3},\d{1,3},\d{1,3},\d{1,3}'
-REGEX_VRAM_FROM_RAM_PATTERN = r'R\[\d+],R\[\d+],R\[\d+],R\[\d+]'

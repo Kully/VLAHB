@@ -27,7 +27,6 @@ LABELS_TO_PC = {}
 def return_hex_instruction_lines(opcode, args, word0_first_half,
                                  word0_second_half, word1,
                                  to_register_key, to_direct_key):
-    valid_opcode = True
     if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
         raise Exception(
             util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
@@ -123,53 +122,130 @@ def validate_and_make_hexfile(lines):
                         raise Exception('\nUnknown Label %s' %args[0])
                     word1 = util.int_to_hex(LABELS_TO_PC[args[0]]).zfill(8)
 
-            elif opcode == 'LD':  # RAM and VRAM
+            elif opcode == 'LD':
                 valid_opcode = True
 
-                # invalid_LD_R_condition = len(args) < 2 or re.search(r'R\[\d+]', args[0])
-                # invalid_LD_V_condition = len(args) < 1 or re.search(r'V\[\d+]', args[0])
+                REGEX_LD_R_ONE = r'R\[\d+]'
+                REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
 
-                # if invalid_LD_R_condition or invalid_LD_V_condition:
+                # Validate
+                # if len(args) < 2 or not re.search(r'R\[\d+:*\d*]', args[0]):
                 #     raise Exception(util.LD_EXCEPTION_MSG)
 
-                #######
-                # RAM #
-                #######
+                if re.search(REGEX_LD_R_ONE, args[0]):
+                    if re.search(REGEX_LD_R_ONE, args[1]):
+                        # LD R[i] R[j]
+                        opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
+                        word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
-                # 1. LD R[i] R[j]
-                if re.search(r'R\[\d+]', args[0]) and re.search(r'R\[\d+]', args[1]):
-                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
-                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
+                    elif re.search(r'\d+', args[1]):
+                        # LD R[i] j
+                        opcode_val = util.op_codes_dict['DIRECT LOAD']
+                        word1 = util.int_to_hex(args[1]).zfill(8)
 
-                # 2. LD R[i] j
-                elif re.search(r'R\[\d+]', args[0]) and re.search(r'\d+', args[1]):
-                    opcode_val = util.op_codes_dict['DIRECT LOAD']
-                    word1 = util.int_to_hex(args[1]).zfill(8)
+                    else:
+                        raise Exception('LD R[i] XXX')
 
-                ########
-                # VRAM #
-                ########
+                    word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
+                    word0_second_half = opcode_val.zfill(4)
 
-                # 1. LD V[i]  <- load from slots R[4096-4099]
-                elif re.search(r'V\[\d+]', args[0]) and len(args) == 1:
-                    opcode_val = util.op_codes_dict['VRAM DIRECT LOAD']
+                elif re.search(REGEX_LD_R_RANGE, args[0]):
+                    if re.search(r'\d+', args[1]):
+                        # LD R[i:j] k
+                        opcode_val = util.op_codes_dict['DIRECT LOAD']
 
-                # 2. V[i] V[j]
-                elif re.search(r'V\[\d+]', args[0]) and re.search(r'V\[\d+]', args[1]):
-                    opcode_val = util.op_codes_dict['VRAM TO VRAM REGISTER LOAD']
-                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
+                        i_and_j = re.findall(r'\d+', args[0])
 
-                # 3. LD V[i] R[j]
-                elif re.search(r'V\[\d+]', args[0]) and re.search(r'R\[\d+]', args[1]):
-                    opcode_val = util.op_codes_dict['RAM TO VRAM REGISTER LOAD']
-                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)                   
+                        i = i_and_j[0]
+                        j = i_and_j[1]
+
+                        if int(i) > int(j):
+                            raise Exception(' LD R[i:j] k\ni > j')
+
+                        word1 = util.int_to_hex(args[1]).zfill(8)
+                        word0_second_half = opcode_val.zfill(4)
+
+                        for ram_idx in range(int(i), int(j)+1):
+                            word0_first_half = util.int_to_hex(str(ram_idx)).zfill(4)
+
+                            # write to hex file
+                            hex_file_str += word0_first_half
+                            hex_file_str += word0_second_half
+                            hex_file_str += '\n'
+                            hex_file_str += word1
+                            hex_file_str += '\n\n'
+
+                            ram_idx += 1
+
+                    elif re.search(REGEX_LD_R_RANGE, args[1]):
+                        # 4. LD R[i:j] R[k:l]
+                        opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
+
+                        i_j_k_l = re.findall(r'\d+', args[0])
+                        i = i_j_k_l[0]
+                        j = i_j_k_l[1]
+                        k = i_j_k_l[2]
+                        l = i_j_k_l[3]
+
+                        if int(i) > int(j):
+                            raise Exception('  LD R[i:j] R[k:l]\ni > j')
+
+                        if int(i) > int(j):
+                            raise Exception('  LD R[i:j] R[k:l]\ni > j')
+
+                        if abs(i-j) != abs(k-l):
+                            raise Exception('  LD R[i:j] R[k:l]\ni-j != k-l')
+
+
+                        word0_second_half = opcode_val.zfill(4)
+
+                        for ram_idx in range(int(i), int(j)+1):
+                            word1 = util.int_to_hex(k + ram_idx).zfill(8)
+                            word0_first_half = util.int_to_hex(str(ram_idx)).zfill(4)
+
+                            # write to hex file
+                            hex_file_str += word0_first_half
+                            hex_file_str += word0_second_half
+                            hex_file_str += '\n'
+                            hex_file_str += word1
+                            hex_file_str += '\n\n'
+
+                            ram_idx += 1
+
+
+                    elif re.search(REGEX_LD_R_ONE, args[1]):
+                        # 4. LD R[i:j] R[k]
+                        opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
+
+                        i_and_j = re.findall(r'\d+', args[0])
+
+                        i = i_and_j[0]
+                        j = i_and_j[1]
+
+                        if int(i) > int(j):
+                            raise Exception(' LD R[i:j] R[k]\ni > j')
+
+                        word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
+                        word0_second_half = opcode_val.zfill(4)
+
+                        for ram_idx in range(int(i), int(j)+1):
+                            word0_first_half = util.int_to_hex(str(ram_idx)).zfill(4)
+
+                            # write to hex file
+                            hex_file_str += word0_first_half
+                            hex_file_str += word0_second_half
+                            hex_file_str += '\n'
+                            hex_file_str += word1
+                            hex_file_str += '\n\n'
+
+                            ram_idx += 1
+
+
+                    else:
+                        raise Exception('LD: Incorrect Syntax')
 
                 else:
                     raise Exception(util.LD_EXCEPTION_MSG)
-
-                word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
-                word0_second_half = opcode_val.zfill(4)
-
 
             elif opcode == 'ADD':
                 valid_opcode = True
@@ -239,7 +315,7 @@ def validate_and_make_hexfile(lines):
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                 word0_second_half = opcode_val.zfill(4)
 
-            # compare
+            # ==
             elif opcode == 'CMP':
                 valid_opcode = True
                 if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
@@ -349,12 +425,23 @@ def validate_and_make_hexfile(lines):
                 opcode_val = util.op_codes_dict['RETURN']
                 word0_second_half = opcode_val.zfill(4)
 
+            # transfer RAM portion to display and update
+            elif opcode == 'BLIT':
+                valid_opcode = True
+                opcode_val = util.op_codes_dict['BLIT']
+                word0_second_half = opcode_val.zfill(4)
+
             elif opcode == 'EXIT':
                 valid_opcode = True
                 opcode_val = util.op_codes_dict['EXIT']
                 word0_second_half = opcode_val.zfill(4)
 
-            if valid_opcode:
+
+            # TODO - cant have this at the end anymore
+            # cause LD R[i:j] R[k] produces several opcode lines
+            # this below assumes 1-to-1
+
+            if valid_opcode and opcode != 'LD':
                 hex_file_str += word0_first_half
                 hex_file_str += word0_second_half
                 hex_file_str += '\n'

@@ -132,9 +132,8 @@ The indices in the table below are of the form `x-y` which correspond to the sta
 
 | Indices in RAM  | Dedication |
 | ------------- |----------------|
-| 0-4095  | function inputs  |
-| 4096-4099   | values for R,G,B,A respectively*  |
-| 4100   | Return slot for function outputs |
-| 4101 | Index for |
+| 0-4095  | Function Inputs*  |
+| 4099   | Return slot for function outputs |
+| 4100-... | Indices for VRAM Colors |
 
-* This is very wasteful space but optimizing this is a TODO for later
+* Functions takes a maximum of 16 inputs from R[0-15]

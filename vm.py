@@ -59,7 +59,7 @@ with contextlib.redirect_stdout(None):
 
 # CPU constants and data structures
 
-COMMANDS_PER_SEC = 10  # bump to 100
+COMMANDS_PER_SEC = 10
 DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
 
 RAM_NUM_OF_SLOTS = 128000  # 512KB == Bill Gates Number
@@ -74,15 +74,10 @@ ROM = []
 
 
 # for pygame
-WIDTH_DISPLAY_PIXELS = 80
-HEIGHT_DISPLAY_PIXELS = 60
+WIDTH_DISPLAY_PIXELS = 160  # 240
+HEIGHT_DISPLAY_PIXELS = 120  # 180
 title = 'VLAHB'
 PIXELS_PER_GRID_CELL_WIDTH = 4
-
-VRAM = []  # load all pixels with black color
-for x in range(WIDTH_DISPLAY_PIXELS):
-    for y in range(HEIGHT_DISPLAY_PIXELS):
-        VRAM.append(255)
 
 
 def starting_PC():
@@ -104,15 +99,6 @@ def fill_ROM_with_hex_lines(hex_lines):
 
 def reset_RAM_values_to_zero():
     RAM = [0] * RAM_NUM_OF_SLOTS
-
-
-def update_one_pixel_color(gameDisplay, word0_first_half, word1):
-    # word0_first_half is the index of VRAM
-    x = word0_first_half % WIDTH_DISPLAY_PIXELS
-    y = int((word0_first_half - x) / WIDTH_DISPLAY_PIXELS)
-    rgba_tuple = util.int_to_rgba_tuple(VRAM[word1])
-
-    gfxdraw.pixel(gameDisplay, x, y, rgba_tuple)
 
 
 def manage_ram_slot_overunder_flow(index_in_RAM):
@@ -170,6 +156,7 @@ def exec(lines_from_file_hex):
         (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
     )
     clock = pygame.time.Clock()
+
 
     PC = starting_PC()  # program counter
     EXIT_LOOP = False
@@ -368,50 +355,18 @@ def exec(lines_from_file_hex):
                 PC += 2
             print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
-        # VRAM DIRECT LOAD == 18
+
+        # BLIT == 18
         elif word0_second_half == 24:
+            for y in range(HEIGHT_DISPLAY_PIXELS):
+                for x in range(WIDTH_DISPLAY_PIXELS):
+                    rgba_tuple = util.int_to_rgba_tuple(
+                        RAM[4100+x+y*WIDTH_DISPLAY_PIXELS]
+                    )
 
-            # load RAM slots 4096-4099
-            r = RAM[4096]
-            g = RAM[4097]
-            b = RAM[4098]
-            a = RAM[4099]
+                    gfxdraw.pixel(gameDisplay, x, y, rgba_tuple)
 
-            # convert r,g,b,a to 4 byte hex string
-            rgba_as_int = util.rgba_tuple_to_int(r,g,b,a)
-            VRAM[word0_first_half] = rgba_as_int
-
-            # draw
-
-            x = word0_first_half % WIDTH_DISPLAY_PIXELS
-            y = int((word0_first_half - x) / WIDTH_DISPLAY_PIXELS)
-
-            # rgba_tuple = util.int_to_rgba_tuple(word1)
-            rgba_tuple = (r,g,b,a)
-
-            gfxdraw.pixel(gameDisplay, x, y, rgba_tuple)
-
-            print('    LD V[%s] %s' %(word0_first_half, word1))
-
-
-
-
-        # VRAM TO VRAM REGISTER LOAD == 19
-        elif word0_second_half == 25:
-            VRAM[word0_first_half] = VRAM[word1]
-
-            # draw
-
-            x = word0_first_half % WIDTH_DISPLAY_PIXELS
-            y = int((word0_first_half - x) / WIDTH_DISPLAY_PIXELS)
-            rgba_tuple = util.int_to_rgba_tuple(VRAM[word1])
-
-            gfxdraw.pixel(gameDisplay, x, y, rgba_tuple)
-
-            print('    LD V[%s] V[%s]' %(word0_first_half, word1))
-
-        # RAM TO VRAM REGISTER LOAD == 20
-        # stuff here...
+            print('    BLIT')
 
 
         # EXIT VM == ffff
@@ -419,12 +374,7 @@ def exec(lines_from_file_hex):
             EXIT_LOOP = True
             print('    EXIT')
 
-
-        ########
-        # VRAM #
-        ########
-
-        # exit pygame
+        # Exit Pygame
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 EXIT_LOOP = True
@@ -437,9 +387,8 @@ def exec(lines_from_file_hex):
         print('    RAM[0-7]:    [%s, %s, %s, %s, %s, %s, %s, %s]' %(
             RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
         )
-        print('    RAM[4096-4099]:  [%s, %s, %s, %s]' %(RAM[4096], RAM[4097], RAM[4098], RAM[4099]))
         print('    STACK:       %r' %STACK)
-        print('    RAM[4100]:   %r  # return value' %RAM[4100])
+        print('    RAM[4099]:   %r  # return value' %RAM[4099])
         print('\n\n')
 
         # update frame

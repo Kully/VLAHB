@@ -14,18 +14,18 @@ MAIN:
     LD R[1] 5
 
     CALL MATH_ADD
-    LD R[2] R[4100]
+    LD R[2] R[4099]
 
     CALL MATH_SUB
-    LD R[3] R[4100]
+    LD R[3] R[4099]
 
     CALL MATH_MUL
-    LD R[4] R[4100]
+    LD R[4] R[4099]
 
     CALL MATH_DIV
-    LD R[5] R[4100]
+    LD R[5] R[4099]
 
     CALL MATH_LONG_WINDED
-    LD R[6] R[4100]
+    LD R[6] R[4099]
 
     EXIT
