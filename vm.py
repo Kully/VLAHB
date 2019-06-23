@@ -45,6 +45,7 @@ RAM = []
 PC = 0  # program counter
 ```
 '''
+import math
 import os
 import string
 import sys
@@ -361,23 +362,22 @@ def exec(lines_from_file_hex):
             for y in range(HEIGHT_DISPLAY_PIXELS):
                 for x in range(WIDTH_DISPLAY_PIXELS):
                     rgba_tuple = util.int_to_rgba_tuple(
-                        RAM[4100+x+y*WIDTH_DISPLAY_PIXELS]
+                        RAM[4100 + x + y*WIDTH_DISPLAY_PIXELS]
                     )
 
                     gfxdraw.pixel(gameDisplay, x, y, rgba_tuple)
 
             print('    BLIT')
 
-        # # DIRECT SQRT == 19
-        # elif word0_second_half == 25:
+        # DIRECT SQRT == 19
+        elif word0_second_half == 25:
+            RAM[word0_first_half] = math.sqrt(word1)
+            print('    SQRT R[%s] %s' %(word0_first_half, word1))
 
-        #     print('    SQRT ') 
-
-        # # REGISTER TO REGISTER SQRT == 20
-        # elif word0_second_half == 26:
-
-        #     print('    SQRT ')  
-
+        # REGISTER TO REGISTER SQRT == 1a
+        elif word0_second_half == 26:
+            RAM[word0_first_half] = math.sqrt(RAM[word1])
+            print('    SQRT R[%s] R[%s]' %(word0_first_half, word1))
 
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:

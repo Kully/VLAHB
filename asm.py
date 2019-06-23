@@ -41,11 +41,11 @@ def write_two_lines_to_hexfile(word0_first_half,
 def return_hex_instruction_lines(opcode, args, word0_first_half,
                                  word0_second_half, word1,
                                  to_register_key, to_direct_key):
-    if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
+    if len(args) < 2 or not re.search(util.REGEX_LD_R_ONE, args[0]):
         raise Exception(
             util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
         )
-    if re.search(r'R\[\d+]', args[1]):
+    if re.search(util.REGEX_LD_R_ONE, args[1]):
         opcode_val = util.op_codes_dict[to_register_key]
         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -139,15 +139,14 @@ def validate_and_make_hexfile(lines):
             elif opcode == 'LD':
                 valid_opcode = True
 
-                REGEX_LD_R_ONE = r'R\[\d+]'
                 REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
 
                 # Validate
                 if len(args) < 2 or not re.search(r'R\[\d+:*\d*]', args[0]):
                     raise Exception(util.LD_EXCEPTION_MSG)
 
-                if re.search(REGEX_LD_R_ONE, args[0]):
-                    if re.match(REGEX_LD_R_ONE, args[1]):
+                if re.search(util.REGEX_LD_R_ONE, args[0]):
+                    if re.match(util.REGEX_LD_R_ONE, args[1]):
                         # LD R[i] R[j]
                         opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
@@ -225,7 +224,7 @@ def validate_and_make_hexfile(lines):
                                 word1, hex_file_str
                             )
 
-                    elif re.search(REGEX_LD_R_ONE, args[1]):
+                    elif re.search(util.REGEX_LD_R_ONE, args[1]):
                         # 4. LD R[i:j] R[k]
                         opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
 
@@ -256,11 +255,11 @@ def validate_and_make_hexfile(lines):
 
             elif opcode == 'ADD':
                 valid_opcode = True
-                if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
+                if len(args) < 2 or not re.search(util.REGEX_LD_R_ONE, args[0]):
                     raise Exception(
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
-                if re.search(r'R\[\d+]', args[1]):
+                if re.search(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER ADD']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -273,11 +272,11 @@ def validate_and_make_hexfile(lines):
 
             elif opcode == 'SUB':
                 valid_opcode = True
-                if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
+                if len(args) < 2 or not re.search(util.REGEX_LD_R_ONE, args[0]):
                     raise Exception(
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
-                if re.search(r'R\[\d+]', args[1]):
+                if re.search(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER SUBTRACT']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -290,11 +289,11 @@ def validate_and_make_hexfile(lines):
 
             elif opcode == 'MUL':
                 valid_opcode = True
-                if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
+                if len(args) < 2 or not re.search(util.REGEX_LD_R_ONE, args[0]):
                     raise Exception(
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
-                if re.search(r'R\[\d+]', args[1]):
+                if re.search(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER MULTIPLY']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -307,11 +306,11 @@ def validate_and_make_hexfile(lines):
 
             elif opcode == 'DIV':
                 valid_opcode = True
-                if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
+                if len(args) < 2 or not re.search(util.REGEX_LD_R_ONE, args[0]):
                     raise Exception(
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
-                if re.search(r'R\[\d+]', args[1]):
+                if re.search(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.op_codes_dict['REGISTER TO REGISTER DIVIDE']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -325,11 +324,11 @@ def validate_and_make_hexfile(lines):
             # ==
             elif opcode == 'CMP':
                 valid_opcode = True
-                if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
+                if len(args) < 2 or not re.search(util.REGEX_LD_R_ONE, args[0]):
                     raise Exception(
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
-                if re.search(r'R\[\d+]', args[1]):
+                if re.search(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.op_codes_dict['COMPARE REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -343,11 +342,11 @@ def validate_and_make_hexfile(lines):
             # <
             elif opcode == 'LT':
                 valid_opcode = True
-                if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
+                if len(args) < 2 or not re.search(util.REGEX_LD_R_ONE, args[0]):
                     raise Exception(
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
-                if re.search(r'R\[\d+]', args[1]):
+                if re.search(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.op_codes_dict['LESS THAN REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -361,11 +360,11 @@ def validate_and_make_hexfile(lines):
             # <=
             elif opcode == 'LTE':
                 valid_opcode = True
-                if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
+                if len(args) < 2 or not re.search(util.REGEX_LD_R_ONE, args[0]):
                     raise Exception(
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
-                if re.search(r'R\[\d+]', args[1]):
+                if re.search(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.op_codes_dict['LESS THAN OR EQUAL REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -379,11 +378,11 @@ def validate_and_make_hexfile(lines):
             # >
             elif opcode == 'GT':
                 valid_opcode = True
-                if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
+                if len(args) < 2 or not re.search(util.REGEX_LD_R_ONE, args[0]):
                     raise Exception(
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
-                if re.search(r'R\[\d+]', args[1]):
+                if re.search(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.op_codes_dict['STRICT GREATER THAN REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -397,11 +396,11 @@ def validate_and_make_hexfile(lines):
             # >=
             elif opcode == 'GTE':
                 valid_opcode = True
-                if len(args) < 2 or not re.search(r'R\[\d+]', args[0]):
+                if len(args) < 2 or not re.search(util.REGEX_LD_R_ONE, args[0]):
                     raise Exception(
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
-                if re.search(r'R\[\d+]', args[1]):
+                if re.search(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.op_codes_dict['GREATER THAN OR EQUAL REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -436,6 +435,26 @@ def validate_and_make_hexfile(lines):
             elif opcode == 'BLIT':
                 valid_opcode = True
                 opcode_val = util.op_codes_dict['BLIT']
+                word0_second_half = opcode_val.zfill(4)
+
+            elif opcode == 'SQRT':
+                valid_opcode = True
+                if len(args) < 2 or not re.search(util.REGEX_LD_R_ONE, args[0]):
+                    raise Exception(
+                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
+                    )
+
+                if re.match(util.REGEX_LD_R_ONE, args[1]):
+                    # SQRT R[i] R[j]
+                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER SQRT']
+                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
+
+                elif re.match(r'\d+', args[1]):
+                    # SQRT R[i] j
+                    opcode_val = util.op_codes_dict['DIRECT SQRT']
+                    word1 = util.int_to_hex(args[1]).zfill(8)
+
+                word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                 word0_second_half = opcode_val.zfill(4)
 
             elif opcode == 'EXIT':

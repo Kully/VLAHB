@@ -96,6 +96,8 @@ op_codes_dict = {
     'GREATER THAN OR EQUAL REGISTER TO DIRECT': '16',
     'GREATER THAN OR EQUAL REGISTER TO REGISTER': '17',
     'BLIT': '18',
+    'DIRECT SQRT': '19',
+    'REGISTER TO REGISTER SQRT': '1a',
     'EXIT': 'ffff',
 }
 
@@ -173,3 +175,5 @@ LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG = (
 # regex
 REGEX_LABEL_PATTERN = r' *[A-Z|\d|_]+:'
 REGEX_RGBA_PATTERN = r'\d{1,3},\d{1,3},\d{1,3},\d{1,3}'
+REGEX_LD_R_ONE = r'R\[\d+]'
+
