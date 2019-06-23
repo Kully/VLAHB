@@ -6,13 +6,9 @@
 // red == ff0000ff == 4278190335
 // green == 00ff00ff == 16711935
 
+// LD R[1] 3
+// LD R[1:6] 3
+LD R[0:3] 7
 
-ADAM_DRAWS:
-
-	LD R[4100:9300] 16711935
-	BLIT
-
-	GOTO ADAM_DRAWS
-
-
+LD R[5:7] R[1:3]
 EXIT

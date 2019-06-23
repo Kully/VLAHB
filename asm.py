@@ -23,6 +23,20 @@ import util
 LABELS_TO_PC = {}
 
 
+def write_two_lines_to_hexfile(word0_first_half,
+                               word0_second_half,
+                               word1, hex_file_str):
+    # write to hex file
+    hex_file_str += word0_first_half
+    hex_file_str += word0_second_half
+    hex_file_str += '\n'
+    hex_file_str += word1
+    hex_file_str += '\n\n'
+
+    return hex_file_str
+
+
+
 # WIP for DRY
 def return_hex_instruction_lines(opcode, args, word0_first_half,
                                  word0_second_half, word1,
@@ -129,16 +143,16 @@ def validate_and_make_hexfile(lines):
                 REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
 
                 # Validate
-                # if len(args) < 2 or not re.search(r'R\[\d+:*\d*]', args[0]):
-                #     raise Exception(util.LD_EXCEPTION_MSG)
+                if len(args) < 2 or not re.search(r'R\[\d+:*\d*]', args[0]):
+                    raise Exception(util.LD_EXCEPTION_MSG)
 
                 if re.search(REGEX_LD_R_ONE, args[0]):
-                    if re.search(REGEX_LD_R_ONE, args[1]):
+                    if re.match(REGEX_LD_R_ONE, args[1]):
                         # LD R[i] R[j]
                         opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
-                    elif re.search(r'\d+', args[1]):
+                    elif re.match(r'\d+', args[1]):
                         # LD R[i] j
                         opcode_val = util.op_codes_dict['DIRECT LOAD']
                         word1 = util.int_to_hex(args[1]).zfill(8)
@@ -149,8 +163,14 @@ def validate_and_make_hexfile(lines):
                     word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                     word0_second_half = opcode_val.zfill(4)
 
+                    hex_file_str = write_two_lines_to_hexfile(
+                        word0_first_half, word0_second_half,
+                        word1, hex_file_str
+                    )
+
+
                 elif re.search(REGEX_LD_R_RANGE, args[0]):
-                    if re.search(r'\d+', args[1]):
+                    if re.match(r'\d+', args[1]):
                         # LD R[i:j] k
                         opcode_val = util.op_codes_dict['DIRECT LOAD']
 
@@ -168,24 +188,22 @@ def validate_and_make_hexfile(lines):
                         for ram_idx in range(int(i), int(j)+1):
                             word0_first_half = util.int_to_hex(str(ram_idx)).zfill(4)
 
-                            # write to hex file
-                            hex_file_str += word0_first_half
-                            hex_file_str += word0_second_half
-                            hex_file_str += '\n'
-                            hex_file_str += word1
-                            hex_file_str += '\n\n'
-
-                            ram_idx += 1
+                            hex_file_str = write_two_lines_to_hexfile(
+                                word0_first_half, word0_second_half,
+                                word1, hex_file_str
+                            )
 
                     elif re.search(REGEX_LD_R_RANGE, args[1]):
                         # 4. LD R[i:j] R[k:l]
                         opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
 
-                        i_j_k_l = re.findall(r'\d+', args[0])
-                        i = i_j_k_l[0]
-                        j = i_j_k_l[1]
-                        k = i_j_k_l[2]
-                        l = i_j_k_l[3]
+                        i_and_j = re.findall(r'\d+', args[0])
+                        i = i_and_j[0]
+                        j = i_and_j[1]
+
+                        k_and_l = re.findall(r'\d+', args[1])
+                        k = k_and_l[0]
+                        l = k_and_l[1]
 
                         if int(i) > int(j):
                             raise Exception('  LD R[i:j] R[k:l]\ni > j')
@@ -193,25 +211,19 @@ def validate_and_make_hexfile(lines):
                         if int(i) > int(j):
                             raise Exception('  LD R[i:j] R[k:l]\ni > j')
 
-                        if abs(i-j) != abs(k-l):
+                        if int(i) - int(j) != int(k) - int(l):
                             raise Exception('  LD R[i:j] R[k:l]\ni-j != k-l')
-
 
                         word0_second_half = opcode_val.zfill(4)
 
-                        for ram_idx in range(int(i), int(j)+1):
-                            word1 = util.int_to_hex(k + ram_idx).zfill(8)
-                            word0_first_half = util.int_to_hex(str(ram_idx)).zfill(4)
+                        for index in range(int(j) - int(i) + 1):
+                            word1 = util.int_to_hex(int(k) + index).zfill(8)
+                            word0_first_half = util.int_to_hex(int(i) + index).zfill(4)
 
-                            # write to hex file
-                            hex_file_str += word0_first_half
-                            hex_file_str += word0_second_half
-                            hex_file_str += '\n'
-                            hex_file_str += word1
-                            hex_file_str += '\n\n'
-
-                            ram_idx += 1
-
+                            hex_file_str = write_two_lines_to_hexfile(
+                                word0_first_half, word0_second_half,
+                                word1, hex_file_str
+                            )
 
                     elif re.search(REGEX_LD_R_ONE, args[1]):
                         # 4. LD R[i:j] R[k]
@@ -228,18 +240,13 @@ def validate_and_make_hexfile(lines):
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
                         word0_second_half = opcode_val.zfill(4)
 
-                        for ram_idx in range(int(i), int(j)+1):
-                            word0_first_half = util.int_to_hex(str(ram_idx)).zfill(4)
+                        for index in range(int(i), int(j) + 1):
+                            word0_first_half = util.int_to_hex(str(index)).zfill(4)
 
-                            # write to hex file
-                            hex_file_str += word0_first_half
-                            hex_file_str += word0_second_half
-                            hex_file_str += '\n'
-                            hex_file_str += word1
-                            hex_file_str += '\n\n'
-
-                            ram_idx += 1
-
+                            hex_file_str = write_two_lines_to_hexfile(
+                                word0_first_half, word0_second_half,
+                                word1, hex_file_str
+                            )
 
                     else:
                         raise Exception('LD: Incorrect Syntax')
@@ -435,11 +442,6 @@ def validate_and_make_hexfile(lines):
                 valid_opcode = True
                 opcode_val = util.op_codes_dict['EXIT']
                 word0_second_half = opcode_val.zfill(4)
-
-
-            # TODO - cant have this at the end anymore
-            # cause LD R[i:j] R[k] produces several opcode lines
-            # this below assumes 1-to-1
 
             if valid_opcode and opcode != 'LD':
                 hex_file_str += word0_first_half

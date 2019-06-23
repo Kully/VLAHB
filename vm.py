@@ -73,9 +73,9 @@ STACK_MAX_SIZE = 32
 ROM = []
 
 
-# for pygame
-WIDTH_DISPLAY_PIXELS = 160  # 240
-HEIGHT_DISPLAY_PIXELS = 120  # 180
+# for Pygame
+WIDTH_DISPLAY_PIXELS = 160
+HEIGHT_DISPLAY_PIXELS = 120
 title = 'VLAHB'
 PIXELS_PER_GRID_CELL_WIDTH = 4
 
@@ -368,6 +368,16 @@ def exec(lines_from_file_hex):
 
             print('    BLIT')
 
+        # # DIRECT SQRT == 19
+        # elif word0_second_half == 25:
+
+        #     print('    SQRT ') 
+
+        # # REGISTER TO REGISTER SQRT == 20
+        # elif word0_second_half == 26:
+
+        #     print('    SQRT ')  
+
 
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:
@@ -381,8 +391,8 @@ def exec(lines_from_file_hex):
 
         # debug prints
         print('')
-        print('    %s'%ROM[PC])
-        print('    %s'%ROM[PC+1])
+        print('    %s'%ROM[PC-2])
+        print('    %s'%ROM[PC-1])
         print('')
         print('    RAM[0-7]:    [%s, %s, %s, %s, %s, %s, %s, %s]' %(
             RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
