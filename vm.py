@@ -379,6 +379,26 @@ def exec(lines_from_file_hex):
             RAM[word0_first_half] = math.sqrt(RAM[word1])
             print('    SQRT R[%s] R[%s]' %(word0_first_half, word1))
 
+        # DIRECT SIN == 1b
+        elif word0_second_half == 27:
+            RAM[word0_first_half] = math.sin(word1)
+            print('    SIN R[%s] %s' %(word0_first_half, word1))
+
+        # REGISTER TO REGISTER SIN == 1c
+        elif word0_second_half == 28:
+            RAM[word0_first_half] = math.sin(RAM[word1])
+            print('    SIN R[%s] R[%s]' %(word0_first_half, word1))
+
+        # DIRECT COS == 1d
+        elif word0_second_half == 29:
+            RAM[word0_first_half] = math.cos(word1)
+            print('    COS R[%s] %s' %(word0_first_half, word1))
+
+        # REGISTER TO REGISTER COS == 1e
+        elif word0_second_half == 30:
+            RAM[word0_first_half] = math.cos(RAM[word1])
+            print('    COS R[%s] R[%s]' %(word0_first_half, word1))
+
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:
             EXIT_LOOP = True

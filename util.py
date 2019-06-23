@@ -98,6 +98,10 @@ op_codes_dict = {
     'BLIT': '18',
     'DIRECT SQRT': '19',
     'REGISTER TO REGISTER SQRT': '1a',
+    'DIRECT SIN': '1b',
+    'REGISTER TO REGISTER SIN': '1c',
+    'DIRECT COS': '1d',
+    'REGISTER TO REGISTER COS': '1e',
     'EXIT': 'ffff',
 }
 

@@ -7,5 +7,9 @@
 // green == 00ff00ff == 16711935
 
 // LD R[1] 4
-LD R[2] 4
+
+SIN R[0] 7  // 0.65698659871 radians
+COS R[1] 7  // 0.75390225434 radians
+
+
 EXIT
