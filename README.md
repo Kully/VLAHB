@@ -133,8 +133,8 @@ The indices in the table below are of the form `x-y` which correspond to the sta
 | Indices in RAM  | Dedication |
 | ------------- |----------------|
 | 0-4095  | Function Inputs*  |
-| 4099   | Return slot for function outputs |
-| 4100-43200 | Indices for VRAM** |
+| 4100    | Return slot for function outputs |
+| 4101-43201 | Indices for VRAM** |
 
 * Functions takes a maximum of 16 inputs from R[0-15]
 ** Liable to change if screen display changes (currently 160X120)

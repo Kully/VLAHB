@@ -366,17 +366,14 @@ def exec(lines_from_file_hex):
                 (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
             )
 
-            t0 = time.time()
             surf.lock()
             for x in range(WIDTH_DISPLAY_PIXELS):
                 for y in range(HEIGHT_DISPLAY_PIXELS):
                     rgba_tuple = util.int_to_rgba_tuple(
-                        RAM[4100 + x + y*WIDTH_DISPLAY_PIXELS]
+                        RAM[4101 + x + y*WIDTH_DISPLAY_PIXELS]
                     )
                     surf.set_at((x, y), rgba_tuple)
             surf.unlock()
-            t1 = time.time()
-            print(t1 - t0) 
 
             gameDisplay.blit(surf, (0, 0))
             pygame.display.update()
@@ -468,7 +465,7 @@ def exec(lines_from_file_hex):
             RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
         )
         print('    STACK:       %r' %STACK)
-        print('    RAM[4099]:   %r  # return value' %RAM[4099])
+        print('    RAM[4100]:   %r  # return value' %RAM[4100])
         print('\n\n')
 
         if EXIT_LOOP:
