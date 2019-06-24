@@ -74,11 +74,9 @@ STACK_MAX_SIZE = 32
 ROM = []
 
 
-# for Pygame
+# pygame
 WIDTH_DISPLAY_PIXELS = 160
 HEIGHT_DISPLAY_PIXELS = 120
-title = 'VLAHB'
-PIXELS_PER_GRID_CELL_WIDTH = 4
 
 
 def starting_PC():
@@ -152,7 +150,7 @@ def exec(lines_from_file_hex):
     # pygame init
     pygame.init()
 
-    pygame.display.set_caption(title)
+    pygame.display.set_caption('VLAHB')
     gameDisplay = pygame.display.set_mode(
         (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
     )
@@ -175,11 +173,16 @@ def exec(lines_from_file_hex):
             break
 
         print('PC: %r'%PC)
+        print('')
+        print('    %s'%ROM[PC])
+        print('    %s'%ROM[PC+1])
 
         # convert all hex to int
         word0_first_half = util.hex_to_int(ROM[PC][:4])
         word0_second_half = util.hex_to_int(ROM[PC][4:])
         word1 = util.hex_to_int(ROM[PC+1])
+        word1_first_half = util.hex_to_int(ROM[PC+1][:4])
+        word1_second_half = util.hex_to_int(ROM[PC+1][4:])
 
         PC += 2
 
@@ -359,13 +362,24 @@ def exec(lines_from_file_hex):
 
         # BLIT == 18
         elif word0_second_half == 24:
-            for y in range(HEIGHT_DISPLAY_PIXELS):
-                for x in range(WIDTH_DISPLAY_PIXELS):
+            surf = pygame.Surface(
+                (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
+            )
+
+            t0 = time.time()
+            surf.lock()
+            for x in range(WIDTH_DISPLAY_PIXELS):
+                for y in range(HEIGHT_DISPLAY_PIXELS):
                     rgba_tuple = util.int_to_rgba_tuple(
                         RAM[4100 + x + y*WIDTH_DISPLAY_PIXELS]
                     )
+                    surf.set_at((x, y), rgba_tuple)
+            surf.unlock()
+            t1 = time.time()
+            print(t1 - t0) 
 
-                    gfxdraw.pixel(gameDisplay, x, y, rgba_tuple)
+            gameDisplay.blit(surf, (0, 0))
+            pygame.display.update()
 
             print('    BLIT')
 
@@ -399,6 +413,45 @@ def exec(lines_from_file_hex):
             RAM[word0_first_half] = math.cos(RAM[word1])
             print('    COS R[%s] R[%s]' %(word0_first_half, word1))
 
+        # LD R[i:j] k == 1f
+        elif word0_second_half == 31:
+            i = util.hex_to_int(ROM[PC][:4])
+
+            word0_second_half = util.hex_to_int(ROM[PC][4:])
+
+            j = util.hex_to_int(ROM[PC+1][:4])
+            k = util.hex_to_int(ROM[PC+1][4:])
+
+            RAM[i:j+1] = [k] * (j+1-i)
+
+            print('    LD R[%s:%s] %s' %(i, j, k))
+
+        # LD R[i:j] R[k] == 20
+        elif word0_second_half == 32:
+            i = util.hex_to_int(ROM[PC-2][:4])
+            
+            word0_second_half = util.hex_to_int(ROM[PC - 2][4:])
+            
+            j = util.hex_to_int(ROM[PC+1 - 2][:4])
+            k = util.hex_to_int(ROM[PC+1 - 2][4:])
+
+            RAM[i:j+1] = [RAM[k]] * (j+1-i)
+
+            print('    LD R[%s:%s] R[%s]' %(i, j, k))
+
+        # LD R[i:j] R[k:l] == 21
+        elif word0_second_half == 33:
+
+            ram_span = util.hex_to_int(ROM[PC - 2][:4])  # ram_span := j-i
+            word0_second_half = util.hex_to_int(ROM[PC - 2][4:])
+            i = util.hex_to_int(ROM[PC+1 - 2][:4])
+            k = util.hex_to_int(ROM[PC+1 - 2][4:])
+
+            RAM[i:i + ram_span+1] = RAM[k:k + ram_span+1]
+
+            print('    LD R[%s:%s] R[%s:%s]' %(i, i+ram_span, k, k+ram_span))
+
+
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:
             EXIT_LOOP = True
@@ -410,19 +463,13 @@ def exec(lines_from_file_hex):
                 EXIT_LOOP = True
 
         # debug prints
-        print('')
-        print('    %s'%ROM[PC-2])
-        print('    %s'%ROM[PC-1])
-        print('')
+        print('\n')
         print('    RAM[0-7]:    [%s, %s, %s, %s, %s, %s, %s, %s]' %(
             RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
         )
         print('    STACK:       %r' %STACK)
         print('    RAM[4099]:   %r  # return value' %RAM[4099])
         print('\n\n')
-
-        # update frame
-        pygame.display.update()
 
         if EXIT_LOOP:
             pygame.quit()
