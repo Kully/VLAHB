@@ -45,29 +45,50 @@ RAM = []
 PC = 0  # program counter
 ```
 '''
+import math
 import os
 import string
 import sys
 import time
 import util
 
+import contextlib
+with contextlib.redirect_stdout(None):
+    import pygame
+    from pygame import gfxdraw
+
+
 # CPU constants and data structures
+
 COMMANDS_PER_SEC = 10
 DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
-ROM = []
-RAM_NUM_OF_SLOTS = 128000  # units of 4 bytes // 512KB == Bill Gates Number
-MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhhhhhh)
+
+RAM_NUM_OF_SLOTS = 128000  # 512KB == Bill Gates Number
+MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhh hhhh) - 4 bytes
 RAM = [0] * RAM_NUM_OF_SLOTS
 
 STACK = []
 STACK_FRAME_SIZE = 128
 STACK_MAX_SIZE = 32
 
+ROM = []
+
+
+# pygame
+WIDTH_DISPLAY_PIXELS = 160
+HEIGHT_DISPLAY_PIXELS = 120
+
+
 def starting_PC():
     f = open('start_pc.txt', 'r')
     PC = int(f.readlines()[0])
     f.close()
     return PC
+
+
+def return_intermediate_color(value):
+    fraction = (value) / (RAM_NUM_OF_SLOTS)
+    return (0, int(fraction * 255), 0)
 
 
 def fill_ROM_with_hex_lines(hex_lines):
@@ -82,10 +103,11 @@ def reset_RAM_values_to_zero():
 def manage_ram_slot_overunder_flow(index_in_RAM):
     if RAM[index_in_RAM] < 0:
         RAM[index_in_RAM] = MAX_RAM_VALUE + RAM[index_in_RAM]
-        print('    Stack Underflow at RAM[%r]'%index_in_RAM)
+        print('    ***Stack Underflow at RAM[%r]***'%index_in_RAM)
+
     elif RAM[index_in_RAM] > MAX_RAM_VALUE:
         RAM[index_in_RAM] = MAX_RAM_VALUE - RAM[index_in_RAM]
-        print('    Stack Overflow at RAM[%r]'%index_in_RAM)
+        print('    ***Stack Overflow at RAM[%r]***'%index_in_RAM)
 
 
 def manage_stack_size_overflow():
@@ -124,28 +146,43 @@ def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
 
 def exec(lines_from_file_hex):
     '''Execute lines in ROM'''
-    # PC = 0
+
+    # pygame init
+    pygame.init()
+
+    pygame.display.set_caption('VLAHB')
+    gameDisplay = pygame.display.set_mode(
+        (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
+    )
+    clock = pygame.time.Clock()
+
+
     PC = starting_PC()  # program counter
     EXIT_LOOP = False
+
     while True:
-        time.sleep(DELAY_BETWEEN_COMMANDS)
+        # time.sleep(DELAY_BETWEEN_COMMANDS)
+        
         # check if end of ROM
-        # TODO: Should we remove below? - EXIT takes care of breaking out of loop
         try:
             ROM[PC]
             ROM[PC+1]
         except IndexError:
+            util.slow_print('PC out of range...exiting vm',
+                            0.1, print_empty_line=True)
             break
 
         print('PC: %r'%PC)
-        print('    ROM lines:')
-        print('        %s'%ROM[PC])
-        print('        %s'%ROM[PC+1])
+        print('')
+        print('    %s'%ROM[PC])
+        print('    %s'%ROM[PC+1])
 
         # convert all hex to int
         word0_first_half = util.hex_to_int(ROM[PC][:4])
         word0_second_half = util.hex_to_int(ROM[PC][4:])
         word1 = util.hex_to_int(ROM[PC+1])
+        word1_first_half = util.hex_to_int(ROM[PC+1][:4])
+        word1_second_half = util.hex_to_int(ROM[PC+1][4:])
 
         PC += 2
 
@@ -161,7 +198,7 @@ def exec(lines_from_file_hex):
         # DIRECT LOAD == 2
         elif word0_second_half == 2:
             RAM[word0_first_half] = word1
-            print('\n    LD R[%s] %s' %(word0_first_half, word1))
+            print('    LD R[%s] %s' %(word0_first_half, word1))
 
         # DIRECT ADD == 3
         elif word0_second_half == 3:
@@ -240,19 +277,18 @@ def exec(lines_from_file_hex):
             manage_stack_size_overflow()
 
             index = len(STACK)
-            # STACK_FRAME_SIZE = 16
             a = STACK_FRAME_SIZE * (0 + index)
             b = STACK_FRAME_SIZE * (1 + index)
             RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
             PC = word1
             print('    CALL: Push %s to the Stack: PC -> %s' %(word1, word1))
 
-        # RETURN == nf
+        # RETURN == f
         elif word0_second_half == 15:
             index = len(STACK)
 
             manage_stack_size_overflow()
-            # STACK_FRAME_SIZE = 16
+
             a = STACK_FRAME_SIZE * (0 + index)
             b = STACK_FRAME_SIZE * (1 + index)
             RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
@@ -261,96 +297,185 @@ def exec(lines_from_file_hex):
 
         # STRICT LESS THAN REGISTER TO DIRECT == 10
         elif word0_second_half == 16:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] < word1:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    LT R[%s] %s -> %s' %(word0_first_half, word1, less_than))
+            print('    LT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # STRICT LESS THAN REGISTER TO REGISTER == 11
         elif word0_second_half == 17:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] < RAM[word1]:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    LT R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
+            print('    LT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
         # LESS THAN OR EQUAL REGISTER TO DIRECT == 12
         elif word0_second_half == 18:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] <= word1:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    LTE R[%s] %s -> %s' %(word0_first_half, word1, less_than))
+            print('    LTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # LESS THAN OR EQUAL REGISTER TO REGISTER == 13
         elif word0_second_half == 19:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] <= RAM[word1]:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    LTE R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
+            print('    LTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
         # STRICT GREATER THAN REGISTER TO DIRECT == 14
         elif word0_second_half == 20:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] > word1:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    GT R[%s] %s -> %s' %(word0_first_half, word1, less_than))
+            print('    GT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # STRICT GREATER THAN REGISTER TO REGISTER == 15
         elif word0_second_half == 21:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] > RAM[word1]:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    GT R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
+            print('    GT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
         # GREATER THAN OR EQUAL REGISTER TO DIRECT == 16
         elif word0_second_half == 22:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] >= word1:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    GTE R[%s] %s -> %s' %(word0_first_half, word1, less_than))
+            print('    GTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # GREATER THAN OR EQUAL REGISTER TO REGISTER == 17
         elif word0_second_half == 23:
-            less_than = 'false'
+            is_this_true = 'false'
             if RAM[word0_first_half] >= RAM[word1]:
-                less_than = 'true'
+                is_this_true = 'true'
                 PC += 2
-            print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, less_than))
+            print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
+
+
+        # BLIT == 18
+        elif word0_second_half == 24:
+            surf = pygame.Surface(
+                (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
+            )
+
+            t0 = time.time()
+            surf.lock()
+            for x in range(WIDTH_DISPLAY_PIXELS):
+                for y in range(HEIGHT_DISPLAY_PIXELS):
+                    rgba_tuple = util.int_to_rgba_tuple(
+                        RAM[4100 + x + y*WIDTH_DISPLAY_PIXELS]
+                    )
+                    surf.set_at((x, y), rgba_tuple)
+            surf.unlock()
+            t1 = time.time()
+            print(t1 - t0) 
+
+            gameDisplay.blit(surf, (0, 0))
+            pygame.display.update()
+
+            print('    BLIT')
+
+        # DIRECT SQRT == 19
+        elif word0_second_half == 25:
+            RAM[word0_first_half] = math.sqrt(word1)
+            print('    SQRT R[%s] %s' %(word0_first_half, word1))
+
+        # REGISTER TO REGISTER SQRT == 1a
+        elif word0_second_half == 26:
+            RAM[word0_first_half] = math.sqrt(RAM[word1])
+            print('    SQRT R[%s] R[%s]' %(word0_first_half, word1))
+
+        # DIRECT SIN == 1b
+        elif word0_second_half == 27:
+            RAM[word0_first_half] = math.sin(word1)
+            print('    SIN R[%s] %s' %(word0_first_half, word1))
+
+        # REGISTER TO REGISTER SIN == 1c
+        elif word0_second_half == 28:
+            RAM[word0_first_half] = math.sin(RAM[word1])
+            print('    SIN R[%s] R[%s]' %(word0_first_half, word1))
+
+        # DIRECT COS == 1d
+        elif word0_second_half == 29:
+            RAM[word0_first_half] = math.cos(word1)
+            print('    COS R[%s] %s' %(word0_first_half, word1))
+
+        # REGISTER TO REGISTER COS == 1e
+        elif word0_second_half == 30:
+            RAM[word0_first_half] = math.cos(RAM[word1])
+            print('    COS R[%s] R[%s]' %(word0_first_half, word1))
+
+        # LD R[i:j] k == 1f
+        elif word0_second_half == 31:
+            i = util.hex_to_int(ROM[PC][:4])
+
+            word0_second_half = util.hex_to_int(ROM[PC][4:])
+
+            j = util.hex_to_int(ROM[PC+1][:4])
+            k = util.hex_to_int(ROM[PC+1][4:])
+
+            RAM[i:j+1] = [k] * (j+1-i)
+
+            print('    LD R[%s:%s] %s' %(i, j, k))
+
+        # LD R[i:j] R[k] == 20
+        elif word0_second_half == 32:
+            i = util.hex_to_int(ROM[PC-2][:4])
+            
+            word0_second_half = util.hex_to_int(ROM[PC - 2][4:])
+            
+            j = util.hex_to_int(ROM[PC+1 - 2][:4])
+            k = util.hex_to_int(ROM[PC+1 - 2][4:])
+
+            RAM[i:j+1] = [RAM[k]] * (j+1-i)
+
+            print('    LD R[%s:%s] R[%s]' %(i, j, k))
+
+        # LD R[i:j] R[k:l] == 21
+        elif word0_second_half == 33:
+
+            ram_span = util.hex_to_int(ROM[PC - 2][:4])  # ram_span := j-i
+            word0_second_half = util.hex_to_int(ROM[PC - 2][4:])
+            i = util.hex_to_int(ROM[PC+1 - 2][:4])
+            k = util.hex_to_int(ROM[PC+1 - 2][4:])
+
+            RAM[i:i + ram_span+1] = RAM[k:k + ram_span+1]
+
+            print('    LD R[%s:%s] R[%s:%s]' %(i, i+ram_span, k, k+ram_span))
+
 
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:
             EXIT_LOOP = True
             print('    EXIT')
 
-        # print statements
-        # TODO - improve these print statements - very clunky right now and
-        # they take up too much space in the terminal window
-        #
-        # idea:
-        # opcode LD R[0] R[4]
-        # RAM: [0, 0, 4, 2, 1, 0, ...]
-        # 
-        # and find a way for the lines to get replaces
-        # or to toggle between replace lines or not and
-        # perhaps put that in the MakeFile
+        # Exit Pygame
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                EXIT_LOOP = True
 
-        print('')
-        print('RAM = [%s, %s, %s, %s, %s, %s, %s, %s, ...]' %(
+        # debug prints
+        print('\n')
+        print('    RAM[0-7]:    [%s, %s, %s, %s, %s, %s, %s, %s]' %(
             RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
         )
-        print('RAM[4100]: %r  # return slot' %RAM[4100])
-        print('STACK: %r' %STACK)
-        print('')
+        print('    STACK:       %r' %STACK)
+        print('    RAM[4099]:   %r  # return value' %RAM[4099])
+        print('\n\n')
 
         if EXIT_LOOP:
+            pygame.quit()
             util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
             break
+
 
 if __name__ == "__main__":
     hexfilename = 'hex/file.hex'
@@ -358,4 +483,4 @@ if __name__ == "__main__":
     fill_ROM_with_hex_lines(hex_lines)
     validate_hex_file(hexfilename)
 
-    exec(hex_lines)
+    exec(hex_lines)  # with pygame visualization

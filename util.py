@@ -1,6 +1,7 @@
 '''
 Util Functions for VLAHB
 '''
+import re
 import sys
 import time
 
@@ -10,7 +11,40 @@ def hex_to_int(h):
 
 
 def int_to_hex(i):
+    if re.match(REGEX_HEX, str(i)):
+        i = int(i, 16)
+
     return hex(int(i))[2:]
+
+
+def int_to_rgba_tuple(i):
+    '''eg. 146581 -> (240,0,150,255)'''
+    color_hex = int_to_hex(i).zfill(8)
+
+    return (
+        hex_to_int(color_hex[ :2]),
+        hex_to_int(color_hex[2:4]),
+        hex_to_int(color_hex[4:6]),
+        hex_to_int(color_hex[6: ]),
+    )
+
+def rgba_tuple_to_int(r,g,b,a):
+    if r > 255:
+        r = 255
+    if g > 255:
+        g = 255
+    if b > 255:
+        b = 255
+    if a > 255:
+        a = 255
+
+    r_hex = int_to_hex(r).zfill(2)
+    g_hex = int_to_hex(g).zfill(2)
+    b_hex = int_to_hex(b).zfill(2)
+    a_hex = int_to_hex(a).zfill(2)
+    rgba_hex = r_hex + g_hex + b_hex + a_hex
+
+    return hex_to_int(rgba_hex)
 
 
 def slow_print(msg, sleep_between_lines=0.02, sleep_after_msg=0.1,
@@ -65,6 +99,16 @@ op_codes_dict = {
     'STRICT GREATER THAN REGISTER TO REGISTER': '15',
     'GREATER THAN OR EQUAL REGISTER TO DIRECT': '16',
     'GREATER THAN OR EQUAL REGISTER TO REGISTER': '17',
+    'BLIT': '18',
+    'DIRECT SQRT': '19',
+    'REGISTER TO REGISTER SQRT': '1a',
+    'DIRECT SIN': '1b',
+    'REGISTER TO REGISTER SIN': '1c',
+    'DIRECT COS': '1d',
+    'REGISTER TO REGISTER COS': '1e',
+    'LD R[i:j] k': '1f',  # not working right now
+    'LD R[i:j] R[k]': '20',
+    'LD R[i:j] R[k:l]': '21',
     'EXIT': 'ffff',
 }
 
@@ -109,10 +153,29 @@ RETURN_EXCEPTION_MSG = (
     '\nThe Opcode RETURN requires no arguments afterwards'
 )
 
-GENERAL_EXCEPTION_MSG = (
+TWO_ARGS_EXCEPTION_MSG = (
     '\nThe Opcode {opcode} must be followed by 2 arguments '
     'either in the form:\n    {opcode} R[X] R[Y]\nor\n'
     '    {opcode} R[X] Y'
+)
+
+LD_EXCEPTION_MSG = (
+    '\nThe Opcode LD is used to load values into RAM slots\nLD '
+    'must be followed by 2 exactly arguments:'
+    '\n'
+    '\nSyntax:'
+    '\n    1. LD R[i] j'
+    '\n    2. LD R[i] R[j]'
+    '\n    3. LD R[i:j] x'
+    '\n    4. LD R[i:j] R[k:l]'
+    '\n'
+)
+
+LD_VRAM_EXCEPTION_MSG = (
+    '\nWhen loading VRAM, LD must be followed by 2 arguments '
+    'either in the form:\n    LD V[X] V[Y]\nor\n'
+    '    LD V[X] (R,G,B,A) for direct load and where '
+    'R,G,B,A are between 0 and 255 inclusive'
 )
 
 LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG = (
@@ -120,4 +183,8 @@ LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG = (
     'Labels can only be defined once across all asm files in ./asm'
 )
 
+# regex
 REGEX_LABEL_PATTERN = r' *[A-Z|\d|_]+:'
+REGEX_RGBA_PATTERN = r'\d{1,3},\d{1,3},\d{1,3},\d{1,3}'
+REGEX_LD_R_ONE = r'R\[\d+]'
+REGEX_HEX = r'0X[0-9a-fA-F]+'

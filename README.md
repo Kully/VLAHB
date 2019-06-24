@@ -5,17 +5,38 @@
 **H**exadecimal <br>
 **B**inary <br>
 
+# Why VLAHB?
+
+1. An opportunity to learn more about how hardware works
+2. Build cool asm programs
+3. The love of learning
+
 # Instructions
-1. Write or Edit an `.asm` file
-2. Edit `file_asm` in the `Makefile` to match the `.asm` you want to run
-3. Run `make` in root directory (you must be here for linking to work properly)
+1. Choose a filename in the `Makefile` to match the `.asm` you want to run
+
+```
+filename = draw.asm  # name of file in /asm you want to run
+
+run:
+	python asm.py $(filename)
+	python vm.py
+
+clean:  # remove all hex files in /hex
+	rm -f hex/*.hex
+
+```
+
+2. Run `make` in root directory (you must be here for linking to work properly)
+
+3. Sit back and enjoy the magic of code! :tada: 
 
 ## ASM - Syntax
-The best way to understand the syntax is through example.
+An easy way to understand any syntax is through example.
 
-Tips:
-- RAM is a pythonic list
-- all numerical values in your `file.asm` are integers eg. 4 != 0x04
+Notes:
+- `RAM` is a pythonic list
+- `VRAM` is also a pythonic list
+- all numerical values in any `file.asm` are integers eg. 4 != 0x04
 
 `GOTO 4`<br>
 Set PC (program counter) to line 4.
@@ -25,6 +46,12 @@ Load RAM[0] with value 4.
 
 `LD R[0] R[2]`<br>
 Load RAM[0] with value of RAM[2].
+
+`LD V[0] 255,0,0,255`<br>
+Load VRAM[0] with the color red
+
+`LD V[3] V[5]`<br>
+Load VRAM[3] with the value of VRAM[5]
 
 `ADD R[2] 8`<br>
 Add 8 to RAM[2].
@@ -61,66 +88,52 @@ Pop the number from the Stack and set PC to that value.
 `EXIT`<br>
 Exit virtual machine.
 
-#### Example:
 
-Let's write a program that emulates a fast ticking clock:
+## Opcodes
 
-clock.asm:
-```
-// fast ticking clock
-ADD R[1] 1
-CMP [1] 60
-GOTO 0
-LD R[1] 0 // reset minute to 0
-ADD R[0] 1
-CMP R[0] 23
-GOTO 0
-LD R[0] 0 // reset hour to 0
-GOTO 0
-EXIT
-```
+| HEX  | Opcode         |
+| ---- |----------------|
+| 01   | GOTO  |
+| 02   | DIRECT LOAD |
+| 03   | DIRECT ADD |
+| 03   | DIRECT ADD |
+| 04   | DIRECT SUBTRACT |
+| 05   | DIRECT MULTIPLY |
+| 06   | DIRECT DIVIDE |
+| 07   | REGISTER TO REGISTER LOAD  |
+| 08   | REGISTER TO REGISTER ADD  |
+| 09   | REGISTER TO REGISTER SUBTRACT  |
+| 0a   | REGISTER TO REGISTER MULTIPLY  |
+| 0b   | REGISTER TO REGISTER DIVIDE  |
+| 0c   | COMPARE REGISTER TO DIRECT  |
+| 0d   | COMPARE REGISTER TO REGISTER  |
+| 0f   | RETURN  |
+| 10   | STRICT LESS THAN REGISTER TO DIRECT  |
+| 11   | STRICT LESS THAN REGISTER TO REGISTER  |
+| 12   | LESS THAN OR EQUAL REGISTER TO DIRECT  |
+| 13   | LESS THAN OR EQUAL REGISTER TO REGISTER  |
+| 14   | STRICT GREATER THAN REGISTER TO DIRECT  |
+| 15   | STRICT GREATER THAN REGISTER TO REGISTER  |
+| 16   | GREATER THAN OR EQUAL REGISTER TO DIRECT  |
+| 17   | GREATER THAN OR EQUAL REGISTER TO REGISTER  |
+| 18   | VRAM DIRECT LOAD  |
+| 19   | VRAM REGISTER TO REGISTER LOAD  |
+| ffff | EXIT  |
 
-I edit the Makefile
 
-```
-file_asm = clock.asm
-file_hex = clock.hex
+## About the RAM Slots - WIP
 
-run :
-	python asm.py $(file_asm) $(file_hex)
-	python vm.py $(file_hex)
-```
+- a "slot in RAM" is a location in RAM that can be identified with an index eg RAM[i]
+- RAM is 512KB in size => RAM has `128000` slots
 
-Now run `make` and watch your clock program run in the terminal!
+#### Slot Dedication
 
+The indices in the table below are of the form `x-y` which correspond to the standard list indexing of Python. This means the values of RAM with the range of indices `x-y` are `RAM[x], RAM[x+1], ... , RAM[y]`.
 
-## Hex - Op Codes
+| Indices in RAM  | Dedication |
+| ------------- |----------------|
+| 0-4095  | Function Inputs*  |
+| 4099   | Return slot for function outputs |
+| 4100-... | Indices for VRAM Colors |
 
-```
-hex     op code
--------------------------------------      
-01   == GOTO
-02   == DIRECT LOAD
-03   == DIRECT ADD
-04   == DIRECT SUBTRACT
-05   == DIRECT MULTIPLY
-06   == DIRECT DIVIDE
-07   == REGISTER TO REGISTER LOAD
-08   == REGISTER TO REGISTER ADD
-09   == REGISTER TO REGISTER SUBTRACT
-0a   == REGISTER TO REGISTER MULTIPLY
-0b   == REGISTER TO REGISTER DIVIDE
-0c   == COMPARE REGISTER TO DIRECT
-0d   == COMPARE REGISTER TO REGISTER
-0f   == RETURN
-10   == STRICT LESS THAN REGISTER TO DIRECT
-11   == STRICT LESS THAN REGISTER TO REGISTER
-12   == LESS THAN OR EQUAL REGISTER TO DIRECT
-13   == LESS THAN OR EQUAL REGISTER TO REGISTER
-14   == STRICT GREATER THAN REGISTER TO DIRECT
-15   == STRICT GREATER THAN REGISTER TO REGISTER
-16   == GREATER THAN OR EQUAL REGISTER TO DIRECT
-17   == GREATER THAN OR EQUAL REGISTER TO REGISTER
-
-ffff == EXIT
-```
+* Functions takes a maximum of 16 inputs from R[0-15]
