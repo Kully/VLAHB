@@ -121,7 +121,7 @@ Exit virtual machine.
 | ffff | EXIT  |
 
 
-## About the RAM Slots - WIP
+## About the RAM Slots
 
 - a "slot in RAM" is a location in RAM that can be identified with an index eg RAM[i]
 - RAM is 512KB in size => RAM has `128000` slots
@@ -134,6 +134,7 @@ The indices in the table below are of the form `x-y` which correspond to the sta
 | ------------- |----------------|
 | 0-4095  | Function Inputs*  |
 | 4099   | Return slot for function outputs |
-| 4100-... | Indices for VRAM Colors |
+| 4100-43200 | Indices for VRAM** |
 
 * Functions takes a maximum of 16 inputs from R[0-15]
+** Liable to change if screen display changes (currently 160X120)
