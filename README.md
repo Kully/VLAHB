@@ -7,9 +7,9 @@
 
 # Why VLAHB?
 
-1. An opportunity to learn more about how hardware works
-2. Build cool asm programs
-3. The love of learning
+1. An opportunity to learn how to write algorithms and learn about how hardware works
+2. Build cool assembly programs
+3. The love and curiosity of learning
 
 # Instructions
 1. Choose a filename in the `Makefile` to match the `.asm` you want to run
