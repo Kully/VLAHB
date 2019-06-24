@@ -106,9 +106,10 @@ op_codes_dict = {
     'REGISTER TO REGISTER SIN': '1c',
     'DIRECT COS': '1d',
     'REGISTER TO REGISTER COS': '1e',
-    'LD R[i:j] k': '1f',  # not working right now
+    'LD R[i:j] k': '1f',  # WIP
     'LD R[i:j] R[k]': '20',
     'LD R[i:j] R[k:l]': '21',
+    '': '22',
     'EXIT': 'ffff',
 }
 
@@ -194,4 +195,5 @@ LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG = (
 REGEX_LABEL_PATTERN = r' *[A-Z|\d|_]+:'
 REGEX_RGBA_PATTERN = r'\d{1,3},\d{1,3},\d{1,3},\d{1,3}'
 REGEX_LD_R_ONE = r'R\[\d+]'
+REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
 REGEX_HEX = r'0X[0-9a-fA-F]+'

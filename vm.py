@@ -459,8 +459,6 @@ def exec(lines_from_file_hex):
             if event.type == pygame.QUIT:
                 EXIT_LOOP = True
 
-        # debug prints
-        # print('')
         print('    RAM[0-7]:     [%s, %s, %s, %s, %s, %s, %s, %s]' %(
             RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
         )

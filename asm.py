@@ -120,15 +120,6 @@ def validate_and_make_hexfile(lines):
             word0_second_half = '0000'
             word1 = '00000000'
 
-            # replace U,V,Y,Z with ints - Wrong Solution
-            # if opcode not in ['GOTO', 'CALL']:
-            #     for idx in range(len(args)):
-            #         for label in util.pointer_label_to_slot_index.keys():
-            #             if label in args[idx]:
-            #                 args[idx] = args[idx].replace(
-            #                     label, util.pointer_label_to_slot_index[label]
-            #                 )
-
             valid_opcode = False
             if opcode == 'GOTO':
                 valid_opcode = True
@@ -148,12 +139,11 @@ def validate_and_make_hexfile(lines):
             elif opcode == 'LD':
                 valid_opcode = True
 
-                REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
+                # Validate - change for new syntaxes
+                # if len(args) < 2 or not re.search(r'R\[\d+:*\d*]', args[0]):
+                #     raise Exception(util.LD_EXCEPTION_MSG)
 
-                # Validate
-                if len(args) < 2 or not re.search(r'R\[\d+:*\d*]', args[0]):
-                    raise Exception(util.LD_EXCEPTION_MSG)
-
+                # for LD R[i] ...
                 if re.search(util.REGEX_LD_R_ONE, args[0]):
                     if re.match(util.REGEX_LD_R_ONE, args[1]):
                         # LD R[i] R[j]
@@ -176,8 +166,21 @@ def validate_and_make_hexfile(lines):
                         word1, hex_file_str
                     )
 
+                # for LD R[R[i]] ...
+                elif re.match(r'R\[R\[\d+]]', args[0]):
+                    # LD R[R[i]] 
 
-                elif re.search(REGEX_LD_R_RANGE, args[0]):
+                # for LD R[R[i]:j]
+                elif False:
+                    pass
+
+                # for LD R[i:R[j]]
+                elif False:
+                    pass
+
+
+                # for LD R[i:j] ...
+                elif re.search(util.REGEX_LD_R_RANGE, args[0]):
                     if re.search(util.REGEX_LD_R_ONE, args[1]):
                         # LD R[i:j] R[k]
                         # hex:
@@ -203,7 +206,7 @@ def validate_and_make_hexfile(lines):
                             word1, hex_file_str
                         )
 
-                    elif re.search(REGEX_LD_R_RANGE, args[1]):
+                    elif re.search(util.REGEX_LD_R_RANGE, args[1]):
                         # LD R[i:j] R[k:l]
                         opcode_val = util.op_codes_dict['LD R[i:j] R[k:l]']
 
