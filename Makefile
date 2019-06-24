@@ -1,3 +1,4 @@
+# TODO - add a debug flag -d for toggling print statements
 filename = 1111draw.asm  # name of file in /asm you want to run
 
 run:
@@ -6,6 +7,3 @@ run:
 
 clean:  # remove all hex files in /hex
 	rm -f hex/*.hex
-
-
-# TODO - add a debug flag -d for toggling print statements

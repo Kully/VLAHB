@@ -112,6 +112,13 @@ op_codes_dict = {
     'EXIT': 'ffff',
 }
 
+pointer_label_to_slot_index = {
+    'U': '4096',
+    'V': '4097',
+    'Y': '4098',
+    'Z': '4099',
+}
+
 # Error Messages
 # HEX
 EVEN_NUMBER_OF_HEX_LINES_ERROR_MSG = (

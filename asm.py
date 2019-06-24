@@ -120,6 +120,15 @@ def validate_and_make_hexfile(lines):
             word0_second_half = '0000'
             word1 = '00000000'
 
+            # replace U,V,Y,Z with ints - Wrong Solution
+            # if opcode not in ['GOTO', 'CALL']:
+            #     for idx in range(len(args)):
+            #         for label in util.pointer_label_to_slot_index.keys():
+            #             if label in args[idx]:
+            #                 args[idx] = args[idx].replace(
+            #                     label, util.pointer_label_to_slot_index[label]
+            #                 )
+
             valid_opcode = False
             if opcode == 'GOTO':
                 valid_opcode = True

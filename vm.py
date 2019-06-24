@@ -161,7 +161,7 @@ def exec(lines_from_file_hex):
     EXIT_LOOP = False
 
     while True:
-        # time.sleep(DELAY_BETWEEN_COMMANDS)
+        time.sleep(DELAY_BETWEEN_COMMANDS)
         
         # check if end of ROM
         try:
@@ -176,6 +176,7 @@ def exec(lines_from_file_hex):
         print('')
         print('    %s'%ROM[PC])
         print('    %s'%ROM[PC+1])
+        print('')
 
         # convert all hex to int
         word0_first_half = util.hex_to_int(ROM[PC][:4])
@@ -454,18 +455,20 @@ def exec(lines_from_file_hex):
             EXIT_LOOP = True
             print('    EXIT')
 
-        # Exit Pygame
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 EXIT_LOOP = True
 
         # debug prints
-        print('\n')
-        print('    RAM[0-7]:    [%s, %s, %s, %s, %s, %s, %s, %s]' %(
+        # print('')
+        print('    RAM[0-7]:     [%s, %s, %s, %s, %s, %s, %s, %s]' %(
             RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
         )
-        print('    STACK:       %r' %STACK)
-        print('    RAM[4100]:   %r  # return value' %RAM[4100])
+        print('    STACK:        %r' %STACK)
+        print('    RAM[4100]:    %r  # return value' %RAM[4100])
+        print('    RAM[U,V,Y,Z]: [%s, %s, %s, %s]  # stack pointers' %(
+            RAM[4096], RAM[4097], RAM[4098], RAM[4099])
+        )
         print('\n\n')
 
         if EXIT_LOOP:

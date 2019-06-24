@@ -47,12 +47,6 @@ Load RAM[0] with value 4.
 `LD R[0] R[2]`<br>
 Load RAM[0] with value of RAM[2].
 
-`LD V[0] 255,0,0,255`<br>
-Load VRAM[0] with the color red
-
-`LD V[3] V[5]`<br>
-Load VRAM[3] with the value of VRAM[5]
-
 `ADD R[2] 8`<br>
 Add 8 to RAM[2].
 
@@ -116,8 +110,16 @@ Exit virtual machine.
 | 15   | STRICT GREATER THAN REGISTER TO REGISTER  |
 | 16   | GREATER THAN OR EQUAL REGISTER TO DIRECT  |
 | 17   | GREATER THAN OR EQUAL REGISTER TO REGISTER  |
-| 18   | VRAM DIRECT LOAD  |
-| 19   | VRAM REGISTER TO REGISTER LOAD  |
+| 18   | BLIT  |
+| 19   | DIRECT SQRT  |
+| 1a   | REGISTER TO REGISTER SQRT  |
+| 1b   | DIRECT SIN  |
+| 1c   | REGISTER TO REGISTER SIN  |
+| 1d   | DIRECT COS  |
+| 1e   | REGISTER TO REGISTER COS  |
+| 1f   | LD R[i:j] k  |
+| 20   | LD R[i:j] R[k]  |
+| 21   | LD R[i:j] R[k:l]  |
 | ffff | EXIT  |
 
 
@@ -133,6 +135,7 @@ The indices in the table below are of the form `x-y` which correspond to the sta
 | Indices in RAM  | Dedication |
 | ------------- |----------------|
 | 0-4095  | Function Inputs*  |
+| 4096-4099  | Pointers for Indices (W,X,Y,Z resp)  |
 | 4100    | Return slot for function outputs |
 | 4101-43201 | Indices for VRAM** |
 
