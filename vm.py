@@ -450,6 +450,7 @@ def exec(lines_from_file_hex):
             print('    LD R[%s:%s] R[%s:%s]' %(i, i+ram_span, k, k+ram_span))
 
         # LD R[V] R[Z] == 0100
+        # 
         # LD R[R[i]] R[R[j]]
         elif word0_second_half == 256:
             encoded_letters = util.int_to_hex(word0_first_half)
@@ -470,7 +471,8 @@ def exec(lines_from_file_hex):
                 RAM[ram_index_j],
             ))
 
-        # LD R[V:U] R[Z] == 101
+        # LD R[V:U] R[Z] == 0101
+        # 
         # LD R[R[i]:R[j]] R[R[k]]
         elif word0_second_half == 257:
             encoded_letters = util.int_to_hex(word0_first_half)
@@ -496,7 +498,8 @@ def exec(lines_from_file_hex):
                 RAM[ram_index_k],
             ))
 
-        # LD R[U:V] R[Y:Z] == 102
+        # LD R[U:V] R[Y:Z] == 0102
+        # 
         # LD R[R[i]:R[j]] R[R[k]:R[l]]
         elif word0_second_half == 258:
             encoded_letters = util.int_to_hex(word0_first_half)
@@ -523,6 +526,30 @@ def exec(lines_from_file_hex):
                 RAM[ram_index_j],
                 RAM[ram_index_k],
                 RAM[ram_index_l],
+            ))
+
+        # LD R[U:V] R[k] == 0103
+        # 
+        # LD R[R[i]:R[j]] R[k]
+        elif word0_second_half == 259:
+            encoded_letters = util.int_to_hex(word0_first_half)
+
+            i = encoded_letters[0]
+            j = encoded_letters[1]
+
+            i = util.hex_digit_to_UVYZ[i]
+            j = util.hex_digit_to_UVYZ[j]
+
+            ram_index_i = util.UVYZ_to_ram_index[i]
+            ram_index_j = util.UVYZ_to_ram_index[j]
+
+            array_span = len(RAM[RAM[ram_index_i]:RAM[ram_index_j]])
+            RAM[RAM[ram_index_i]:RAM[ram_index_j]] = [RAM[word1]] * array_span
+
+            print('    LD R[%s:%s] R[%s]' %(
+                RAM[ram_index_i],
+                RAM[ram_index_j],
+                word1,
             ))
 
         # EXIT VM == ffff

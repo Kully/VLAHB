@@ -226,6 +226,7 @@ def validate_and_make_hexfile(lines):
                         )
 
                 elif re.match(util.REGEX_UV_ONE_AND_ONE, args[0] + ' ' + args[1]):
+                    # LD R[U] R[V]
                     letters = re.findall(util.util.REGEX_UV_ONE_AND_ONE, args[0] + ' ' + args[1])
                     
                     i = letters[0][0]
@@ -249,12 +250,21 @@ def validate_and_make_hexfile(lines):
                     j = util.UVYZ_to_hex_digit[str(letters_arg0[0][1])]
                     k = '0'
                     l = '0'
-                    
-                    if re.match(util.REGEX_UV_ONE, args[1]):
+
+                    # LD R[U:V] R[i]
+                    if re.match(r'R\[\d+]', args[1]):
+                        opcode_val = '103'
+
+                        # encode int i in word1
+                        word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
+
+                    # LD R[U:V] R[Y]
+                    elif re.match(util.REGEX_UV_ONE, args[1]):
                         opcode_val = '101'
                         k = re.findall(util.REGEX_UV_ONE, args[1])[0]
                         k = util.UVYZ_to_hex_digit[k]
                         
+                    # LD R[U:V] R[Y:Z]
                     elif re.match(util.REGEX_UV_TWO, args[1]):
                         opcode_val = '102'
 
