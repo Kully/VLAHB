@@ -161,9 +161,8 @@ def exec(lines_from_file_hex):
     EXIT_LOOP = False
 
     while True:
-        time.sleep(DELAY_BETWEEN_COMMANDS)
-        
-        # check if end of ROM
+        # time.sleep(DELAY_BETWEEN_COMMANDS)
+
         try:
             ROM[PC]
             ROM[PC+1]
@@ -182,6 +181,7 @@ def exec(lines_from_file_hex):
         word0_first_half = util.hex_to_int(ROM[PC][:4])
         word0_second_half = util.hex_to_int(ROM[PC][4:])
         word1 = util.hex_to_int(ROM[PC+1])
+
         word1_first_half = util.hex_to_int(ROM[PC+1][:4])
         word1_second_half = util.hex_to_int(ROM[PC+1][4:])
 
@@ -191,70 +191,70 @@ def exec(lines_from_file_hex):
         # OP CODES #
         ############
 
-        # GOTO == 1
+        # GOTO == 0001
         if word0_second_half == 1:
             PC = word1
             print('    GOTO: PC -> %s' %word1)
 
-        # DIRECT LOAD == 2
+        # DIRECT LOAD == 0002
         elif word0_second_half == 2:
             RAM[word0_first_half] = word1
             print('    LD R[%s] %s' %(word0_first_half, word1))
 
-        # DIRECT ADD == 3
+        # DIRECT ADD == 0003
         elif word0_second_half == 3:
             RAM[word0_first_half] += word1
             print('    ADD R[%s] %s' %(word0_first_half, word1))
             manage_ram_slot_overunder_flow(word0_first_half)
 
-        # DIRECT SUBTRACT == 4
+        # DIRECT SUBTRACT == 0004
         elif word0_second_half == 4:
             RAM[word0_first_half] -= word1
             print('    SUB R[%s] %s' %(word0_first_half, word1))
             manage_ram_slot_overunder_flow(word0_first_half)
 
-        # DIRECT MULTIPLY == 5
+        # DIRECT MULTIPLY == 0005
         elif word0_second_half == 5:
             RAM[word0_first_half] *= word1
             print('    MUL R[%s] %s' %(word0_first_half, word1))
             manage_ram_slot_overunder_flow(word0_first_half)
 
-        # DIRECT DIVIDE == 6
+        # DIRECT DIVIDE == 0006
         elif word0_second_half == 6:
             RAM[word0_first_half] /= word1
             print('    DIV R[%s] %s' %(word0_first_half, word1))
             manage_ram_slot_overunder_flow(word0_first_half)
 
-        # REGISTER TO REGISTER LOAD == 7
+        # REGISTER TO REGISTER LOAD == 0007
         elif word0_second_half == 7:
             RAM[word0_first_half] = RAM[word1]
             print('    LD R[%s] R[%s]' %(word0_first_half, word1))
 
-        # REGISTER TO REGISTER ADD == 8
+        # REGISTER TO REGISTER ADD == 0008
         elif word0_second_half == 8:
             RAM[word0_first_half] += RAM[word1]
             print('    ADD R[%s] R[%s]' %(word0_first_half, word1))
             manage_ram_slot_overunder_flow(word0_first_half)
 
-        # REGISTER TO REGISTER SUBTRACT == 9
+        # REGISTER TO REGISTER SUBTRACT == 0009
         elif word0_second_half == 9:
             RAM[word0_first_half] -= RAM[word1]
             print('    SUB R[%s] R[%s]' %(word0_first_half, word1))
             manage_ram_slot_overunder_flow(word0_first_half)
 
-        # REGISTER TO REGISTER MULTIPLY == a
+        # REGISTER TO REGISTER MULTIPLY == 000a
         elif word0_second_half == 10:
             RAM[word0_first_half] *= RAM[word1]
             print('    MUL R[%s] R[%s]' %(word0_first_half, word1))
             manage_ram_slot_overunder_flow(word0_first_half)
 
-        # REGISTER TO REGISTER DIVIDE == b
+        # REGISTER TO REGISTER DIVIDE == 000b
         elif word0_second_half == 11:
             RAM[word0_first_half] /= RAM[word1]
             print('    DIV R[%s] R[%s]' %(word0_first_half, word1))
             manage_ram_slot_overunder_flow(word0_first_half)
 
-        # COMPARE REGISTER TO DIRECT  == c
+        # COMPARE REGISTER TO DIRECT  == 000c
         elif word0_second_half == 12:
             cmp_true = 'false'
             if RAM[word0_first_half] == word1:
@@ -262,7 +262,7 @@ def exec(lines_from_file_hex):
                 PC += 2
             print('    CMP R[%s] %s -> %s' %(word0_first_half, word1, cmp_true))
 
-        # COMPARE REGISTER TO REGISTER == d
+        # COMPARE REGISTER TO REGISTER == 000d
         elif word0_second_half == 13:
             cmp_true = 'false'
             if RAM[word0_first_half] == RAM[word1]:
@@ -271,7 +271,7 @@ def exec(lines_from_file_hex):
 
             print('    CMP R[%s] R[%s] -> %s' %(word0_first_half, word1, cmp_true))
 
-        # CALL == e
+        # CALL == 000e
         elif word0_second_half == 14:
             STACK.append(PC)
 
@@ -284,7 +284,7 @@ def exec(lines_from_file_hex):
             PC = word1
             print('    CALL: Push %s to the Stack: PC -> %s' %(word1, word1))
 
-        # RETURN == f
+        # RETURN == 000f
         elif word0_second_half == 15:
             index = len(STACK)
 
@@ -296,7 +296,7 @@ def exec(lines_from_file_hex):
             PC = STACK.pop()
             print('    RETURN: Pop %s from the Stack: PC -> %s' %(PC, PC))
 
-        # STRICT LESS THAN REGISTER TO DIRECT == 10
+        # STRICT LESS THAN REGISTER TO DIRECT == 0010
         elif word0_second_half == 16:
             is_this_true = 'false'
             if RAM[word0_first_half] < word1:
@@ -304,7 +304,7 @@ def exec(lines_from_file_hex):
                 PC += 2
             print('    LT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
-        # STRICT LESS THAN REGISTER TO REGISTER == 11
+        # STRICT LESS THAN REGISTER TO REGISTER == 0011
         elif word0_second_half == 17:
             is_this_true = 'false'
             if RAM[word0_first_half] < RAM[word1]:
@@ -312,7 +312,7 @@ def exec(lines_from_file_hex):
                 PC += 2
             print('    LT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
-        # LESS THAN OR EQUAL REGISTER TO DIRECT == 12
+        # LESS THAN OR EQUAL REGISTER TO DIRECT == 0012
         elif word0_second_half == 18:
             is_this_true = 'false'
             if RAM[word0_first_half] <= word1:
@@ -320,7 +320,7 @@ def exec(lines_from_file_hex):
                 PC += 2
             print('    LTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
-        # LESS THAN OR EQUAL REGISTER TO REGISTER == 13
+        # LESS THAN OR EQUAL REGISTER TO REGISTER == 0013
         elif word0_second_half == 19:
             is_this_true = 'false'
             if RAM[word0_first_half] <= RAM[word1]:
@@ -328,7 +328,7 @@ def exec(lines_from_file_hex):
                 PC += 2
             print('    LTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
-        # STRICT GREATER THAN REGISTER TO DIRECT == 14
+        # STRICT GREATER THAN REGISTER TO DIRECT == 0014
         elif word0_second_half == 20:
             is_this_true = 'false'
             if RAM[word0_first_half] > word1:
@@ -336,7 +336,7 @@ def exec(lines_from_file_hex):
                 PC += 2
             print('    GT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
-        # STRICT GREATER THAN REGISTER TO REGISTER == 15
+        # STRICT GREATER THAN REGISTER TO REGISTER == 0015
         elif word0_second_half == 21:
             is_this_true = 'false'
             if RAM[word0_first_half] > RAM[word1]:
@@ -344,7 +344,7 @@ def exec(lines_from_file_hex):
                 PC += 2
             print('    GT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
-        # GREATER THAN OR EQUAL REGISTER TO DIRECT == 16
+        # GREATER THAN OR EQUAL REGISTER TO DIRECT == 0016
         elif word0_second_half == 22:
             is_this_true = 'false'
             if RAM[word0_first_half] >= word1:
@@ -352,7 +352,7 @@ def exec(lines_from_file_hex):
                 PC += 2
             print('    GTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
-        # GREATER THAN OR EQUAL REGISTER TO REGISTER == 17
+        # GREATER THAN OR EQUAL REGISTER TO REGISTER == 0017
         elif word0_second_half == 23:
             is_this_true = 'false'
             if RAM[word0_first_half] >= RAM[word1]:
@@ -361,7 +361,7 @@ def exec(lines_from_file_hex):
             print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
 
-        # BLIT == 18
+        # BLIT == 0018
         elif word0_second_half == 24:
             surf = pygame.Surface(
                 (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
@@ -381,37 +381,37 @@ def exec(lines_from_file_hex):
 
             print('    BLIT')
 
-        # DIRECT SQRT == 19
+        # DIRECT SQRT == 0019
         elif word0_second_half == 25:
             RAM[word0_first_half] = math.sqrt(word1)
             print('    SQRT R[%s] %s' %(word0_first_half, word1))
 
-        # REGISTER TO REGISTER SQRT == 1a
+        # REGISTER TO REGISTER SQRT == 001a
         elif word0_second_half == 26:
             RAM[word0_first_half] = math.sqrt(RAM[word1])
             print('    SQRT R[%s] R[%s]' %(word0_first_half, word1))
 
-        # DIRECT SIN == 1b
+        # DIRECT SIN == 001b
         elif word0_second_half == 27:
             RAM[word0_first_half] = math.sin(word1)
             print('    SIN R[%s] %s' %(word0_first_half, word1))
 
-        # REGISTER TO REGISTER SIN == 1c
+        # REGISTER TO REGISTER SIN == 001c
         elif word0_second_half == 28:
             RAM[word0_first_half] = math.sin(RAM[word1])
             print('    SIN R[%s] R[%s]' %(word0_first_half, word1))
 
-        # DIRECT COS == 1d
+        # DIRECT COS == 001d
         elif word0_second_half == 29:
             RAM[word0_first_half] = math.cos(word1)
             print('    COS R[%s] %s' %(word0_first_half, word1))
 
-        # REGISTER TO REGISTER COS == 1e
+        # REGISTER TO REGISTER COS == 001e
         elif word0_second_half == 30:
             RAM[word0_first_half] = math.cos(RAM[word1])
             print('    COS R[%s] R[%s]' %(word0_first_half, word1))
 
-        # LD R[i:j] k == 1f
+        # LD R[i:j] k == 001f
         elif word0_second_half == 31:
             i = util.hex_to_int(ROM[PC][:4])
 
@@ -424,7 +424,7 @@ def exec(lines_from_file_hex):
 
             print('    LD R[%s:%s] %s' %(i, j, k))
 
-        # LD R[i:j] R[k] == 20
+        # LD R[i:j] R[k] == 0020
         elif word0_second_half == 32:
             i = util.hex_to_int(ROM[PC-2][:4])
             
@@ -437,7 +437,7 @@ def exec(lines_from_file_hex):
 
             print('    LD R[%s:%s] R[%s]' %(i, j, k))
 
-        # LD R[i:j] R[k:l] == 21
+        # LD R[i:j] R[k:l] == 0021
         elif word0_second_half == 33:
 
             ram_span = util.hex_to_int(ROM[PC - 2][:4])  # ram_span := j-i
@@ -449,6 +449,108 @@ def exec(lines_from_file_hex):
 
             print('    LD R[%s:%s] R[%s:%s]' %(i, i+ram_span, k, k+ram_span))
 
+        # LD R[V] R[Z] == 0100
+        # 
+        # LD R[R[i]] R[R[j]]
+        elif word0_second_half == 256:
+            encoded_letters = util.int_to_hex(word0_first_half)
+
+            i = encoded_letters[0]
+            j = encoded_letters[1]
+
+            i = util.hex_digit_to_UVYZ[i]
+            j = util.hex_digit_to_UVYZ[j]
+
+            ram_index_i = util.UVYZ_to_ram_index[i]
+            ram_index_j = util.UVYZ_to_ram_index[j]
+
+            RAM[RAM[ram_index_i]] = RAM[RAM[ram_index_j]]
+
+            print('    LD R[%s] R[%s]' %(
+                RAM[ram_index_i],
+                RAM[ram_index_j],
+            ))
+
+        # LD R[V:U] R[Z] == 0101
+        # 
+        # LD R[R[i]:R[j]] R[R[k]]
+        elif word0_second_half == 257:
+            encoded_letters = util.int_to_hex(word0_first_half)
+
+            i = encoded_letters[0]
+            j = encoded_letters[1]
+            k = encoded_letters[2]
+
+            i = util.hex_digit_to_UVYZ[i]
+            j = util.hex_digit_to_UVYZ[j]
+            k = util.hex_digit_to_UVYZ[k]
+
+            ram_index_i = util.UVYZ_to_ram_index[i]
+            ram_index_j = util.UVYZ_to_ram_index[j]
+            ram_index_k = util.UVYZ_to_ram_index[k]
+
+            array_span = len(RAM[RAM[ram_index_i]:RAM[ram_index_j]])
+            RAM[RAM[ram_index_i]:RAM[ram_index_j]] = [RAM[RAM[ram_index_k]]] * array_span
+
+            print('    LD R[%s:%s] R[%s]' %(
+                RAM[ram_index_i],
+                RAM[ram_index_j],
+                RAM[ram_index_k],
+            ))
+
+        # LD R[U:V] R[Y:Z] == 0102
+        # 
+        # LD R[R[i]:R[j]] R[R[k]:R[l]]
+        elif word0_second_half == 258:
+            encoded_letters = util.int_to_hex(word0_first_half)
+
+            i = encoded_letters[0]
+            j = encoded_letters[1]
+            k = encoded_letters[2]
+            l = encoded_letters[2]
+
+            i = util.hex_digit_to_UVYZ[i]
+            j = util.hex_digit_to_UVYZ[j]
+            k = util.hex_digit_to_UVYZ[k]
+            l = util.hex_digit_to_UVYZ[l]
+
+            ram_index_i = util.UVYZ_to_ram_index[i]
+            ram_index_j = util.UVYZ_to_ram_index[j]
+            ram_index_k = util.UVYZ_to_ram_index[k]
+            ram_index_l = util.UVYZ_to_ram_index[l]
+
+            RAM[RAM[ram_index_i]:RAM[ram_index_j]] = RAM[RAM[ram_index_k]:RAM[ram_index_l]]
+
+            print('    LD R[%s:%s] R[%s:%s]' %(
+                RAM[ram_index_i],
+                RAM[ram_index_j],
+                RAM[ram_index_k],
+                RAM[ram_index_l],
+            ))
+
+        # LD R[U:V] R[k] == 0103
+        # 
+        # LD R[R[i]:R[j]] R[k]
+        elif word0_second_half == 259:
+            encoded_letters = util.int_to_hex(word0_first_half)
+
+            i = encoded_letters[0]
+            j = encoded_letters[1]
+
+            i = util.hex_digit_to_UVYZ[i]
+            j = util.hex_digit_to_UVYZ[j]
+
+            ram_index_i = util.UVYZ_to_ram_index[i]
+            ram_index_j = util.UVYZ_to_ram_index[j]
+
+            array_span = len(RAM[RAM[ram_index_i]:RAM[ram_index_j]])
+            RAM[RAM[ram_index_i]:RAM[ram_index_j]] = [RAM[word1]] * array_span
+
+            print('    LD R[%s:%s] R[%s]' %(
+                RAM[ram_index_i],
+                RAM[ram_index_j],
+                word1,
+            ))
 
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:
