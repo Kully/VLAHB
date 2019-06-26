@@ -120,15 +120,6 @@ def validate_and_make_hexfile(lines):
             word0_second_half = '0000'
             word1 = '00000000'
 
-            # replace U,V,Y,Z with ints - Wrong Solution
-            # if opcode not in ['GOTO', 'CALL']:
-            #     for idx in range(len(args)):
-            #         for label in util.pointer_label_to_slot_index.keys():
-            #             if label in args[idx]:
-            #                 args[idx] = args[idx].replace(
-            #                     label, util.pointer_label_to_slot_index[label]
-            #                 )
-
             valid_opcode = False
             if opcode == 'GOTO':
                 valid_opcode = True
@@ -148,11 +139,14 @@ def validate_and_make_hexfile(lines):
             elif opcode == 'LD':
                 valid_opcode = True
 
-                REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
+
+                REGEX_UV_ONE_AND_ONE = r'R\[([UVYZ])] R\[([UVYZ])]'
+                REGEX_UV_ONE = r'R\[([UVYZ])]'
+                REGEX_UV_TWO = r'R\[([UVYZ]):([UVYZ])]'
 
                 # Validate
-                if len(args) < 2 or not re.search(r'R\[\d+:*\d*]', args[0]):
-                    raise Exception(util.LD_EXCEPTION_MSG)
+                # if len(args) < 2 or not re.search(r'R\[\d+:*\d*]', args[0]):
+                #     raise Exception(util.LD_EXCEPTION_MSG)
 
                 if re.search(util.REGEX_LD_R_ONE, args[0]):
                     if re.match(util.REGEX_LD_R_ONE, args[1]):
@@ -177,7 +171,7 @@ def validate_and_make_hexfile(lines):
                     )
 
 
-                elif re.search(REGEX_LD_R_RANGE, args[0]):
+                elif re.search(util.REGEX_LD_R_RANGE, args[0]):
                     if re.search(util.REGEX_LD_R_ONE, args[1]):
                         # LD R[i:j] R[k]
                         # hex:
@@ -203,7 +197,7 @@ def validate_and_make_hexfile(lines):
                             word1, hex_file_str
                         )
 
-                    elif re.search(REGEX_LD_R_RANGE, args[1]):
+                    elif re.search(util.REGEX_LD_R_RANGE, args[1]):
                         # LD R[i:j] R[k:l]
                         opcode_val = util.op_codes_dict['LD R[i:j] R[k:l]']
 
@@ -236,8 +230,50 @@ def validate_and_make_hexfile(lines):
                             word1, hex_file_str
                         )
 
-                    else:
-                        raise Exception('LD: Incorrect Syntax')
+                elif re.match(REGEX_UV_ONE_AND_ONE, args[0] + ' ' + args[1]):
+                    letters = re.findall(REGEX_UV_ONE_AND_ONE, args[0] + ' ' + args[1])
+                    
+                    i = letters[0][0]
+                    j = letters[0][1]
+                    
+                    opcode_val = '100'
+                    i_as_hex_digit = util.UVYZ_to_hex_digit[str(i)]
+                    j_as_hex_digit = util.UVYZ_to_hex_digit[str(j)]
+                    
+                    word0_first_half = i_as_hex_digit + j_as_hex_digit + '00'
+                    word0_second_half = opcode_val.zfill(4)
+                    
+                    hex_file_str = write_two_lines_to_hexfile(
+                        word0_first_half, word0_second_half,
+                        word1, hex_file_str
+                    )
+
+                elif re.match(REGEX_UV_TWO, args[0]):
+                    letters_arg0 = re.findall(REGEX_UV_TWO, args[0])
+                    i = util.UVYZ_to_hex_digit[str(letters_arg0[0][0])]
+                    j = util.UVYZ_to_hex_digit[str(letters_arg0[0][1])]
+                    k = '0'
+                    l = '0'
+                    
+                    if re.match(REGEX_UV_ONE, args[1]):
+                        opcode_val = '101'
+                        k = re.findall(REGEX_UV_ONE, args[1])[0]
+                        k = util.UVYZ_to_hex_digit[k]
+                        
+                    elif re.match(REGEX_UV_TWO, args[1]):
+                        opcode_val = '102'
+
+                        k_and_l = re.findall(REGEX_UV_TWO, args[1]) 
+                        k = util.UVYZ_to_hex_digit[str(k_and_l[0][0])]
+                        l = util.UVYZ_to_hex_digit[str(k_and_l[0][1])]
+
+                    word0_first_half = i+j+k+l
+                    word0_second_half = opcode_val.zfill(4)
+
+                    hex_file_str = write_two_lines_to_hexfile(
+                        word0_first_half, word0_second_half,
+                        word1, hex_file_str
+                    )
 
                 else:
                     raise Exception(util.LD_EXCEPTION_MSG)

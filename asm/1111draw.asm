@@ -1,71 +1,53 @@
-// GOTO FLASHING_LIGHTS
-// GOTO NEON_SIREN
-GOTO NILL
+// ***********
+// U := R[4096]
+// V := R[4097]
+// Y := R[4098]
+// Z := R[4099]
 
-NILL:
-	LD R[Y] 4101
-	LD R[Z] 4200
-	LD R[45124] 0XFF0000FF  // red
+// -> means "assign to" :)
 
-	LD R[4101:Z] R[45124]  	// LD R[V:Z] R[45124]
-	BLIT
-	CALL BLACK_SCREEN_CLEAR
+// I am storing my colors starting from slot 120,000
+// (there are 128,000 slots in RAM we can use)
+// they can be stored anywhere, but I want them out of the
+// way from VRAM
 
-	GOTO NILL
+// SCREEN WIDTH := 160
+// ***********
 
 
-FLASHING_LIGHTS:
-	// load slots with color values
-	LD R[45120] 0X12d3cfff
-	LD R[45121] 0X67eacaff
-	LD R[45122] 0Xb0f4e6ff
-	LD R[45123] 0XFCF9ECFF
-	LD R[45123] 0XFCF9ECFF
-	LD R[45124] 0XFF0000FF  // red
-
-	LD R[U] 4101 // vram starts
-	CALL GET_DISPLAY_WIDTH_IN_PIXELS
-	LD R[V] R[4100]
-	ADD R[V] 4101
-
-	// draw line 1
-	LD R[U:V] R[45124]
-	LD R[U:V] R[45124]
-	LD R[U:V] R[45124]
-	LD R[U:V] R[45124]
-	BLIT
-
-	CALL BLACK_SCREEN_CLEAR
-
-	GOTO FLASHING_LIGHTS
+CALL LOAD_VALUES
+CALL DRAW_ROWS
 EXIT
 
+LOAD_VALUES:
+	LD R[4096] 4100  // U -> VRAM start_index
+	LD R[4097] 4260  // V -> VRAM start_index + DISPLAY_WIDTH
+	LD R[4099] 4100  // Z -> VRAM start
 
-NEON_SIREN:
-	LD R[45123] 0XFCF9ECFF
+	// load colors
+	LD R[120000] 0XFF0000FF  // load random slot RED
+	LD R[120001] 0X00FF00FF  // load random slot GREEN
+	LD R[120002] 0X0000FFFF  // load random slot BLUE
 
-	LD R[9000:10000] R[45123]
+	LD R[4098] 120000  // Y -> slot that stores colors
+	RETURN
 
-	BLIT
+DRAW_ROWS:
+	LD R[U:V] R[Y]  // color current row
+	BLIT  // update screen
+	
+	// ******************
+	// CALL GET_DISPLAY_WIDTH_IN_PIXELS
+	// ADD R[4096] R[4099]
+	// ******************
 
-	LD R[46000] 4  // start a counter up to 255
+	// bump U and V by DISPLAY_WIDTH
+	ADD R[4096] 160
+	ADD R[4097] 160
+	
 
-// TODO: allow tab spacing for labels
+	// LD R[Z] R[Y]  // fill Z pixel with Y value
 
-    // 
-    NEON_SIREN_LOOP:
-        // lower the opacity of the image by 1
-		ADD R[46000] 1
-		SUB R[45123] 150
-		LD R[9000:10000] R[45123]
-		BLIT
-		CMP R[46000] 2
-		GOTO NEON_SIREN_LOOP
-		EXIT
-
-	GOTO NEON_SIREN
-
-
-
+	GOTO DRAW_ROWS
 
 EXIT
