@@ -5,9 +5,12 @@
 **H**exadecimal <br>
 **B**inary <br>
 
-# Why VLAHB?
+# What?
+- processor design from the ground up
 
-1. An opportunity to learn how to write algorithms and learn about how hardware works
+# Why?
+
+1. An opportunity to learn and write algorithms in a primative programming language
 2. Build cool assembly programs
 3. The love and curiosity of learning
 
@@ -117,9 +120,6 @@ Exit virtual machine.
 | 001c   | REGISTER TO REGISTER SIN  |
 | 001d   | DIRECT COS  |
 | 001e   | REGISTER TO REGISTER COS  |
-| 001f   | LD R[i:j] k  |
-| 0020   | LD R[i:j] R[k]  |
-| 0021   | LD R[i:j] R[k:l]  |
 | ffff | EXIT  |
 
 

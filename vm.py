@@ -487,7 +487,8 @@ def exec(lines_from_file_hex):
             ram_index_j = util.UVYZ_to_ram_index[j]
             ram_index_k = util.UVYZ_to_ram_index[k]
 
-            RAM[RAM[ram_index_i]:RAM[ram_index_j]] = RAM[RAM[ram_index_k]]
+            array_span = len(RAM[RAM[ram_index_i]:RAM[ram_index_j]])
+            RAM[RAM[ram_index_i]:RAM[ram_index_j]] = [RAM[RAM[ram_index_k]]] * array_span
 
             print('    LD R[%s:%s] R[%s]' %(
                 RAM[ram_index_i],
