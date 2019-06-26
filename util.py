@@ -220,3 +220,8 @@ REGEX_RGBA_PATTERN = r'\d{1,3},\d{1,3},\d{1,3},\d{1,3}'
 REGEX_LD_R_ONE = r'R\[\d+]'
 REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
 REGEX_HEX = r'0X[0-9a-fA-F]+'
+
+# for LD R[U:V] R[Z] calls
+REGEX_UV_ONE_AND_ONE = r'R\[([UVYZ])] R\[([UVYZ])]'
+REGEX_UV_ONE = r'R\[([UVYZ])]'
+REGEX_UV_TWO = r'R\[([UVYZ]):([UVYZ])]'
