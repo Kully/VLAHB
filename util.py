@@ -130,9 +130,10 @@ op_codes_dict = {
     'REGISTER TO REGISTER SIN': '1c',
     'DIRECT COS': '1d',
     'REGISTER TO REGISTER COS': '1e',
-    # 'LD R[i:j] k': '1f',  # remove
-    # 'LD R[i:j] R[k]': '20',  # remove
-    # 'LD R[i:j] R[k:l]': '21',  # remove
+    'LD R[i:j] k': '1f',
+    'LD R[i:j] R[k]': '20',
+    'LD R[i:j] R[k:l]': '21',
+    # add U,V,Y,Z opcode names here
     'EXIT': 'ffff',
 }
 

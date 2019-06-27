@@ -87,13 +87,21 @@ Exit virtual machine.
 
 What makes coding in ASM effective (as well as fun) is using the built in pointers. We have assigned the variables `U,V,Y,Z` to point to the values stored at specific slots in RAM. In particular:
 
-```
-U := R[4096]
-V := R[4097]
-Y := R[4098]
-Z := R[4099]
-```
+`U := R[4096]`
+`V := R[4097]`
+`Y := R[4098]`
+`Z := R[4099]`
 
+
+This means that you can programmatically change an index. As an example:
+
+`LD R[Z] R[V]`<br>
+
+which roughly means
+
+`LD R[R[4099]] R[R[4097]]`<br>
+
+These variables only work with respect to the `LD` operation and some of the uses are currently limited.
 
 ## Opcodes
 
@@ -129,7 +137,16 @@ Z := R[4099]
 | 001c   | REGISTER TO REGISTER SIN  |
 | 001d   | DIRECT COS  |
 | 001e   | REGISTER TO REGISTER COS  |
-| ffff | EXIT  |
+| 001f   | LD R[i:j] k |
+| 0020   | LD R[i:j] R[k] |
+| 0021   | LD R[i:j] R[k:l] |
+| 0100   | LD R[U] R[V] |
+| 0101   | LD R[U:V] R[Y] |
+| 0102   | LD R[U:V] R[Y:Z] |
+| 0103   | LD R[U:V] R[i] |
+| 0104   | LD R[U] R[i] |
+| 0105   | LD R[U] i |
+| ffff   | EXIT  |
 
 
 ## Technical Details/Slot Dedication

@@ -263,7 +263,6 @@ def validate_and_make_hexfile(lines):
                     if re.match(r'R\[\d+]', args[1]):
                         opcode_val = '103'
 
-                        # encode int i in word1
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                     # LD R[U:V] R[Y]
