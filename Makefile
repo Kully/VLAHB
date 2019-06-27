@@ -1,5 +1,5 @@
 # TODO - add a debug flag -d for toggling print statements
-filename = pride_flag.asm  # name of file in /asm you want to run
+filename = rotate_square_adam.asm  # name of file in /asm you want to run
 
 run:
 	python3 asm.py $(filename)

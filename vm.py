@@ -584,6 +584,28 @@ def exec(lines_from_file_hex):
                 word1,
             ))
 
+        #  LD R[U:V] i == 0106
+        elif word0_second_half == 262:
+            encoded_letters = util.int_to_hex(word0_first_half)
+
+            u = encoded_letters[0]
+            u = util.hex_digit_to_UVYZ[u]
+
+            v = encoded_letters[1]
+            v = util.hex_digit_to_UVYZ[v]
+
+            ram_index_u = util.UVYZ_to_ram_index[u]
+            ram_index_v = util.UVYZ_to_ram_index[v]
+
+            array_span = len(RAM[RAM[ram_index_u] : RAM[ram_index_v]])
+            RAM[RAM[ram_index_u] : RAM[ram_index_v]] = [word1] * array_span
+
+            print('    LD R[%s:%s] %s' %(
+                RAM[ram_index_u],
+                RAM[ram_index_v],
+                word1,
+            ))
+
         # EXIT VM == ffff
         elif word0_second_half == 2**16 - 1:
             EXIT_LOOP = True
