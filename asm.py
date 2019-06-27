@@ -12,7 +12,6 @@ Notes/Best Practices about ASM:
 '''
 import json
 import os
-import pprint
 import re
 import string
 import sys
@@ -264,6 +263,12 @@ def validate_and_make_hexfile(lines):
                         opcode_val = '103'
 
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
+
+                    # LD R[U:V] i
+                    if re.match(r'\d+', args[1]):
+                        opcode_val = '106'
+
+                        word1 = util.int_to_hex(args[1]).zfill(8)
 
                     # LD R[U:V] R[Y]
                     elif re.match(util.REGEX_UV_ONE, args[1]):
