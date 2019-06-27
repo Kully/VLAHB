@@ -14,7 +14,6 @@
 // SCREEN WIDTH := 160
 // ***********
 
-
 CALL LOAD_VALUES
 CALL DRAW_ROWS
 EXIT

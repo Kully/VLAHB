@@ -169,9 +169,6 @@ def validate_and_make_hexfile(lines):
                 elif re.search(util.REGEX_LD_R_RANGE, args[0]):
                     if re.search(util.REGEX_LD_R_ONE, args[1]):
                         # LD R[i:j] R[k]
-                        # hex:
-                        # [ i  ][opcode]
-                        # [ j  ][  k  ]
                         opcode_val = util.op_codes_dict['LD R[i:j] R[k]']
 
                         i_and_j = re.findall(r'\d+', args[0])
@@ -225,20 +222,31 @@ def validate_and_make_hexfile(lines):
                             word1, hex_file_str
                         )
 
-                elif re.match(util.REGEX_UV_ONE_AND_ONE, args[0] + ' ' + args[1]):
-                    # LD R[U] R[V]
-                    letters = re.findall(util.util.REGEX_UV_ONE_AND_ONE, args[0] + ' ' + args[1])
-                    
-                    i = letters[0][0]
-                    j = letters[0][1]
-                    
-                    opcode_val = '100'
-                    i_as_hex_digit = util.UVYZ_to_hex_digit[str(i)]
-                    j_as_hex_digit = util.UVYZ_to_hex_digit[str(j)]
-                    
-                    word0_first_half = i_as_hex_digit + j_as_hex_digit + '00'
+                elif re.match(util.REGEX_UV_ONE, args[0]):
+                    letters_arg0 = re.findall(util.REGEX_UV_ONE, args[0])
+                    i = util.UVYZ_to_hex_digit[str(letters_arg0[0])]
+                    j = '0'
+
+                    if re.match(util.REGEX_UV_ONE, args[1]):
+                        # LD R[U] R[V]
+                        j = util.UVYZ_to_hex_digit[args[1][2:-1]]
+                        opcode_val = '100'
+
+                    elif re.match(r'R\[\d+]', args[1]):
+                        # LD R[U] R[i]
+                        opcode_val = '104'
+
+                        j = args[1][2:-1]
+                        word1 = util.int_to_hex(j).zfill(8)
+
+                    elif re.match(r'\d+', args[1]):
+                        # LD R[U] i
+                        opcode_val = '105'
+                        word1 = util.int_to_hex(args[1]).zfill(8)
+
+                    word0_first_half = i+j+'00'
                     word0_second_half = opcode_val.zfill(4)
-                    
+
                     hex_file_str = write_two_lines_to_hexfile(
                         word0_first_half, word0_second_half,
                         word1, hex_file_str

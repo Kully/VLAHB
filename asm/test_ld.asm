@@ -1,6 +1,6 @@
 // Add these to ASM lang
 
-// [ ] LD R[U] 42
+// [X] LD R[U] 42
 // [ ] LD R[U] R[42]
 
 // [ ] LD R[U:V] 42
