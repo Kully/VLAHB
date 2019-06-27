@@ -5,16 +5,16 @@
 **H**exadecimal <br>
 **B**inary <br>
 
-# What?
-- processor design from the ground up
+## What?
+A virtual machine written in Python with original compiler and processor design with display using Pygame.
 
-# Why?
+## Why?
 
-1. An opportunity to learn and write algorithms in a primative programming language
-2. Build cool assembly programs
-3. The love and curiosity of learning
+1. An opportunity to learn and write algorithms in a primative programming language.
+2. Build cool assembly programs.
+3. The love and curiosity of learning.
 
-# Instructions
+## Instructions
 1. Choose a filename in the `Makefile` to match the `.asm` you want to run
 
 ```
@@ -35,11 +35,6 @@ clean:  # remove all hex files in /hex
 
 ## ASM - Syntax
 An easy way to understand any syntax is through example.
-
-Notes:
-- `RAM` is a pythonic list
-- `VRAM` is also a pythonic list
-- all numerical values in any `file.asm` are integers eg. 4 != 0x04
 
 `GOTO 4`<br>
 Set PC (program counter) to line 4.
@@ -65,16 +60,20 @@ Multiply RAM[0] by 2.
 `DIV R[0] 2`<br>
 Divide RAM[0] by 2.
 
-`CMP R[0] R[1]`<br>
-Compare RAM[0] with RAM[1].
+`CMP A B`<br>
+If A == B, skip next line of assembly code.
 
-`CMP R[0] 42`<br>
-Compare RAM[0] with value 42.
+`LT A B`<br>
+If A $\lt$ B, skip next line of assembly code.
 
-```bash
-if (X == Y):
-    skip next line in .asm (PC += 2)
-```
+`LTE A B`<br>
+If A $\leq$ B, skip next line of assembly code.
+
+`GT A B`<br>
+If A $\gt$ B, skip next line of assembly code.
+
+`GTE A B`<br>
+If A $\geq$ B, skip next line of assembly code.
 
 `CALL FUNCTION`<br>
 Push PC to the Stack and set PC to where label `FUNCTION` is.
@@ -84,6 +83,16 @@ Pop the number from the Stack and set PC to that value.
 
 `EXIT`<br>
 Exit virtual machine.
+
+
+What makes coding in ASM effective (as well as fun) is using the built in pointers. We have assigned the variables `U,V,Y,Z` to point to the values stored at specific slots in RAM. In particular:
+
+```
+U := R[4096]
+V := R[4097]
+Y := R[4098]
+Z := R[4099]
+```
 
 
 ## Opcodes
@@ -123,19 +132,19 @@ Exit virtual machine.
 | ffff | EXIT  |
 
 
-## About the RAM Slots
+## Technical Details/Slot Dedication
 
-- a "slot in RAM" is a location in RAM that can be identified with an index eg RAM[i]
-- RAM is 512KB in size => RAM has `128000` slots
-
-#### Slot Dedication
+- `RAM` is a pythonic list
+- a "slot in RAM" is a location in RAM that can be identified with an index eg. RAM[i]
+- RAM is 512KB in size which means RAM has `128000` slots
+- all numerical values in any `.asm` file should be interpretted by humans as integers. Having said this, you can only direct load hex values eg. `LD R[4100] 0XFF0000FF`
 
 The indices in the table below are of the form `x-y` which correspond to the standard list indexing of Python. This means the values of RAM with the range of indices `x-y` are `RAM[x], RAM[x+1], ... , RAM[y]`.
 
 | Indices in RAM  | Dedication |
 | ------------- |----------------|
 | 0-4095  | Function Inputs*  |
-| 4096-4099  | Pointers for Indices (W,X,Y,Z resp)  |
+| 4096-4099  | Pointers for Indices (U,V,Y,Z resp)  |
 | 4100    | Return slot for function outputs |
 | 4101-43201 | Indices for VRAM** |
 
