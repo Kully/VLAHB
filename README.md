@@ -5,8 +5,13 @@
 **H**exadecimal <br>
 **B**inary <br>
 
-## What?
-A virtual machine written in Python with original compiler and processor design with display using Pygame.
+A Virtual Machine, Assembler, and Compiler written in Python
+
+What else...
+
+- supports screen display
+- original processor design
+- peep hole optimizer with unrolling loops
 
 ## Why?
 
