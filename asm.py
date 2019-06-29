@@ -473,6 +473,14 @@ def validate_and_make_hexfile(lines):
                 opcode_val = util.op_codes_dict['RETURN']
                 word0_second_half = opcode_val.zfill(4)
 
+            elif opcode in ('POP', 'PUSH'):
+                valid_opcode = True
+                if len(args) > 0:
+                    raise Exception(util.POP_PUSH_EXCEPTION_MSG.format(opcode))
+
+                opcode_val = util.op_codes_dict[opcode]
+                word0_second_half = opcode_val.zfill(4)
+
             # transfer RAM portion to display and update
             elif opcode == 'BLIT':
                 valid_opcode = True

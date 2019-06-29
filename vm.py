@@ -291,13 +291,39 @@ def exec(lines_from_file_hex):
 
             manage_stack_size_overflow()
 
-            index = len(STACK) - 1
+            index = len(STACK)
             a = STACK_FRAME_SIZE * (0 + index)
             b = STACK_FRAME_SIZE * (1 + index)
             RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
             PC = STACK.pop()
 
             print('    RETURN: Pop %s from the Stack: PC -> %s' %(PC, PC))
+
+        # POP == fff0
+        elif word0_second_half == 65520:
+            
+            manage_stack_size_overflow()
+
+            index = len(STACK)
+            a = STACK_FRAME_SIZE * (0 + index)
+            b = STACK_FRAME_SIZE * (1 + index)
+            RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
+            STACK.pop()
+
+            print('    POP: Pop %s from the Stack' %(PC))
+
+        # PUSH == fff1
+        elif word0_second_half == 65521:
+            STACK.append(PC)
+
+            manage_stack_size_overflow()
+
+            index = len(STACK)
+            a = STACK_FRAME_SIZE * (0 + index)
+            b = STACK_FRAME_SIZE * (1 + index)
+            RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
+
+            print('    PUSH: Push %s to the Stack' %(word1))
 
         # STRICT LESS THAN REGISTER TO DIRECT == 0010
         elif word0_second_half == 16:
