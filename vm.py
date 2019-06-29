@@ -47,6 +47,7 @@ PC = 0  # program counter
 '''
 import math
 import os
+import random
 import string
 import sys
 import time
@@ -459,6 +460,22 @@ def exec(lines_from_file_hex):
             RAM[i:i + ram_span+1] = RAM[k:k + ram_span+1]
 
             print('    LD R[%s:%s] R[%s:%s]' %(i, i+ram_span, k, k+ram_span))
+
+
+        # FLOOR == 0022
+        elif word0_second_half == 34:
+            RAM[word1] = math.floor(RAM[word1])
+            print('    FLOOR R[%s]' %word1)
+
+        # CEIL == 0023
+        elif word0_second_half == 35:
+            RAM[word1] = math.ceil(RAM[word1])
+            print('    CEIL R[%s]' %word1)
+
+        # RAND == 0024
+        elif word0_second_half == 36:
+            RAM[word1] = random.choice([0, 1])
+            print('    RAND R[%s]' %word1)
 
         # LD R[V] R[Z] == 0100
         # 

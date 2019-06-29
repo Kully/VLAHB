@@ -133,7 +133,17 @@ op_codes_dict = {
     'LD R[i:j] k': '1f',
     'LD R[i:j] R[k]': '20',
     'LD R[i:j] R[k:l]': '21',
-    # add U,V,Y,Z opcode names here
+    'FLOOR': '22',
+    'CEIL': '23',
+    'RAND': '24',
+    # U,V,Y,Z
+    'LD R[U] R[V]': '100',
+    'LD R[U] R[i]': '104',
+    'LD R[U] i': '105',
+    'LD R[U:V] R[i]': '103',
+    'LD R[U:V] i': '106',
+    'LD R[U:V] R[Y]': '101',
+    'LD R[U:V] R[Y:Z]': '102',
     'EXIT': 'ffff',
 }
 
@@ -191,6 +201,12 @@ TWO_ARGS_EXCEPTION_MSG = (
     '    {opcode} R[X] Y'
 )
 
+ONE_ARG_EXCEPTION_MSG = (
+    '\nThe Opcode {opcode} must be followed by 1 argument '
+    'in the form:\n    {opcode} R[X] where X is an int'
+)
+
+# TODO: update the syntax in error message below
 LD_EXCEPTION_MSG = (
     '\nThe Opcode LD is used to load values into RAM slots\nLD '
     'must be followed by 2 exactly arguments:'
