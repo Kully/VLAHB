@@ -537,12 +537,14 @@ def validate_and_make_hexfile(lines):
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
-                word0_second_half = opcode_val.zfill(4)
+                word0_second_half = opcode_val.zfill(4)             
 
             elif opcode == 'EXIT':
                 valid_opcode = True
                 opcode_val = util.op_codes_dict['EXIT']
                 word0_second_half = opcode_val.zfill(4)
+
+            # TODO: ignore line if invalid line of code
 
             if valid_opcode and opcode != 'LD':
                 hex_file_str += word0_first_half
@@ -585,7 +587,7 @@ if __name__ == "__main__":
         lines_for_program, cumsum_hex_lines = compute_label_indices(
             file_asm, cumsum_hex_lines
         )
-        all_lines_for_programs.append(lines_for_program) 
+        all_lines_for_programs.append(lines_for_program)
 
     # generate all asm -> hex files
     for lines_for_program in all_lines_for_programs:

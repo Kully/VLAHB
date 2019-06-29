@@ -7,11 +7,12 @@
 
 A Virtual Machine, Assembler, and Compiler written in Python
 
-What else...
+Some features...
 
-- supports screen display
 - original processor design
 - peep hole optimizer with unrolling loops
+- statically linked
+- screen display
 
 ## Why?
 

@@ -102,3 +102,20 @@ MATH_DIV_REMAINDER_16:
     
     LD R[4100] R[4]
     RETURN
+
+// R[0]: X
+// R[1]: Y
+// Returns abs(X-Y)
+MATH_ABS_DIFF:
+    LTE R[0] R[1]
+    GOTO MATH_ABS_DIFF_LTE_FALSE
+    LD R[4100] R[1]
+    SUB R[4100] R[0]
+    RETURN
+
+    MATH_ABS_DIFF_LTE_FALSE:
+        LD R[4100] R[0]
+        SUB R[4100] R[1]
+        RETURN
+
+    RETURN

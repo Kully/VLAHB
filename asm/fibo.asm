@@ -14,7 +14,3 @@ ALGO:
 	CMP R[99] 5
 	GOTO ALGO
 	EXIT
-
-rts
-rti
-happy

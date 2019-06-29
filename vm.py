@@ -286,6 +286,18 @@ def exec(lines_from_file_hex):
 
         # RETURN == 000f
         elif word0_second_half == 15:
+
+            manage_stack_size_overflow()
+
+            index = len(STACK)
+            a = STACK_FRAME_SIZE * (0 + index)
+            b = STACK_FRAME_SIZE * (1 + index)
+            RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
+            PC = STACK.pop()
+            print('    RETURN: Pop %s from the Stack: PC -> %s' %(PC, PC))
+
+        # SHIFT == fff0  (RETURN without the pop)
+        elif word0_second_half == 15:
             index = len(STACK)
 
             manage_stack_size_overflow()
@@ -293,8 +305,7 @@ def exec(lines_from_file_hex):
             a = STACK_FRAME_SIZE * (0 + index)
             b = STACK_FRAME_SIZE * (1 + index)
             RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
-            PC = STACK.pop()
-            print('    RETURN: Pop %s from the Stack: PC -> %s' %(PC, PC))
+            print('    SHIFT: Pop %s from the Stack: PC -> %s' %(PC, PC))
 
         # STRICT LESS THAN REGISTER TO DIRECT == 0010
         elif word0_second_half == 16:
@@ -606,7 +617,7 @@ def exec(lines_from_file_hex):
                 word1,
             ))
 
-        # EXIT VM == ffff
+        # EXIT == ffff
         elif word0_second_half == 2**16 - 1:
             EXIT_LOOP = True
             print('    EXIT')
@@ -615,11 +626,11 @@ def exec(lines_from_file_hex):
             if event.type == pygame.QUIT:
                 EXIT_LOOP = True
 
-        # debug prints
-        # print('')
-        print('    RAM[0-7]:     [%s, %s, %s, %s, %s, %s, %s, %s]' %(
-            RAM[0], RAM[1], RAM[2], RAM[3], RAM[4], RAM[5], RAM[6], RAM[7])
-        )
+        print('RAM:')
+        print('    RAM[0:7]    : %r'  %RAM[0 : 7])  # has one extra
+        print('    RAM[128:134]: %r'  %RAM[128 : 134])
+        print('    RAM[256:262]: %r'  %RAM[256 : 262])
+        print('')
         print('    STACK:        %r' %STACK)
         print('    RAM[4100]:    %r  # return value' %RAM[4100])
         print('    RAM[U,V,Y,Z]: [%s, %s, %s, %s]  # stack pointers' %(
