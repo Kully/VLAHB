@@ -1,3 +1,36 @@
+LD R[0] 1
+LD R[1] 9
+CALL ADAM111
+EXIT
+
+
+ADAM111:
+	LD R[0] 4
+	LD R[1] 7
+	RETURN
+
+
+
+LD R[0] 4
+LD R[1] 2
+CALL TEST_STACK_1
+EXIT
+
+TEST_STACK_1:
+	LD R[0] 5
+	LD R[0] 8
+	CALL TEST_STACK_2
+
+	EXIT
+
+TEST_STACK_2:
+	LD R[0] 1
+	LD R[1] 1
+	LD R[2] 1
+	LD R[3] 1
+	LD R[4100] 1111
+	RETURN
+
 
 LD R[0] 1          // X0
 LD R[1] 5  		   // Y0

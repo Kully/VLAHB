@@ -283,6 +283,7 @@ def exec(lines_from_file_hex):
             b = STACK_FRAME_SIZE * (1 + index)
             RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
             PC = word1
+
             print('    CALL: Push %s to the Stack: PC -> %s' %(word1, word1))
 
         # RETURN == 000f
@@ -290,23 +291,13 @@ def exec(lines_from_file_hex):
 
             manage_stack_size_overflow()
 
-            index = len(STACK)
+            index = len(STACK) - 1
             a = STACK_FRAME_SIZE * (0 + index)
             b = STACK_FRAME_SIZE * (1 + index)
             RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
             PC = STACK.pop()
+
             print('    RETURN: Pop %s from the Stack: PC -> %s' %(PC, PC))
-
-        # SHIFT == fff0  (RETURN without the pop)
-        elif word0_second_half == 15:
-            index = len(STACK)
-
-            manage_stack_size_overflow()
-
-            a = STACK_FRAME_SIZE * (0 + index)
-            b = STACK_FRAME_SIZE * (1 + index)
-            RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
-            print('    SHIFT: Pop %s from the Stack: PC -> %s' %(PC, PC))
 
         # STRICT LESS THAN REGISTER TO DIRECT == 0010
         elif word0_second_half == 16:
@@ -322,6 +313,7 @@ def exec(lines_from_file_hex):
             if RAM[word0_first_half] < RAM[word1]:
                 is_this_true = 'true'
                 PC += 2
+
             print('    LT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
         # LESS THAN OR EQUAL REGISTER TO DIRECT == 0012
@@ -330,6 +322,7 @@ def exec(lines_from_file_hex):
             if RAM[word0_first_half] <= word1:
                 is_this_true = 'true'
                 PC += 2
+
             print('    LTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # LESS THAN OR EQUAL REGISTER TO REGISTER == 0013
@@ -338,6 +331,7 @@ def exec(lines_from_file_hex):
             if RAM[word0_first_half] <= RAM[word1]:
                 is_this_true = 'true'
                 PC += 2
+
             print('    LTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
         # STRICT GREATER THAN REGISTER TO DIRECT == 0014
@@ -346,6 +340,7 @@ def exec(lines_from_file_hex):
             if RAM[word0_first_half] > word1:
                 is_this_true = 'true'
                 PC += 2
+
             print('    GT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # STRICT GREATER THAN REGISTER TO REGISTER == 0015
@@ -354,6 +349,7 @@ def exec(lines_from_file_hex):
             if RAM[word0_first_half] > RAM[word1]:
                 is_this_true = 'true'
                 PC += 2
+
             print('    GT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
         # GREATER THAN OR EQUAL REGISTER TO DIRECT == 0016
@@ -362,6 +358,7 @@ def exec(lines_from_file_hex):
             if RAM[word0_first_half] >= word1:
                 is_this_true = 'true'
                 PC += 2
+
             print('    GTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # GREATER THAN OR EQUAL REGISTER TO REGISTER == 0017
@@ -370,6 +367,7 @@ def exec(lines_from_file_hex):
             if RAM[word0_first_half] >= RAM[word1]:
                 is_this_true = 'true'
                 PC += 2
+
             print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
 
@@ -644,9 +642,10 @@ def exec(lines_from_file_hex):
                 EXIT_LOOP = True
 
         print('RAM:')
-        print('    RAM[0:7]    : %r'  %RAM[0 : 7])  # has one extra
+        print('    RAM[0:6]    : %r'  %RAM[0 : 6])
         print('    RAM[128:134]: %r'  %RAM[128 : 134])
-        print('    RAM[256:262]: %r'  %RAM[256 : 262])
+        print('    RAM[256:262]: %r'  %RAM[128*2 : 128*2 + 6])
+        print('    RAM[384:390]: %r'  %RAM[128*3 : 128*3 + 6])
         print('')
         print('    STACK:        %r' %STACK)
         print('    RAM[4100]:    %r  # return value' %RAM[4100])

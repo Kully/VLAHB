@@ -1,5 +1,6 @@
 # TODO - add a debug flag -d for toggling print statements
-filename = rotate_square_kully.asm  # name of file in /asm you want to run
+filename = rotate_square_kully.asm
+# filename = pride_flag.asm
 
 run:
 	python3 asm.py $(filename)
