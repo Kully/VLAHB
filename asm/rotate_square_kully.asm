@@ -1,35 +1,13 @@
-LD R[0] 1
-LD R[1] 9
-CALL ADAM111
-EXIT
+// LD R[0] 43
+// LD R[1] 22
+// PUSH
 
-
-ADAM111:
-	LD R[0] 4
-	LD R[1] 7
-	RETURN
-
-
-
-LD R[0] 4
-LD R[1] 2
-CALL TEST_STACK_1
-EXIT
-
-TEST_STACK_1:
-	LD R[0] 5
-	LD R[0] 8
-	CALL TEST_STACK_2
-
-	EXIT
-
-TEST_STACK_2:
-	LD R[0] 1
-	LD R[1] 1
-	LD R[2] 1
-	LD R[3] 1
-	LD R[4100] 1111
-	RETURN
+// LD R[0] 11
+// LD R[1] 23
+// LD R[2] 33
+// LD R[3] 33
+// CALL LOVE_IS_HERE
+// POP
 
 
 LD R[0] 1          // X0
@@ -37,7 +15,7 @@ LD R[1] 5  		   // Y0
 LD R[2] 7		   // X1
 LD R[3] 2          // Y1
 LD R[4] 0XAC80FFFF // color
-
+PUSH
 
 CALL DRAW_LINE
 EXIT
@@ -51,25 +29,16 @@ DRAW_LINE:
 	LD R[U] R[4]
 	BLIT
 
-
-	// save first inputs
-	LD R[100] R[0]
-	LD R[101] R[1]
-	LD R[102] R[2]
-	LD R[103] R[3]
-	LD R[104] R[4]
-
 	// store abs(X0-X1) in R[5]
+	POP
 	LD R[1] R[2]
 	CALL MATH_ABS_DIFF
 	LD R[5] R[4100]
 
+
+	POP
 	// retrieve first inputs
-	LD R[0] R[100]
-	LD R[1] R[101]
-	LD R[2] R[102]
-	LD R[3] R[103]
-	LD R[4] R[104]
+	EXIT
 
 
 	// store abs(Y0-Y1) in R[6]
