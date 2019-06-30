@@ -1,14 +1,27 @@
-LD R[0] 1
-LD R[1] 9
-CALL ADAM111
+// testing POP and PUSH
+// testing POP and PUSH
+// testing POP and PUSH
+
+LD R[0] 43
+LD R[1] 22
+PUSH
+LD R[0] 11
+LD R[1] 23
+LD R[2] 33
+LD R[3] 33
+
+CALL LOVE_IS_HERE
 EXIT
 
+LOVE_IS_HERE:
+    RETURN
 
-ADAM111:
-	LD R[0] 4
-	LD R[1] 7
-	RETURN
 
+
+
+// testing POP and PUSH
+// testing POP and PUSH
+// testing POP and PUSH
 
 
 LD R[0] 4
