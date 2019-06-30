@@ -113,8 +113,8 @@ op_codes_dict = {
     'REGISTER TO REGISTER DIVIDE': 'b',
     'COMPARE REGISTER TO DIRECT': 'c',
     'COMPARE REGISTER TO REGISTER': 'd',
-    'CALL': 'e',
-    'RETURN': 'f',
+    'CALL': 'e',  # PUSH + GOTO
+    'RETURN': 'f', # POP + GOTO
     'LESS THAN REGISTER TO DIRECT': '10',
     'LESS THAN REGISTER TO REGISTER': '11',
     'LESS THAN OR EQUAL REGISTER TO DIRECT': '12',
@@ -144,6 +144,8 @@ op_codes_dict = {
     'LD R[U:V] i': '106',
     'LD R[U:V] R[Y]': '101',
     'LD R[U:V] R[Y:Z]': '102',
+    'POP': 'fff0',
+    'PUSH': 'fff1',
     'EXIT': 'ffff',
 }
 
@@ -194,6 +196,11 @@ CALL_EXCEPTION_MSG = (
 RETURN_EXCEPTION_MSG = (
     '\nThe Opcode RETURN requires no arguments afterwards'
 )
+
+POP_PUSH_EXCEPTION_MSG = (
+    '\nThe Opcode {opcode} requires no arguments afterwards'
+)
+
 
 TWO_ARGS_EXCEPTION_MSG = (
     '\nThe Opcode {opcode} must be followed by 2 arguments '
