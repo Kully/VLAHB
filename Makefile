@@ -1,6 +1,6 @@
 # TODO - add a debug flag -d for toggling print statements
-filename = rotate_square_kully.asm
-# filename = pride_flag.asm
+# filename = ball_bouncing_off_walls.asm
+filename = logic.asm
 
 run:
 	python3 asm.py $(filename)
