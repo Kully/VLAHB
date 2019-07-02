@@ -1,7 +1,8 @@
-LD R[0] 1
-LD R[1] 0
-CALL LOGIC_OR
+LD R[0] 2
+LD R[1] 4
+CALL LOGIC_AND
 EXIT
+
 
 LOGIC_OR:
 	LD R[4100] 1
@@ -10,4 +11,21 @@ LOGIC_OR:
 	CMP R[1] 0
 	RETURN
 	LD R[4100] 0
+	RETURN
+
+
+LOGIC_AND:
+ 	// count num of 1s in R[4]
+	LD R[4100] 0
+
+	CMP R[0] 0
+	ADD R[4] 1
+
+	CMP R[1] 0
+	ADD R[4] 1
+
+	CMP R[4] 2
+	RETURN
+	LD R[4100] 1
+	LD R[4] 0  // reset R[4] to 0
 	RETURN
