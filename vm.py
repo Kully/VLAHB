@@ -512,11 +512,11 @@ def UNKNOWN6(word0_first_half, word1): # 0106
         ))
 
 def EXIT(word0_first_half, word1): #ffff
-    EXIT_LOOP = True
+    exit(1)
     print('    EXIT')
 
 opcodes = [0] * 65536
-opcodes[0x1] = GOTO
+opcodes[0x1] = GOTO # 01
 opcodes[0x2] = DIRECT_LOAD # 0002
 opcodes[0x3] = DIRECT_ADD #3
 opcodes[0x4] = DIRECT_SUBTRACT # 0004
@@ -531,8 +531,8 @@ opcodes[0xc] = COMPARE_REGISTER_TO_DIRECT #== 000c
 opcodes[0xd] = COMPARE_REGISTER_TO_REGISTER #== 000d
 opcodes[0xe] = CALL #== 000e
 opcodes[0xf] = RETURN #== 000f
-opcodes[0xff0] = POP #== fff0
-opcodes[0xff1] = PUSH #== fff1
+opcodes[0xfff0] = POP #== fff0
+opcodes[0xfff1] = PUSH #== fff1
 opcodes[0x10] = STRICT_LESS_THAN_REGISTER_TO_DIRECT #== 0010
 opcodes[0x11] = STRICT_LESS_THAN_REGISTER_TO_REGISTER #== 0011
 opcodes[0x12] = LESS_THAN_OR_EQUAL_REGISTER_TO_DIRECT #== 0012
@@ -568,8 +568,6 @@ def exec(lines_from_file_hex):
     global PC
     clock = pygame.time.Clock()
 
-    EXIT_LOOP = False
-
     while True:
         # time.sleep(DELAY_BETWEEN_COMMANDS)
 
@@ -596,10 +594,6 @@ def exec(lines_from_file_hex):
 
         PC += 2
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                EXIT_LOOP = True
-
         print('RAM:')
         print('    RAM[0:6]    : %r'  %RAM[0 : 6])
         print('    RAM[128:134]: %r'  %RAM[128 : 134])
@@ -612,11 +606,6 @@ def exec(lines_from_file_hex):
             RAM[4096], RAM[4097], RAM[4098], RAM[4099])
         )
         print('\n\n')
-
-        if EXIT_LOOP:
-            pygame.quit()
-            util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
-            break
 
 
 if __name__ == "__main__":
