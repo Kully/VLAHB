@@ -10,7 +10,7 @@ LD R[65002] 10  // ball Y coord
 // ball velocity
 // 0 is +
 // 1 is -
-LD R[65003] 0  // X velo
+LD R[65003] 1  // X velo
 LD R[65004] 1  // Y velo
 
 
@@ -25,11 +25,11 @@ BALL_BOUNCING_OFF_WALLS_MAIN:
 	// ***************
 
 	// ** X - right wall
-	LT R[65001] 160  // screen width
+	LT R[65001] 159  // screen width - 1
 	LD R[65003] 0
 
 	// ** X - left wall
-	GT R[65001] 0  // screen width
+	GT R[65001] 0
 	LD R[65003] 1
 
 	// ** Y - bottom wall
@@ -37,7 +37,7 @@ BALL_BOUNCING_OFF_WALLS_MAIN:
 	LD R[65004] 0
 
 	// ** Y - top wall
-	GT R[65002] 0  // screen height
+	GT R[65002] 0
 	LD R[65004] 1
 
 	// ************************************
