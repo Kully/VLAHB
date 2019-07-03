@@ -401,20 +401,21 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 24:
             surf = pygame.Surface(
                 (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
-            )
-
+                )
             surf.lock()
-            for x in range(WIDTH_DISPLAY_PIXELS):
-                for y in range(HEIGHT_DISPLAY_PIXELS):
-                    rgba_tuple = util.int_to_rgba_tuple(
-                        RAM[4101 + x + y*WIDTH_DISPLAY_PIXELS]
-                    )
-                    surf.set_at((x, y), rgba_tuple)
+            for i in range(WIDTH_DISPLAY_PIXELS * HEIGHT_DISPLAY_PIXELS):
+                color = RAM[4101 + i]
+                rgba_tuple = (
+                    (color >> 24) & 0xFF,
+                    (color >> 16) & 0xFF,
+                    (color >>  8) & 0xFF,
+                    (color >>  0) & 0xFF)
+                x = int(i % WIDTH_DISPLAY_PIXELS)
+                y = int(i / WIDTH_DISPLAY_PIXELS)
+                surf.set_at((x, y), rgba_tuple)
             surf.unlock()
-
             gameDisplay.blit(surf, (0, 0))
             pygame.display.update()
-
             print('    BLIT')
 
         # DIRECT SQRT == 0019
