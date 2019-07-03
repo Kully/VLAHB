@@ -2,8 +2,11 @@
 // clear screen
 CALL SCREEN_FILL_BLACK
 
+// Y points to color
+LD R[4098] 65000
+
 // init variables
-LD R[65000] 0X00FF00FF  // ball color
+LD R[65000] 0XFF0000FF  // ball color
 LD R[65001] 22  // ball X coord
 LD R[65002] 10  // ball Y coord
 
@@ -21,17 +24,17 @@ BALL_BOUNCING_OFF_WALLS_MAIN:
 	// ***************
 
 	// ** X - right wall
-	LT R[65001] 159  // screen width - 1
+	LT R[65001] 158  // screen width - 1
 	LD R[65003] 0
 	// ** X - left wall
-	GT R[65001] 0
+	GT R[65001] 2
 	LD R[65003] 1
 
 	// ** Y - bottom wall
-	LT R[65002] 120  // screen height
+	LT R[65002] 118  // screen height
 	LD R[65004] 0
 	// ** Y - top wall
-	GT R[65002] 0
+	GT R[65002] 2
 	LD R[65004] 1
 
 	// ************************************
@@ -59,8 +62,10 @@ BALL_BOUNCING_OFF_WALLS_MAIN:
 	// ****
 	// draw
 	// ****
-	CLEAR
-	LD R[Z] 0X00FF00FF // load color in display
+	// CLEAR
+	// ADD R[65000] 4021
+	// LD R[Z] 0X00FF00FF // load color in display
+	LD R[Z] R[Y] // load color in display
 	BLIT
 
 
