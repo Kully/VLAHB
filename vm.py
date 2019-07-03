@@ -325,6 +325,13 @@ def exec(lines_from_file_hex):
 
             print('    PUSH: Push %s to the Stack' %(word1))
 
+        # CLEAR == fff2
+        elif word0_second_half == 65522:
+            len_of_vram = WIDTH_DISPLAY_PIXELS * HEIGHT_DISPLAY_PIXELS
+            RAM[4101:4101 + len_of_vram] = [0] * len_of_vram
+            print('    CLEAR')
+
+
         # STRICT LESS THAN REGISTER TO DIRECT == 0010
         elif word0_second_half == 16:
             is_this_true = 'false'

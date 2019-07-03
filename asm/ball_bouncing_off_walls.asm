@@ -59,6 +59,7 @@ BALL_BOUNCING_OFF_WALLS_MAIN:
 	// ****
 	// draw
 	// ****
+	CLEAR
 	LD R[Z] 0X00FF00FF // load color in display
 	BLIT
 

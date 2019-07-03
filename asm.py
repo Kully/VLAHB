@@ -560,6 +560,11 @@ def validate_and_make_hexfile(lines):
                 if re.match(r'R\[\d+]', args[0]):
                     word1 = util.int_to_hex(args[0][2:-1]).zfill(8)
 
+            elif opcode == 'CLEAR':
+                valid_opcode = True
+                opcode_val = util.op_codes_dict[opcode]
+                word0_second_half = opcode_val.zfill(4)
+
             elif opcode == 'EXIT':
                 valid_opcode = True
                 opcode_val = util.op_codes_dict['EXIT']

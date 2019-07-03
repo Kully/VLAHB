@@ -146,6 +146,7 @@ op_codes_dict = {
     'LD R[U:V] R[Y:Z]': '102',
     'POP': 'fff0',
     'PUSH': 'fff1',
+    'CLEAR': 'fff2',
     'EXIT': 'ffff',
 }
 
