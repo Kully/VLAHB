@@ -74,10 +74,11 @@ STACK_MAX_SIZE = 32
 
 ROM = []
 
-
-# pygame
 WIDTH_DISPLAY_PIXELS = 160
 HEIGHT_DISPLAY_PIXELS = 120
+pygame.init()
+pygame.display.set_caption('VLAHB')
+gameDisplay = pygame.display.set_mode((WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS))
 
 
 def starting_PC():
@@ -100,6 +101,10 @@ def fill_ROM_with_hex_lines(hex_lines):
 def reset_RAM_values_to_zero():
     RAM = [0] * RAM_NUM_OF_SLOTS
 
+# Disable printing.
+if False:
+    def print(a):
+        pass
 
 def manage_ram_slot_overunder_flow(index_in_RAM):
     if RAM[index_in_RAM] < 0:
@@ -144,25 +149,458 @@ def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
     util.slow_print('Validation: PASS!', print_empty_line=True)
     time.sleep(0.4)
 
+def GOTO(PC, word1, word0_first_half):
+    PC = word1
+    print('    GOTO: PC -> %s' %word1)
+    return PC
+
+def DLD(PC, word1, word0_first_half):
+    RAM[word0_first_half] = word1
+    print('    LD R[%s] %s' %(word0_first_half, word1))
+    return PC
+
+def DADD(PC, word1, word0_first_half):
+    RAM[word0_first_half] += word1
+    print('    ADD R[%s] %s' %(word0_first_half, word1))
+    manage_ram_slot_overunder_flow(word0_first_half)
+    return PC
+
+def DSUB(PC, word1, word0_first_half):
+    RAM[word0_first_half] -= word1
+    print('    SUB R[%s] %s' %(word0_first_half, word1))
+    manage_ram_slot_overunder_flow(word0_first_half)
+    return PC
+
+def DMUL(PC, word1, word0_first_half):
+    RAM[word0_first_half] *= word1
+    print('    MUL R[%s] %s' %(word0_first_half, word1))
+    manage_ram_slot_overunder_flow(word0_first_half)
+    return PC
+
+def DDIV(PC, word1, word0_first_half):
+    RAM[word0_first_half] /= word1
+    print('    DIV R[%s] %s' %(word0_first_half, word1))
+    manage_ram_slot_overunder_flow(word0_first_half)
+    return PC
+
+def RRLD(PC, word1, word0_first_half):
+    RAM[word0_first_half] = RAM[word1]
+    print('    LD R[%s] R[%s]' %(word0_first_half, word1))
+    return PC
+
+def RRADD(PC, word1, word0_first_half):
+    RAM[word0_first_half] += RAM[word1]
+    print('    ADD R[%s] R[%s]' %(word0_first_half, word1))
+    manage_ram_slot_overunder_flow(word0_first_half)
+    return PC
+
+def RRSUB(PC, word1, word0_first_half):
+    RAM[word0_first_half] -= RAM[word1]
+    print('    SUB R[%s] R[%s]' %(word0_first_half, word1))
+    manage_ram_slot_overunder_flow(word0_first_half)
+    return PC
+
+def RRMUL(PC, word1, word0_first_half):
+    RAM[word0_first_half] *= RAM[word1]
+    print('    MUL R[%s] R[%s]' %(word0_first_half, word1))
+    manage_ram_slot_overunder_flow(word0_first_half)
+    return PC
+
+def RRDIV(PC, word1, word0_first_half):
+    RAM[word0_first_half] /= RAM[word1]
+    print('    DIV R[%s] R[%s]' %(word0_first_half, word1))
+    manage_ram_slot_overunder_flow(word0_first_half)
+    return PC
+
+def CRD(PC, word1, word0_first_half):
+    cmp_true = 'false'
+    if RAM[word0_first_half] == word1:
+        cmp_true = 'true'
+        PC += 2
+    print('    CMP R[%s] %s -> %s' %(word0_first_half, word1, cmp_true))
+    return PC
+
+def CRR(PC, word1, word0_first_half):
+    cmp_true = 'false'
+    if RAM[word0_first_half] == RAM[word1]:
+        PC += 2
+        cmp_true = 'true'
+    print('    CMP R[%s] R[%s] -> %s' %(word0_first_half, word1, cmp_true))
+    return PC
+
+def CALL(PC, word1, word0_first_half):
+    STACK.append(PC)
+    manage_stack_size_overflow()
+    index = len(STACK)
+    a = STACK_FRAME_SIZE * (0 + index)
+    b = STACK_FRAME_SIZE * (1 + index)
+    RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
+    PC = word1
+    print('    CALL: Push %s to the Stack: PC -> %s' %(word1, word1))
+    return PC
+
+def RET(PC, word1, word0_first_half):
+    manage_stack_size_overflow()
+    index = len(STACK)
+    a = STACK_FRAME_SIZE * (0 + index)
+    b = STACK_FRAME_SIZE * (1 + index)
+    RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
+    PC = STACK.pop()
+    print('    RETURN: Pop %s from the Stack: PC -> %s' %(PC, PC))
+    return PC
+
+def POP(PC, word1, word0_first_half):
+    manage_stack_size_overflow()
+    index = len(STACK)
+    a = STACK_FRAME_SIZE * (0 + index)
+    b = STACK_FRAME_SIZE * (1 + index)
+    RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
+    STACK.pop()
+    print('    POP: Pop %s from the Stack' %(PC))
+    return PC
+
+def PUSH(PC, word1, word0_first_half):
+    STACK.append(PC)
+    manage_stack_size_overflow()
+    index = len(STACK)
+    a = STACK_FRAME_SIZE * (0 + index)
+    b = STACK_FRAME_SIZE * (1 + index)
+    RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
+    print('    PUSH: Push %s to the Stack' %(word1))
+    return PC
+
+def SLRD(PC, word1, word0_first_half):
+    is_this_true = 'false'
+    if RAM[word0_first_half] < word1:
+        is_this_true = 'true'
+        PC += 2
+    print('    LT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
+    return PC
+
+def SLRR(PC, word1, word0_first_half):
+    is_this_true = 'false'
+    if RAM[word0_first_half] < RAM[word1]:
+        is_this_true = 'true'
+        PC += 2
+    print('    LT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
+    return PC
+
+def LTERD(PC, word1, word0_first_half):
+    is_this_true = 'false'
+    if RAM[word0_first_half] <= word1:
+        is_this_true = 'true'
+        PC += 2
+    print('    LTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
+    return PC
+
+def LTERR(PC, word1, word0_first_half):
+    is_this_true = 'false'
+    if RAM[word0_first_half] <= RAM[word1]:
+        is_this_true = 'true'
+        PC += 2
+    print('    LTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
+    return PC
+
+def SGRD(PC, word1, word0_first_half):
+    is_this_true = 'false'
+    if RAM[word0_first_half] > word1:
+        is_this_true = 'true'
+        PC += 2
+    print('    GT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
+    return PC
+
+def SGRR(PC, word1, word0_first_half):
+    is_this_true = 'false'
+    if RAM[word0_first_half] > RAM[word1]:
+        is_this_true = 'true'
+        PC += 2
+    print('    GT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
+    return PC
+
+def GTERD(PC, word1, word0_first_half):
+    is_this_true = 'false'
+    if RAM[word0_first_half] >= word1:
+        is_this_true = 'true'
+        PC += 2
+    print('    GTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
+    return PC
+
+def GTERR(PC, word1, word0_first_half):
+    is_this_true = 'false'
+    if RAM[word0_first_half] >= RAM[word1]:
+        is_this_true = 'true'
+        PC += 2
+    print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
+    return PC
+
+def BLIT(PC, word1, word0_first_half):
+    surf = pygame.Surface(
+        (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
+    )
+    surf.lock()
+    for i in range(WIDTH_DISPLAY_PIXELS * HEIGHT_DISPLAY_PIXELS):
+        color = RAM[4101 + i]
+        rgba_tuple = (
+            (color >> 24) & 0xFF,
+            (color >> 16) & 0xFF,
+            (color >>  8) & 0xFF,
+            (color >>  0) & 0xFF)
+        x = int(i % WIDTH_DISPLAY_PIXELS)
+        y = int(i / WIDTH_DISPLAY_PIXELS)
+        surf.set_at((x, y), rgba_tuple)
+    surf.unlock()
+    gameDisplay.blit(surf, (0, 0))
+    pygame.display.update()
+    print('    BLIT')
+    return PC
+
+def DSQRT(PC, word1, word0_first_half):
+    RAM[word0_first_half] = math.sqrt(word1)
+    print('    SQRT R[%s] %s' %(word0_first_half, word1))
+    return PC
+
+def RRSQRT(PC, word1, word0_first_half):
+    RAM[word0_first_half] = math.sqrt(RAM[word1])
+    print('    SQRT R[%s] R[%s]' %(word0_first_half, word1))
+    return PC
+
+def DSIN(PC, word1, word0_first_half):
+    RAM[word0_first_half] = math.sin(word1)
+    print('    SIN R[%s] %s' %(word0_first_half, word1))
+    return PC
+
+def RRS(PC, word1, word0_first_half):
+    RAM[word0_first_half] = math.sin(RAM[word1])
+    print('    SIN R[%s] R[%s]' %(word0_first_half, word1))
+    return PC
+
+def DCOS(PC, word1, word0_first_half):
+    RAM[word0_first_half] = math.cos(word1)
+    print('    COS R[%s] %s' %(word0_first_half, word1))
+    return PC
+
+def RRC(PC, word1, word0_first_half):
+    RAM[word0_first_half] = math.cos(RAM[word1])
+    print('    COS R[%s] R[%s]' %(word0_first_half, word1))
+    return PC
+
+def UU0(PC, word1, word0_first_half):
+    i = util.hex_to_int(ROM[PC][:4])
+    j = util.hex_to_int(ROM[PC+1][:4])
+    k = util.hex_to_int(ROM[PC+1][4:])
+    RAM[i:j+1] = [k] * (j+1-i)
+    print('    LD R[%s:%s] %s' %(i, j, k))
+    return PC
+
+def UU1(PC, word1, word0_first_half):
+    i = util.hex_to_int(ROM[PC-2][:4])
+    j = util.hex_to_int(ROM[PC+1 - 2][:4])
+    k = util.hex_to_int(ROM[PC+1 - 2][4:])
+    RAM[i:j+1] = [RAM[k]] * (j+1-i)
+    print('    LD R[%s:%s] R[%s]' %(i, j, k))
+    return PC
+
+def UU2(PC, word1, word0_first_half):
+    ram_span = util.hex_to_int(ROM[PC - 2][:4])  # ram_span := j-i
+    i = util.hex_to_int(ROM[PC+1 - 2][:4])
+    k = util.hex_to_int(ROM[PC+1 - 2][4:])
+    RAM[i:i + ram_span+1] = RAM[k:k + ram_span+1]
+    print('    LD R[%s:%s] R[%s:%s]' %(i, i+ram_span, k, k+ram_span))
+    return PC
+
+def FLOOR(PC, word1, word0_first_half):
+    RAM[word1] = math.floor(RAM[word1])
+    print('    FLOOR R[%s]' %word1)
+    return PC
+
+def CEIL(PC, word1, word0_first_half):
+    RAM[word1] = math.ceil(RAM[word1])
+    print('    CEIL R[%s]' %word1)
+    return PC
+
+def RAND(PC, word1, word0_first_half):
+    RAM[word1] = random.choice([0, 1])
+    print('    RAND R[%s]' %word1)
+    return PC
+
+def U0(PC, word1, word0_first_half):
+    encoded_letters = util.int_to_hex(word0_first_half)
+    i = encoded_letters[0]
+    j = encoded_letters[1]
+    i = util.hex_digit_to_UVYZ[i]
+    j = util.hex_digit_to_UVYZ[j]
+    ram_index_i = util.UVYZ_to_ram_index[i]
+    ram_index_j = util.UVYZ_to_ram_index[j]
+    RAM[RAM[ram_index_i]] = RAM[RAM[ram_index_j]]
+    print('    LD R[%s] R[%s]' %(
+        RAM[ram_index_i],
+        RAM[ram_index_j],
+        ))
+    return PC
+
+def U1(PC, word1, word0_first_half):
+    encoded_letters = util.int_to_hex(word0_first_half)
+    i = encoded_letters[0]
+    j = encoded_letters[1]
+    k = encoded_letters[2]
+    i = util.hex_digit_to_UVYZ[i]
+    j = util.hex_digit_to_UVYZ[j]
+    k = util.hex_digit_to_UVYZ[k]
+    ram_index_i = util.UVYZ_to_ram_index[i]
+    ram_index_j = util.UVYZ_to_ram_index[j]
+    ram_index_k = util.UVYZ_to_ram_index[k]
+    array_span = len(RAM[RAM[ram_index_i]:RAM[ram_index_j]])
+    RAM[RAM[ram_index_i]:RAM[ram_index_j]] = [RAM[RAM[ram_index_k]]] * array_span
+    print('    LD R[%s:%s] R[%s]' %(
+        RAM[ram_index_i],
+        RAM[ram_index_j],
+        RAM[ram_index_k],
+        ))
+    return PC
+
+def U2(PC, word1, word0_first_half):
+    encoded_letters = util.int_to_hex(word0_first_half)
+    i = encoded_letters[0]
+    j = encoded_letters[1]
+    k = encoded_letters[2]
+    l = encoded_letters[2]
+    i = util.hex_digit_to_UVYZ[i]
+    j = util.hex_digit_to_UVYZ[j]
+    k = util.hex_digit_to_UVYZ[k]
+    l = util.hex_digit_to_UVYZ[l]
+    ram_index_i = util.UVYZ_to_ram_index[i]
+    ram_index_j = util.UVYZ_to_ram_index[j]
+    ram_index_k = util.UVYZ_to_ram_index[k]
+    ram_index_l = util.UVYZ_to_ram_index[l]
+    RAM[RAM[ram_index_i]:RAM[ram_index_j]] = RAM[RAM[ram_index_k]:RAM[ram_index_l]]
+    print('    LD R[%s:%s] R[%s:%s]' %(
+        RAM[ram_index_i],
+        RAM[ram_index_j],
+        RAM[ram_index_k],
+        RAM[ram_index_l],
+        ))
+    return PC
+
+def U3(PC, word1, word0_first_half):
+    encoded_letters = util.int_to_hex(word0_first_half)
+    i = encoded_letters[0]
+    j = encoded_letters[1]
+    i = util.hex_digit_to_UVYZ[i]
+    j = util.hex_digit_to_UVYZ[j]
+    ram_index_i = util.UVYZ_to_ram_index[i]
+    ram_index_j = util.UVYZ_to_ram_index[j]
+    array_span = len(RAM[RAM[ram_index_i]:RAM[ram_index_j]])
+    RAM[RAM[ram_index_i]:RAM[ram_index_j]] = [RAM[word1]] * array_span
+    print('    LD R[%s:%s] R[%s]' %(
+        RAM[ram_index_i],
+        RAM[ram_index_j],
+        word1,
+        ))
+    return PC
+
+def U4(PC, word1, word0_first_half):
+    encoded_letters = util.int_to_hex(word0_first_half)
+    i = encoded_letters[0]
+    i = util.hex_digit_to_UVYZ[i]
+    ram_index_i = util.UVYZ_to_ram_index[i]
+    RAM[RAM[ram_index_i]] = RAM[word1]
+    print('    LD R[%s] R[%s]' %(
+        RAM[ram_index_i],
+        word1,
+        ))
+    return PC
+
+def U5(PC, word1, word0_first_half):
+    encoded_letters = util.int_to_hex(word0_first_half)
+    i = encoded_letters[0]
+    i = util.hex_digit_to_UVYZ[i]
+    ram_index_i = util.UVYZ_to_ram_index[i]
+    RAM[RAM[ram_index_i]] = word1
+    print('    LD R[%s] %s' %(
+        RAM[ram_index_i],
+        word1,
+        ))
+    return PC
+
+def U6(PC, word1, word0_first_half):
+    encoded_letters = util.int_to_hex(word0_first_half)
+    u = encoded_letters[0]
+    u = util.hex_digit_to_UVYZ[u]
+    v = encoded_letters[1]
+    v = util.hex_digit_to_UVYZ[v]
+    ram_index_u = util.UVYZ_to_ram_index[u]
+    ram_index_v = util.UVYZ_to_ram_index[v]
+    array_span = len(RAM[RAM[ram_index_u] : RAM[ram_index_v]])
+    RAM[RAM[ram_index_u] : RAM[ram_index_v]] = [word1] * array_span
+    print('    LD R[%s:%s] %s' %(
+        RAM[ram_index_u],
+        RAM[ram_index_v],
+        word1,
+        ))
+    return PC
+
+def EXIT(PC, word1, word0_first_half):
+    print('    EXIT')
+    exit(1)
+    return PC
+
+opcodes = [0] * (0xFFFF + 1)
+opcodes[0x1] = GOTO
+opcodes[0x2] = DLD
+opcodes[0x3] = DADD
+opcodes[0x4] = DSUB
+opcodes[0x5] = DMUL
+opcodes[0x6] = DDIV
+opcodes[0x7] = RRLD
+opcodes[0x8] = RRADD
+opcodes[0x9] = RRSUB
+opcodes[0xa] = RRMUL
+opcodes[0xb] = RRDIV
+opcodes[0xc] = CRD
+opcodes[0xd] = CRR
+opcodes[0xe] = CALL
+opcodes[0xf] = RET
+opcodes[0xfff0] = POP
+opcodes[0xfff1] = PUSH
+opcodes[0x10] = SLRD
+opcodes[0x11] = SLRR
+opcodes[0x12] = LTERD
+opcodes[0x13] = LTERR
+opcodes[0x14] = SGRD
+opcodes[0x15] = SGRR
+opcodes[0x16] = GTERD
+opcodes[0x17] = GTERR
+opcodes[0x18] = BLIT
+opcodes[0x19] = DSQRT
+opcodes[0x1a] = RRSQRT
+opcodes[0x1b] = DSIN
+opcodes[0x1c] = RRS
+opcodes[0x1d] = DCOS
+opcodes[0x1e] = RRC
+opcodes[0x1f] = UU0
+opcodes[0x20] = UU1
+opcodes[0x21] = UU2
+opcodes[0x22] = FLOOR
+opcodes[0x23] = CEIL
+opcodes[0x24] = RAND
+opcodes[0x100] = U0
+opcodes[0x101] = U1
+opcodes[0x102] = U2
+opcodes[0x103] = U3
+opcodes[0x104] = U4
+opcodes[0x105] = U5
+opcodes[0x106] = U6
+opcodes[0xffff] = EXIT
 
 def exec(lines_from_file_hex):
     '''Execute lines in ROM'''
 
-    # pygame init
-    pygame.init()
-
-    pygame.display.set_caption('VLAHB')
-    gameDisplay = pygame.display.set_mode(
-        (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
-    )
     clock = pygame.time.Clock()
 
 
     PC = starting_PC()  # program counter
-    EXIT_LOOP = False
 
     while True:
-        # time.sleep(DELAY_BETWEEN_COMMANDS)
 
         try:
             ROM[PC]
@@ -183,489 +621,17 @@ def exec(lines_from_file_hex):
         word0_second_half = util.hex_to_int(ROM[PC][4:])
         word1 = util.hex_to_int(ROM[PC+1])
 
-        word1_first_half = util.hex_to_int(ROM[PC+1][:4])
-        word1_second_half = util.hex_to_int(ROM[PC+1][4:])
-
         PC += 2
 
-        ############
-        # OP CODES #
-        ############
-
-        # GOTO == 0001
-        if word0_second_half == 1:
-            PC = word1
-            print('    GOTO: PC -> %s' %word1)
-
-        # DIRECT LOAD == 0002
-        elif word0_second_half == 2:
-            RAM[word0_first_half] = word1
-            print('    LD R[%s] %s' %(word0_first_half, word1))
-
-        # DIRECT ADD == 0003
-        elif word0_second_half == 3:
-            RAM[word0_first_half] += word1
-            print('    ADD R[%s] %s' %(word0_first_half, word1))
-            manage_ram_slot_overunder_flow(word0_first_half)
-
-        # DIRECT SUBTRACT == 0004
-        elif word0_second_half == 4:
-            RAM[word0_first_half] -= word1
-            print('    SUB R[%s] %s' %(word0_first_half, word1))
-            manage_ram_slot_overunder_flow(word0_first_half)
-
-        # DIRECT MULTIPLY == 0005
-        elif word0_second_half == 5:
-            RAM[word0_first_half] *= word1
-            print('    MUL R[%s] %s' %(word0_first_half, word1))
-            manage_ram_slot_overunder_flow(word0_first_half)
-
-        # DIRECT DIVIDE == 0006
-        elif word0_second_half == 6:
-            RAM[word0_first_half] /= word1
-            print('    DIV R[%s] %s' %(word0_first_half, word1))
-            manage_ram_slot_overunder_flow(word0_first_half)
-
-        # REGISTER TO REGISTER LOAD == 0007
-        elif word0_second_half == 7:
-            RAM[word0_first_half] = RAM[word1]
-            print('    LD R[%s] R[%s]' %(word0_first_half, word1))
-
-        # REGISTER TO REGISTER ADD == 0008
-        elif word0_second_half == 8:
-            RAM[word0_first_half] += RAM[word1]
-            print('    ADD R[%s] R[%s]' %(word0_first_half, word1))
-            manage_ram_slot_overunder_flow(word0_first_half)
-
-        # REGISTER TO REGISTER SUBTRACT == 0009
-        elif word0_second_half == 9:
-            RAM[word0_first_half] -= RAM[word1]
-            print('    SUB R[%s] R[%s]' %(word0_first_half, word1))
-            manage_ram_slot_overunder_flow(word0_first_half)
-
-        # REGISTER TO REGISTER MULTIPLY == 000a
-        elif word0_second_half == 10:
-            RAM[word0_first_half] *= RAM[word1]
-            print('    MUL R[%s] R[%s]' %(word0_first_half, word1))
-            manage_ram_slot_overunder_flow(word0_first_half)
-
-        # REGISTER TO REGISTER DIVIDE == 000b
-        elif word0_second_half == 11:
-            RAM[word0_first_half] /= RAM[word1]
-            print('    DIV R[%s] R[%s]' %(word0_first_half, word1))
-            manage_ram_slot_overunder_flow(word0_first_half)
-
-        # COMPARE REGISTER TO DIRECT  == 000c
-        elif word0_second_half == 12:
-            cmp_true = 'false'
-            if RAM[word0_first_half] == word1:
-                cmp_true = 'true'
-                PC += 2
-            print('    CMP R[%s] %s -> %s' %(word0_first_half, word1, cmp_true))
-
-        # COMPARE REGISTER TO REGISTER == 000d
-        elif word0_second_half == 13:
-            cmp_true = 'false'
-            if RAM[word0_first_half] == RAM[word1]:
-                PC += 2
-                cmp_true = 'true'
-
-            print('    CMP R[%s] R[%s] -> %s' %(word0_first_half, word1, cmp_true))
-
-        # CALL == 000e
-        elif word0_second_half == 14:
-            STACK.append(PC)
-
-            manage_stack_size_overflow()
-
-            index = len(STACK)
-            a = STACK_FRAME_SIZE * (0 + index)
-            b = STACK_FRAME_SIZE * (1 + index)
-            RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
-            PC = word1
-
-            print('    CALL: Push %s to the Stack: PC -> %s' %(word1, word1))
-
-        # RETURN == 000f
-        elif word0_second_half == 15:
-
-            manage_stack_size_overflow()
-
-            index = len(STACK)
-            a = STACK_FRAME_SIZE * (0 + index)
-            b = STACK_FRAME_SIZE * (1 + index)
-            RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
-            PC = STACK.pop()
-
-            print('    RETURN: Pop %s from the Stack: PC -> %s' %(PC, PC))
-
-        # POP == fff0
-        elif word0_second_half == 65520:
-            
-            manage_stack_size_overflow()
-
-            index = len(STACK)
-            a = STACK_FRAME_SIZE * (0 + index)
-            b = STACK_FRAME_SIZE * (1 + index)
-            RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
-            STACK.pop()
-
-            print('    POP: Pop %s from the Stack' %(PC))
-
-        # PUSH == fff1
-        elif word0_second_half == 65521:
-            STACK.append(PC)
-
-            manage_stack_size_overflow()
-
-            index = len(STACK)
-            a = STACK_FRAME_SIZE * (0 + index)
-            b = STACK_FRAME_SIZE * (1 + index)
-            RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
-
-            print('    PUSH: Push %s to the Stack' %(word1))
-
-        # STRICT LESS THAN REGISTER TO DIRECT == 0010
-        elif word0_second_half == 16:
-            is_this_true = 'false'
-            if RAM[word0_first_half] < word1:
-                is_this_true = 'true'
-                PC += 2
-            print('    LT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
-
-        # STRICT LESS THAN REGISTER TO REGISTER == 0011
-        elif word0_second_half == 17:
-            is_this_true = 'false'
-            if RAM[word0_first_half] < RAM[word1]:
-                is_this_true = 'true'
-                PC += 2
-
-            print('    LT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
-
-        # LESS THAN OR EQUAL REGISTER TO DIRECT == 0012
-        elif word0_second_half == 18:
-            is_this_true = 'false'
-            if RAM[word0_first_half] <= word1:
-                is_this_true = 'true'
-                PC += 2
-
-            print('    LTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
-
-        # LESS THAN OR EQUAL REGISTER TO REGISTER == 0013
-        elif word0_second_half == 19:
-            is_this_true = 'false'
-            if RAM[word0_first_half] <= RAM[word1]:
-                is_this_true = 'true'
-                PC += 2
-
-            print('    LTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
-
-        # STRICT GREATER THAN REGISTER TO DIRECT == 0014
-        elif word0_second_half == 20:
-            is_this_true = 'false'
-            if RAM[word0_first_half] > word1:
-                is_this_true = 'true'
-                PC += 2
-
-            print('    GT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
-
-        # STRICT GREATER THAN REGISTER TO REGISTER == 0015
-        elif word0_second_half == 21:
-            is_this_true = 'false'
-            if RAM[word0_first_half] > RAM[word1]:
-                is_this_true = 'true'
-                PC += 2
-
-            print('    GT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
-
-        # GREATER THAN OR EQUAL REGISTER TO DIRECT == 0016
-        elif word0_second_half == 22:
-            is_this_true = 'false'
-            if RAM[word0_first_half] >= word1:
-                is_this_true = 'true'
-                PC += 2
-
-            print('    GTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
-
-        # GREATER THAN OR EQUAL REGISTER TO REGISTER == 0017
-        elif word0_second_half == 23:
-            is_this_true = 'false'
-            if RAM[word0_first_half] >= RAM[word1]:
-                is_this_true = 'true'
-                PC += 2
-
-            print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
-
-
-        # BLIT == 0018
-        elif word0_second_half == 24:
-            surf = pygame.Surface(
-                (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
-            )
-
-            surf.lock()
-            for x in range(WIDTH_DISPLAY_PIXELS):
-                for y in range(HEIGHT_DISPLAY_PIXELS):
-                    rgba_tuple = util.int_to_rgba_tuple(
-                        RAM[4101 + x + y*WIDTH_DISPLAY_PIXELS]
-                    )
-                    surf.set_at((x, y), rgba_tuple)
-            surf.unlock()
-
-            gameDisplay.blit(surf, (0, 0))
-            pygame.display.update()
-
-            print('    BLIT')
-
-        # DIRECT SQRT == 0019
-        elif word0_second_half == 25:
-            RAM[word0_first_half] = math.sqrt(word1)
-            print('    SQRT R[%s] %s' %(word0_first_half, word1))
-
-        # REGISTER TO REGISTER SQRT == 001a
-        elif word0_second_half == 26:
-            RAM[word0_first_half] = math.sqrt(RAM[word1])
-            print('    SQRT R[%s] R[%s]' %(word0_first_half, word1))
-
-        # DIRECT SIN == 001b
-        elif word0_second_half == 27:
-            RAM[word0_first_half] = math.sin(word1)
-            print('    SIN R[%s] %s' %(word0_first_half, word1))
-
-        # REGISTER TO REGISTER SIN == 001c
-        elif word0_second_half == 28:
-            RAM[word0_first_half] = math.sin(RAM[word1])
-            print('    SIN R[%s] R[%s]' %(word0_first_half, word1))
-
-        # DIRECT COS == 001d
-        elif word0_second_half == 29:
-            RAM[word0_first_half] = math.cos(word1)
-            print('    COS R[%s] %s' %(word0_first_half, word1))
-
-        # REGISTER TO REGISTER COS == 001e
-        elif word0_second_half == 30:
-            RAM[word0_first_half] = math.cos(RAM[word1])
-            print('    COS R[%s] R[%s]' %(word0_first_half, word1))
-
-        # LD R[i:j] k == 001f
-        elif word0_second_half == 31:
-            i = util.hex_to_int(ROM[PC][:4])
-
-            word0_second_half = util.hex_to_int(ROM[PC][4:])
-
-            j = util.hex_to_int(ROM[PC+1][:4])
-            k = util.hex_to_int(ROM[PC+1][4:])
-
-            RAM[i:j+1] = [k] * (j+1-i)
-
-            print('    LD R[%s:%s] %s' %(i, j, k))
-
-        # LD R[i:j] R[k] == 0020
-        elif word0_second_half == 32:
-            i = util.hex_to_int(ROM[PC-2][:4])
-            
-            word0_second_half = util.hex_to_int(ROM[PC - 2][4:])
-            
-            j = util.hex_to_int(ROM[PC+1 - 2][:4])
-            k = util.hex_to_int(ROM[PC+1 - 2][4:])
-
-            RAM[i:j+1] = [RAM[k]] * (j+1-i)
-
-            print('    LD R[%s:%s] R[%s]' %(i, j, k))
-
-        # LD R[i:j] R[k:l] == 0021
-        elif word0_second_half == 33:
-
-            ram_span = util.hex_to_int(ROM[PC - 2][:4])  # ram_span := j-i
-            word0_second_half = util.hex_to_int(ROM[PC - 2][4:])
-            i = util.hex_to_int(ROM[PC+1 - 2][:4])
-            k = util.hex_to_int(ROM[PC+1 - 2][4:])
-
-            RAM[i:i + ram_span+1] = RAM[k:k + ram_span+1]
-
-            print('    LD R[%s:%s] R[%s:%s]' %(i, i+ram_span, k, k+ram_span))
-
-
-        # FLOOR == 0022
-        elif word0_second_half == 34:
-            RAM[word1] = math.floor(RAM[word1])
-            print('    FLOOR R[%s]' %word1)
-
-        # CEIL == 0023
-        elif word0_second_half == 35:
-            RAM[word1] = math.ceil(RAM[word1])
-            print('    CEIL R[%s]' %word1)
-
-        # RAND == 0024
-        elif word0_second_half == 36:
-            RAM[word1] = random.choice([0, 1])
-            print('    RAND R[%s]' %word1)
-
-        # LD R[V] R[Z] == 0100
-        # 
-        # LD R[R[i]] R[R[j]]
-        elif word0_second_half == 256:
-            encoded_letters = util.int_to_hex(word0_first_half)
-
-            i = encoded_letters[0]
-            j = encoded_letters[1]
-
-            i = util.hex_digit_to_UVYZ[i]
-            j = util.hex_digit_to_UVYZ[j]
-
-            ram_index_i = util.UVYZ_to_ram_index[i]
-            ram_index_j = util.UVYZ_to_ram_index[j]
-
-            RAM[RAM[ram_index_i]] = RAM[RAM[ram_index_j]]
-
-            print('    LD R[%s] R[%s]' %(
-                RAM[ram_index_i],
-                RAM[ram_index_j],
-            ))
-
-        # LD R[V:U] R[Z] == 0101
-        # 
-        # LD R[R[i]:R[j]] R[R[k]]
-        elif word0_second_half == 257:
-            encoded_letters = util.int_to_hex(word0_first_half)
-
-            i = encoded_letters[0]
-            j = encoded_letters[1]
-            k = encoded_letters[2]
-
-            i = util.hex_digit_to_UVYZ[i]
-            j = util.hex_digit_to_UVYZ[j]
-            k = util.hex_digit_to_UVYZ[k]
-
-            ram_index_i = util.UVYZ_to_ram_index[i]
-            ram_index_j = util.UVYZ_to_ram_index[j]
-            ram_index_k = util.UVYZ_to_ram_index[k]
-
-            array_span = len(RAM[RAM[ram_index_i]:RAM[ram_index_j]])
-            RAM[RAM[ram_index_i]:RAM[ram_index_j]] = [RAM[RAM[ram_index_k]]] * array_span
-
-            print('    LD R[%s:%s] R[%s]' %(
-                RAM[ram_index_i],
-                RAM[ram_index_j],
-                RAM[ram_index_k],
-            ))
-
-        # LD R[U:V] R[Y:Z] == 0102
-        # 
-        # LD R[R[i]:R[j]] R[R[k]:R[l]]
-        elif word0_second_half == 258:
-            encoded_letters = util.int_to_hex(word0_first_half)
-
-            i = encoded_letters[0]
-            j = encoded_letters[1]
-            k = encoded_letters[2]
-            l = encoded_letters[2]
-
-            i = util.hex_digit_to_UVYZ[i]
-            j = util.hex_digit_to_UVYZ[j]
-            k = util.hex_digit_to_UVYZ[k]
-            l = util.hex_digit_to_UVYZ[l]
-
-            ram_index_i = util.UVYZ_to_ram_index[i]
-            ram_index_j = util.UVYZ_to_ram_index[j]
-            ram_index_k = util.UVYZ_to_ram_index[k]
-            ram_index_l = util.UVYZ_to_ram_index[l]
-
-            RAM[RAM[ram_index_i]:RAM[ram_index_j]] = RAM[RAM[ram_index_k]:RAM[ram_index_l]]
-
-            print('    LD R[%s:%s] R[%s:%s]' %(
-                RAM[ram_index_i],
-                RAM[ram_index_j],
-                RAM[ram_index_k],
-                RAM[ram_index_l],
-            ))
-
-        # LD R[U:V] R[k] == 0103
-        # 
-        # LD R[R[i]:R[j]] R[k]
-        elif word0_second_half == 259:
-            encoded_letters = util.int_to_hex(word0_first_half)
-
-            i = encoded_letters[0]
-            j = encoded_letters[1]
-
-            i = util.hex_digit_to_UVYZ[i]
-            j = util.hex_digit_to_UVYZ[j]
-
-            ram_index_i = util.UVYZ_to_ram_index[i]
-            ram_index_j = util.UVYZ_to_ram_index[j]
-
-            array_span = len(RAM[RAM[ram_index_i]:RAM[ram_index_j]])
-            RAM[RAM[ram_index_i]:RAM[ram_index_j]] = [RAM[word1]] * array_span
-
-            print('    LD R[%s:%s] R[%s]' %(
-                RAM[ram_index_i],
-                RAM[ram_index_j],
-                word1,
-            ))
-
-        # LD R[U] R[i] == 0104
-        elif word0_second_half == 260:
-            encoded_letters = util.int_to_hex(word0_first_half)
-
-            i = encoded_letters[0]
-            i = util.hex_digit_to_UVYZ[i]
-
-            ram_index_i = util.UVYZ_to_ram_index[i]
-
-            RAM[RAM[ram_index_i]] = RAM[word1]
-
-            print('    LD R[%s] R[%s]' %(
-                RAM[ram_index_i],
-                word1,
-            ))
-
-        # LD R[U] i == 0105
-        elif word0_second_half == 261:
-            encoded_letters = util.int_to_hex(word0_first_half)
-
-            i = encoded_letters[0]
-            i = util.hex_digit_to_UVYZ[i]
-
-            ram_index_i = util.UVYZ_to_ram_index[i]
-
-            RAM[RAM[ram_index_i]] = word1
-
-            print('    LD R[%s] %s' %(
-                RAM[ram_index_i],
-                word1,
-            ))
-
-        #  LD R[U:V] i == 0106
-        elif word0_second_half == 262:
-            encoded_letters = util.int_to_hex(word0_first_half)
-
-            u = encoded_letters[0]
-            u = util.hex_digit_to_UVYZ[u]
-
-            v = encoded_letters[1]
-            v = util.hex_digit_to_UVYZ[v]
-
-            ram_index_u = util.UVYZ_to_ram_index[u]
-            ram_index_v = util.UVYZ_to_ram_index[v]
-
-            array_span = len(RAM[RAM[ram_index_u] : RAM[ram_index_v]])
-            RAM[RAM[ram_index_u] : RAM[ram_index_v]] = [word1] * array_span
-
-            print('    LD R[%s:%s] %s' %(
-                RAM[ram_index_u],
-                RAM[ram_index_v],
-                word1,
-            ))
-
-        # EXIT == ffff
-        elif word0_second_half == 2**16 - 1:
-            EXIT_LOOP = True
-            print('    EXIT')
+        t0 = time.time()
+        PC = opcodes[word0_second_half](PC, word1, word0_first_half)
+        t1 = time.time()
+
+        print(t1 - t0)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                EXIT_LOOP = True
+                exit(1)
 
         print('RAM:')
         print('    RAM[0:6]    : %r'  %RAM[0 : 6])
@@ -679,11 +645,6 @@ def exec(lines_from_file_hex):
             RAM[4096], RAM[4097], RAM[4098], RAM[4099])
         )
         print('\n\n')
-
-        if EXIT_LOOP:
-            pygame.quit()
-            util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
-            break
 
 
 if __name__ == "__main__":
