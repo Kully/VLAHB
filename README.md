@@ -49,8 +49,10 @@ clean:  # remove all hex files in /hex
 - RAM is 512KB in size which means RAM has `128000` slots
 - All numerical values in any `.asm` file are interpretted as integers. The only exception is loading hexadecimal explicitly, eg. `LD R[4100] 0XFF0000FF`
 
+
 #### About Indexing
-Do not confuse the syntax `R[0:4]` with Python syntax. In VLAHB, `R[0:4]` or more generally `R[x:y]` where x,y $\in$ Integers represents the values of RAM from `RAM[x], RAM[x+1], ... , RAM[y]`. In Python, the indexing doesn't include the last index `R[y]` but here it does!
+Do not confuse the syntax `R[0:4]` with Python syntax. In VLAHB, `R[0:4]` or more generally `R[x:y]` , where x,y are integers, represents the values of RAM from `RAM[x], RAM[x+1], ... , RAM[y]`. In Python, the indexing doesn't include the last index `R[y]` but here it does!
+
 
 #### About Labels
 Labels are what make VLAHB function well. Standard to a lot of other assembly languages, a label is declared in code with a line that starts with a capital word that ends with a colon.
@@ -70,41 +72,26 @@ These are two examples of valid labels. These labels are not written into the `f
 
 This way, by calling `GOTO MY_LABEL` the program knows to jump to code that comes immediately after `MY_LABEL:`. This is the precursor to functions.
 
-#### About VLAHB Pointers
-What makes coding in ASM effective (as well as fun) is using the built in pointers. We have assigned the variables `U,V,Y,Z` to point to the values stored at specific slots in RAM. In particular:
-
-`U := R[4096]`
-`V := R[4097]`
-`Y := R[4098]`
-`Z := R[4099]`
-
-
-This means that you can programmatically change an index. As an example:
-
-`LD R[Z] R[V]`<br>
-
-which roughly means
-
-`LD R[R[4099]] R[R[4097]]`<br>
-
-These variables only work with respect to the `LD` operation and some of the uses are currently limited.
 
 #### About VRAM
 
 A portion of `RAM` is dedicated to the screen output. In particular, RAM[4101:19200] is for the screen output and each slot of RAM in this range holds 4btyes which is interpretted as an rgba value eg `0XFF0000FF` is red.
 
 
-#### About Slot Dedication
+#### About VLAHB Pointers
+What makes coding in ASM effective (as well as fun) is using the built in pointers. We have assigned the variables `U,V,Y,Z` to point to the values stored at specific slots in RAM. In particular
 
-| Indices in RAM  | Dedication |
-| ------------- |----------------|
-| 0-4095  | Function Inputs*  |
-| 4096:4099  | Pointers for Indices (U,V,Y,Z resp)  |
-| 4100    | Return slot for function outputs |
-| 4101:19200 | Indices for VRAM** |
+```
+U := R[4096]
+V := R[4097]
+Y := R[4098]
+Z := R[4099]
+```
 
-* Functions takes a maximum of 16 inputs from R[0-15]
-** Liable to change if screen display changes (currently 160X120)
+This means that we can programmatically control these 4 indices in RAM. For example `LD R[Z] R[V]` should be interpretted by a human as taking the value of RAM stored at index `R[4097]` and loading that into RAM at the index `R[9099]`.
+
+These variables only work with respect to the `LD` opcode and some of the uses are currently limited. See the syntax table below.
+
 
 ## Syntax
 
@@ -144,7 +131,7 @@ A portion of `RAM` is dedicated to the screen output. In particular, RAM[4101:19
 | 0021   | load RAM[0:4] with R[13:17]                          | LD R[0:4] R[13:17]          |
 | 0022   | load floor(R[7]) in R[7]   | FLOOR R[7]  |
 | 0023   | load ceil(R[7]) in R[7]   | CEIL R[7]  |
-| 0024   | load random bit $\in$ {0,1} in R[7]   | RAND R[7]  |
+| 0024   | load random bit in {0,1} in R[7]   | RAND R[7]  |
 | 0100   | LD R[R[4096]] R[R[4097]]                             | LD R[U] R[V]   |       
 | 0101   | LD R[R[4096]:R[4097]] R[R[4098]]                     | LD R[U:V] R[Y]          |       
 | 0102   | LD R[R[4096]:R[4097]] R[R[4099]:R[4098]]    | LD R[U:V] R[Z:Y]        |       
@@ -155,3 +142,16 @@ A portion of `RAM` is dedicated to the screen output. In particular, RAM[4101:19
 | fff1   | PUSH PC value to stack | PUSH  |
 | fff2   | load VRAM slots with 0 | CLEAR | 
 | ffff   | quit program      | EXIT         |       
+
+
+#### Slot Dedication Reference Table
+
+| Indices in RAM  | Dedication |
+| ------------- |----------------|
+| 0-4095  | Function Inputs*  |
+| 4096:4099  | Pointers for Indices (U,V,Y,Z resp)  |
+| 4100    | Return slot for function outputs |
+| 4101:19200 | Indices for VRAM** |
+
+* Functions takes a maximum of 16 inputs from R[0:15]
+** Liable to change if screen display changes (currently 160X120)
