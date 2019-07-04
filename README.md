@@ -137,11 +137,15 @@ which roughly means
 
 These variables only work with respect to the `LD` operation and some of the uses are currently limited.
 
+#### About VRAM
+
+A portion of `RAM` is dedicated to the screen output. In particular, RAM[4101:19200] is for the screen output and each slot of RAM in this range holds 4btyes which is interpretted as an rgba value eg `0XFF0000FF` is red
+
 
 | hex    | description                             |   assembly example     |
 |--------|-----------------------------------------|------------------------|
 | 0001   | GOTO: set PC to where LABEL is defined                | GOTO LABEL         |       
-| 0002   | load 4 at R[0]                             | LD R[0] 4              |       
+| 0002   | load 4278190335 at R[0] | LD R[4101] 0XFF0000FF           |       
 | 0003   | add 2 to R[0]                              | ADD R[0] 2            |
 | 0004   | subtract 2 from R[0]                         | SUB R[0] 2          |       
 | 0005   | multiply R[0] by 2                         | MUL R[0] 2         |       
@@ -151,9 +155,9 @@ These variables only work with respect to the `LD` operation and some of the use
 | 0009   | subtract R[3] from R[1]           | SUB R[1] R[3]          |       
 | 000a   | multiply R[1] by R[3]           | MUL R[1] R[3]          |       
 | 000b   | divide R[1] by R[3]             | DIV R[1] R[3]          |       
-| 000c   | skip a line if R[4] == 42  |           | CMP R[4] 42   
+| 000c   | skip a line if R[4] == 42  |   CMP R[4] 42        | 
 | 000d   | skip a line if R[1] == R[2]  | CMP R[1] R[2]          |       
-| 000f   | GOTO+POP                          | RETURN                 |       
+| 000f   | GOTO+POP                         | RETURN                 |       
 | 0010   | skip a line if R[2] < 3  | LT R[2] 3          |       
 | 0011   | skip a line if R[2] < R[3]  | LT R[2] R[3]          |       
 | 0012   | skip a line if R[2] U+02264 3  | LTE R[2] 3          |       
@@ -162,7 +166,7 @@ These variables only work with respect to the `LD` operation and some of the use
 | 0015   | skip a line if R[2] > R[3]  | GT R[2] R[3]          |       
 | 0016   | skip a line if R[2] >= 3  | GTE R[2] 3          |       
 | 0017   | skip a line if R[2] >= R[3]  | GTE R[2] R[3]          |       
-| 0018   | update display with rgba values stored in RAM[4101:19200]  | BLIT     |       
+| 0018   | update display  | BLIT     |       
 | 0019   | load square root of 16 into R[5]  | SQRT R[5] 16         |       
 | 001a   | load square root of R[16] into R[5]  | SQRT R[5] R[16]          |       
 | 001b   | load sine(16) into R[5]  | SIN R[5] 16         |       
@@ -171,14 +175,20 @@ These variables only work with respect to the `LD` operation and some of the use
 | 001e   | load cos(R[16]) into R[5]   |   COS R[5] R[16]        |       
 | 001f   | load RAM[0] to R[4] with 6                           | LD R[0:4] 6       |       
 | 0020   | load RAM[0] to R[4] with R[6]                        | LD R[0:4] R[6]          |       
-| 0021   | load RAM[0:4] with R[13:17]                          | LD R[0:4] R[13:17]          |       
+| 0021   | load RAM[0:4] with R[13:17]                          | LD R[0:4] R[13:17]          |
+| 0022   | load floor(R[7]) in R[7]   | FLOOR R[7]  |
+| 0023   | load ceil(R[7]) in R[7]   | CEIL R[7]  |
+| 0024   | load random bit $\in$ {0,1} in R[7]   | RAND R[7]  |
 | 0100   | LD R[R[4096]] R[R[4097]]                             | LD R[U] R[V]   |       
 | 0101   | LD R[R[4096]:R[4097]] R[R[4098]]                     | LD R[U:V] R[Y]          |       
 | 0102   | LD R[R[4096]:R[4097]] R[R[4099]:R[4098]]    | LD R[U:V] R[Z:Y]        |       
 | 0103   | LD R[R[4096]:R[4097]] R[5]                   | LD R[U:V] R[5]         |       
 | 0104   | LD R[R[4096]] R[3]                     | LD R[U] R[3]          |       
-| 0105   | LD R[R[4096]] 42                      | LD R[U] 42      |       
-| ffff   | quit program                             | EXIT         |       
+| 0105   | LD R[R[4096]] 42                      | LD R[U] 42      |
+| fff0   | POP value from the stack and assign to PC   | POP  |
+| fff1   | PUSH PC value to stack | PUSH  |
+| fff2   | load VRAM slots with 0 | CLEAR | 
+| ffff   | quit program      | EXIT         |       
 
 
 ## Technical Details/Slot Dedication
@@ -195,7 +205,7 @@ The indices in the table below are of the form `x-y` which correspond to the sta
 | 0-4095  | Function Inputs*  |
 | 4096-4099  | Pointers for Indices (U,V,Y,Z resp)  |
 | 4100    | Return slot for function outputs |
-| 4101-43201 | Indices for VRAM** |
+| 4101-19200 | Indices for VRAM** |
 
 * Functions takes a maximum of 16 inputs from R[0-15]
 ** Liable to change if screen display changes (currently 160X120)
