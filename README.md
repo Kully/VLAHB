@@ -40,7 +40,8 @@ clean:  # remove all hex files in /hex
 3. Sit back and enjoy the magic of code! :tada: 
 
 ## ASM - Syntax
-An easy way to understand any syntax is through example.
+
+`GOTO,CALL,RETURN,PUSH,POP,LD,ADD,SUB,MUL,DIV,BLIT,CLEAR,CMP,LT,LTE,GT,GTE,SIN,COS,SQRT,EXIT`
 
 `GOTO 4`<br>
 Set PC (program counter) to line 4.
@@ -111,48 +112,48 @@ These variables only work with respect to the `LD` operation and some of the use
 
 ## Opcodes
 
-| HEX  | Opcode         |
-| ---- |----------------|
-| 0001   | GOTO  |
-| 0002   | DIRECT LOAD |
-| 0003   | DIRECT ADD |
-| 0003   | DIRECT ADD |
-| 0004   | DIRECT SUBTRACT |
-| 0005   | DIRECT MULTIPLY |
-| 0006   | DIRECT DIVIDE |
-| 0007   | REGISTER TO REGISTER LOAD  |
-| 0008   | REGISTER TO REGISTER ADD  |
-| 0009   | REGISTER TO REGISTER SUBTRACT  |
-| 000a   | REGISTER TO REGISTER MULTIPLY  |
-| 000b   | REGISTER TO REGISTER DIVIDE  |
-| 000c   | COMPARE REGISTER TO DIRECT  |
-| 000d   | COMPARE REGISTER TO REGISTER  |
-| 000f   | RETURN  |
-| 0010   | STRICT LESS THAN REGISTER TO DIRECT  |
-| 0011   | STRICT LESS THAN REGISTER TO REGISTER  |
-| 0012   | LESS THAN OR EQUAL REGISTER TO DIRECT  |
-| 0013   | LESS THAN OR EQUAL REGISTER TO REGISTER  |
-| 0014   | STRICT GREATER THAN REGISTER TO DIRECT  |
-| 0015   | STRICT GREATER THAN REGISTER TO REGISTER  |
-| 0016   | GREATER THAN OR EQUAL REGISTER TO DIRECT  |
-| 0017   | GREATER THAN OR EQUAL REGISTER TO REGISTER  |
-| 0018   | BLIT  |
-| 0019   | DIRECT SQRT  |
-| 001a   | REGISTER TO REGISTER SQRT  |
-| 001b   | DIRECT SIN  |
-| 001c   | REGISTER TO REGISTER SIN  |
-| 001d   | DIRECT COS  |
-| 001e   | REGISTER TO REGISTER COS  |
-| 001f   | LD R[i:j] k |
-| 0020   | LD R[i:j] R[k] |
-| 0021   | LD R[i:j] R[k:l] |
-| 0100   | LD R[U] R[V] |
-| 0101   | LD R[U:V] R[Y] |
-| 0102   | LD R[U:V] R[Y:Z] |
-| 0103   | LD R[U:V] R[i] |
-| 0104   | LD R[U] R[i] |
-| 0105   | LD R[U] i |
-| ffff   | EXIT  |
+| HEX  | Description         |   Assembly Example     |  Hex Example     |
+| ---- |----------------|---------------|------------|
+| 0001   | GOTO  |     GOTO              |    asdfdf      |
+| 0002   | DIRECT LOAD |           |          |
+| 0003   | DIRECT ADD |           |          |
+| 0003   | DIRECT ADD |           |          |
+| 0004   | DIRECT SUBTRACT |           |          |
+| 0005   | DIRECT MULTIPLY |           |          |
+| 0006   | DIRECT DIVIDE |           |          |
+| 0007   | REGISTER TO REGISTER LOAD  |           |          |
+| 0008   | REGISTER TO REGISTER ADD  |           |          |
+| 0009   | REGISTER TO REGISTER SUBTRACT  |           |          |
+| 000a   | REGISTER TO REGISTER MULTIPLY  |           |          |
+| 000b   | REGISTER TO REGISTER DIVIDE  |           |          |
+| 000c   | COMPARE REGISTER TO DIRECT  |           |          |
+| 000d   | COMPARE REGISTER TO REGISTER  |           |          |
+| 000f   | RETURN  |           |          |
+| 0010   | STRICT LESS THAN REGISTER TO DIRECT  |           |          |
+| 0011   | STRICT LESS THAN REGISTER TO REGISTER  |           |          |
+| 0012   | LESS THAN OR EQUAL REGISTER TO DIRECT  |           |          |
+| 0013   | LESS THAN OR EQUAL REGISTER TO REGISTER  |           |          |
+| 0014   | STRICT GREATER THAN REGISTER TO DIRECT  |           |          |
+| 0015   | STRICT GREATER THAN REGISTER TO REGISTER  |           |          |
+| 0016   | GREATER THAN OR EQUAL REGISTER TO DIRECT  |           |          |
+| 0017   | GREATER THAN OR EQUAL REGISTER TO REGISTER  |           |          |
+| 0018   | BLIT  |           |          |
+| 0019   | DIRECT SQRT  |           |          |
+| 001a   | REGISTER TO REGISTER SQRT  |           |          |
+| 001b   | DIRECT SIN  |           |          |
+| 001c   | REGISTER TO REGISTER SIN  |           |          |
+| 001d   | DIRECT COS  |           |          |
+| 001e   | REGISTER TO REGISTER COS  |           |          |
+| 001f   | LD R[i:j] k |           |          |
+| 0020   | LD R[i:j] R[k] |           |          |
+| 0021   | LD R[i:j] R[k:l] |           |          |
+| 0100   | LD R[U] R[V] |           |          |
+| 0101   | LD R[U:V] R[Y] |           |          |
+| 0102   | LD R[U:V] R[Y:Z] |           |          |
+| 0103   | LD R[U:V] R[i] |           |          |
+| 0104   | LD R[U] R[i] |           |          |
+| 0105   | LD R[U] i |           |          |
+| ffff   | EXIT  |           |          |
 
 
 ## Technical Details/Slot Dedication
