@@ -1,5 +1,7 @@
 '''
 Util Functions for VLAHB
+
+GOTO,CALL,RETURN,PUSH,POP,LD,ADD,SUB,MUL,DIV,BLIT,CLEAR,CMP,LT,LTE,GT,GTE,SIN,COS,SQRT,EXIT
 '''
 import re
 import sys

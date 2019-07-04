@@ -6,9 +6,9 @@ CALL SCREEN_FILL_BLACK
 LD R[4098] 65000
 
 // init variables
-LD R[65000] 0XFF0000FF  // ball color
-LD R[65001] 22  // ball X coord
-LD R[65002] 10  // ball Y coord
+LD R[65000] 0X00FF00FF  // ball color
+LD R[65001] 1  // ball X coord
+LD R[65002] 1  // ball Y coord
 
 // ball velocity
 // 0 is +
@@ -62,9 +62,8 @@ BALL_BOUNCING_OFF_WALLS_MAIN:
 	// ****
 	// draw
 	// ****
-	// CLEAR
-	// ADD R[65000] 4021
-	// LD R[Z] 0X00FF00FF // load color in display
+	CLEAR
+	// ADD R[65000] 255
 	LD R[Z] R[Y] // load color in display
 	BLIT
 
