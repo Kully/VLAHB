@@ -16,13 +16,13 @@ A Virtual Machine, Assembler, and Compiler written in Python
 - screen display -->
 
 
-# Why?
+## Why?
 
 1. An opportunity to learn and write algorithms in a primative programming language.
 2. Build cool assembly programs.
 3. The love and curiosity of learning.
 
-# How to Build
+## How to Build
 1. Choose a filename in the `Makefile` to match the `.asm` you want to run
 
 ```
@@ -42,17 +42,17 @@ clean:  # remove all hex files in /hex
 3. Sit back and enjoy the magic! :tada:
 
 
-### About RAM
+#### About RAM
 
 - `RAM` is stored as a pythonic list.
 - We define a "slot in RAM" to be a location in RAM that can be identified with an index eg. RAM[i].
 - RAM is 512KB in size which means RAM has `128000` slots
 - All numerical values in any `.asm` file are interpretted as integers. The only exception is loading hexadecimal explicitly, eg. `LD R[4100] 0XFF0000FF`
 
-### About Indexing
+#### About Indexing
 Do not confuse the syntax `R[0:4]` with Python syntax. In VLAHB, `R[0:4]` or more generally `R[x:y]` where x,y $\in$ Integers represents the values of RAM from `RAM[x], RAM[x+1], ... , RAM[y]`. In Python, the indexing doesn't include the last index `R[y]` but here it does!
 
-### About Labels
+#### About Labels
 Labels are what make VLAHB function well. Standard to a lot of other assembly languages, a label is declared in code with a line that starts with a capital word that ends with a colon.
 
 ```asm
@@ -70,7 +70,7 @@ These are two examples of valid labels. These labels are not written into the `f
 
 This way, by calling `GOTO MY_LABEL` the program knows to jump to code that comes immediately after `MY_LABEL:`. This is the precursor to functions.
 
-### About VLAHB Pointers
+#### About VLAHB Pointers
 What makes coding in ASM effective (as well as fun) is using the built in pointers. We have assigned the variables `U,V,Y,Z` to point to the values stored at specific slots in RAM. In particular:
 
 `U := R[4096]`
@@ -89,12 +89,12 @@ which roughly means
 
 These variables only work with respect to the `LD` operation and some of the uses are currently limited.
 
-### About VRAM
+#### About VRAM
 
 A portion of `RAM` is dedicated to the screen output. In particular, RAM[4101:19200] is for the screen output and each slot of RAM in this range holds 4btyes which is interpretted as an rgba value eg `0XFF0000FF` is red.
 
 
-### About Slot Dedication
+#### About Slot Dedication
 
 | Indices in RAM  | Dedication |
 | ------------- |----------------|
@@ -106,7 +106,7 @@ A portion of `RAM` is dedicated to the screen output. In particular, RAM[4101:19
 * Functions takes a maximum of 16 inputs from R[0-15]
 ** Liable to change if screen display changes (currently 160X120)
 
-# Syntax
+## Syntax
 
 | hex    | description                             |   assembly example     |
 |--------|-----------------------------------------|------------------------|
