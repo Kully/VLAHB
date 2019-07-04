@@ -20,7 +20,7 @@ Some features...
 2. Build cool assembly programs.
 3. The love and curiosity of learning.
 
-## Instructions
+## How to Build
 1. Choose a filename in the `Makefile` to match the `.asm` you want to run
 
 ```
@@ -37,68 +37,22 @@ clean:  # remove all hex files in /hex
 
 2. Run `make` in root directory (you must be here for linking to work properly)
 
-3. Sit back and enjoy the magic of code! :tada: 
-
-## ASM - Syntax (remove this section)
-
-`GOTO,CALL,RETURN,PUSH,POP,LD,ADD,SUB,MUL,DIV,BLIT,CLEAR,CMP,LT,LTE,GT,GTE,SIN,COS,SQRT,EXIT`
-
-`GOTO 4`<br>
-Set PC (program counter) to line 4.
-
-`LD R[0] 4`<br>
-Load RAM[0] with value 4.
-
-`LD R[0] R[2]`<br>
-Load RAM[0] with value of RAM[2].
-
-`ADD R[2] 8`<br>
-Add 8 to RAM[2].
-
-`ADD R[2] R[6]`<br>
-Add value of R[6] to RAM[2].
-
-`SUB R[0] 3`<br>
-Subtract 3 from RAM[0].
-
-`MUL R[0] 2`<br>
-Multiply RAM[0] by 2.
-
-`DIV R[0] 2`<br>
-Divide RAM[0] by 2.
-
-`CMP A B`<br>
-If A == B, skip next line of assembly code.
-
-`LT A B`<br>
-If A $\lt$ B, skip next line of assembly code.
-
-`LTE A B`<br>
-If A $\leq$ B, skip next line of assembly code.
-
-`GT A B`<br>
-If A $\gt$ B, skip next line of assembly code.
-
-`GTE A B`<br>
-If A $\geq$ B, skip next line of assembly code.
-
-`CALL FUNCTION`<br>
-Push PC to the Stack and set PC to where label `FUNCTION` is.
-
-`RETURN`<br>
-Pop the number from the Stack and set PC to that value.
-
-`EXIT`<br>
-Exit virtual machine.
+3. Sit back and enjoy the magic! :tada:
 
 
 ## Syntax - make sure to keep switching up the
 
 A few notes first
 
-#### About Indexing
-Do not confuse the syntax `R[0:4]` with Python syntax. In VLAHB, this code snippet is refering to the values of RAM from `RAM[0]` to `RAM[4]`. In Python, the 4 index is not inclusive in the indexing but here it is.
+#### About RAM
 
+- `RAM` is stored as a pythonic list.
+- We define a "slot in RAM" to be a location in RAM that can be identified with an index eg. RAM[i].
+- RAM is 512KB in size which means RAM has `128000` slots
+- All numerical values in any `.asm` file are interpretted as integers. The only exception is loading hexadecimal explicitly, eg. `LD R[4100] 0XFF0000FF`
+
+#### About Indexing
+Do not confuse the syntax `R[0:4]` with Python syntax. In VLAHB, `R[0:4]` or more generally `R[x:y]` where x,y $\in$ Integers represents the values of RAM from `RAM[x], RAM[x+1], ... , RAM[y]`. In Python, the indexing doesn't include the last index `R[y]` but here it does!
 
 #### About Labels
 Labels are what make VLAHB function well. Standard to a lot of other assembly languages, a label is declared in code with a line that starts with a capital word that ends with a colon.
@@ -139,8 +93,20 @@ These variables only work with respect to the `LD` operation and some of the use
 
 #### About VRAM
 
-A portion of `RAM` is dedicated to the screen output. In particular, RAM[4101:19200] is for the screen output and each slot of RAM in this range holds 4btyes which is interpretted as an rgba value eg `0XFF0000FF` is red
+A portion of `RAM` is dedicated to the screen output. In particular, RAM[4101:19200] is for the screen output and each slot of RAM in this range holds 4btyes which is interpretted as an rgba value eg `0XFF0000FF` is red.
 
+
+#### About Slot Dedication
+
+| Indices in RAM  | Dedication |
+| ------------- |----------------|
+| 0-4095  | Function Inputs*  |
+| 4096-4099  | Pointers for Indices (U,V,Y,Z resp)  |
+| 4100    | Return slot for function outputs |
+| 4101-19200 | Indices for VRAM** |
+
+* Functions takes a maximum of 16 inputs from R[0-15]
+** Liable to change if screen display changes (currently 160X120)
 
 | hex    | description                             |   assembly example     |
 |--------|-----------------------------------------|------------------------|
@@ -160,12 +126,12 @@ A portion of `RAM` is dedicated to the screen output. In particular, RAM[4101:19
 | 000f   | GOTO+POP                         | RETURN                 |       
 | 0010   | skip a line if R[2] < 3  | LT R[2] 3          |       
 | 0011   | skip a line if R[2] < R[3]  | LT R[2] R[3]          |       
-| 0012   | skip a line if R[2] U+02264 3  | LTE R[2] 3          |       
-| 0013   | skip a line if R[2] U+02264 R[3]  | LTE R[2] R[3]          |       
+| 0012   | skip a line if R[2] ≤ 3  | LTE R[2] 3          |       
+| 0013   | skip a line if R[2] ≤ R[3]  | LTE R[2] R[3]          |       
 | 0014   | skip a line if R[2] > 3  | GT R[2] 3          |       
 | 0015   | skip a line if R[2] > R[3]  | GT R[2] R[3]          |       
-| 0016   | skip a line if R[2] >= 3  | GTE R[2] 3          |       
-| 0017   | skip a line if R[2] >= R[3]  | GTE R[2] R[3]          |       
+| 0016   | skip a line if R[2] ≥ 3  | GTE R[2] 3          |       
+| 0017   | skip a line if R[2] ≥ R[3]  | GTE R[2] R[3]          |       
 | 0018   | update display  | BLIT     |       
 | 0019   | load square root of 16 into R[5]  | SQRT R[5] 16         |       
 | 001a   | load square root of R[16] into R[5]  | SQRT R[5] R[16]          |       
@@ -189,23 +155,3 @@ A portion of `RAM` is dedicated to the screen output. In particular, RAM[4101:19
 | fff1   | PUSH PC value to stack | PUSH  |
 | fff2   | load VRAM slots with 0 | CLEAR | 
 | ffff   | quit program      | EXIT         |       
-
-
-## Technical Details/Slot Dedication
-
-- `RAM` is a pythonic list
-- a "slot in RAM" is a location in RAM that can be identified with an index eg. RAM[i]
-- RAM is 512KB in size which means RAM has `128000` slots
-- all numerical values in any `.asm` file should be interpretted by humans as integers. Having said this, you can only direct load hex values eg. `LD R[4100] 0XFF0000FF`
-
-The indices in the table below are of the form `x-y` which correspond to the standard list indexing of Python. This means the values of RAM with the range of indices `x-y` are `RAM[x], RAM[x+1], ... , RAM[y]`.
-
-| Indices in RAM  | Dedication |
-| ------------- |----------------|
-| 0-4095  | Function Inputs*  |
-| 4096-4099  | Pointers for Indices (U,V,Y,Z resp)  |
-| 4100    | Return slot for function outputs |
-| 4101-19200 | Indices for VRAM** |
-
-* Functions takes a maximum of 16 inputs from R[0-15]
-** Liable to change if screen display changes (currently 160X120)
