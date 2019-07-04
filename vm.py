@@ -406,7 +406,6 @@ def exec(lines_from_file_hex):
 
         # BLIT == 0018
         elif word0_second_half == 24:
-            a = time.time()
             surf = pygame.Surface(
                 (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
                 )
@@ -424,8 +423,6 @@ def exec(lines_from_file_hex):
             surf.unlock()
             gameDisplay.blit(surf, (0, 0))
             pygame.display.update()
-            b = time.time()
-            print('blit time: %s' %(b-a))
             print('    BLIT')
 
         # DIRECT SQRT == 0019
