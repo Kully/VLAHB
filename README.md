@@ -39,7 +39,7 @@ clean:  # remove all hex files in /hex
 
 3. Sit back and enjoy the magic of code! :tada: 
 
-## ASM - Syntax
+## ASM - Syntax (remove this section)
 
 `GOTO,CALL,RETURN,PUSH,POP,LD,ADD,SUB,MUL,DIV,BLIT,CLEAR,CMP,LT,LTE,GT,GTE,SIN,COS,SQRT,EXIT`
 
@@ -92,6 +92,33 @@ Pop the number from the Stack and set PC to that value.
 Exit virtual machine.
 
 
+## Syntax - make sure to keep switching up the
+
+A few notes first
+
+#### About Indexing
+Do not confuse the syntax `R[0:4]` with Python syntax. In VLAHB, this code snippet is refering to the values of RAM from `RAM[0]` to `RAM[4]`. In Python, the 4 index is not inclusive in the indexing but here it is.
+
+
+#### About Labels
+Labels are what make VLAHB function well. Standard to a lot of other assembly languages, a label is declared in code with a line that starts with a capital word that ends with a colon.
+
+```asm
+
+MY_LABEL:
+	// code goes here
+	// ...
+
+FOO_123:
+	// more code here
+
+```
+
+These are two examples of valid labels. These labels are not written into the `file.hex` that gets generated to be read by the virtual machine `vm.py`, but rather is used in the preprocessing before the `file.hex` is created. `asm.py` attaches a line number to each label on the backend which is _actually_ the line number of the most immediate code line (not a comment) below the label.
+
+This way, by calling `GOTO MY_LABEL` the program knows to jump to code that comes immediately after `MY_LABEL:`. This is the precursor to functions.
+
+#### About VLAHB Pointers
 What makes coding in ASM effective (as well as fun) is using the built in pointers. We have assigned the variables `U,V,Y,Z` to point to the values stored at specific slots in RAM. In particular:
 
 `U := R[4096]`
@@ -110,50 +137,48 @@ which roughly means
 
 These variables only work with respect to the `LD` operation and some of the uses are currently limited.
 
-## Opcodes
 
-| HEX  | Description         |   Assembly Example     |  Hex Example     |
-| ---- |----------------|---------------|------------|
-| 0001   | GOTO  |     GOTO              |    asdfdf      |
-| 0002   | DIRECT LOAD |           |          |
-| 0003   | DIRECT ADD |           |          |
-| 0003   | DIRECT ADD |           |          |
-| 0004   | DIRECT SUBTRACT |           |          |
-| 0005   | DIRECT MULTIPLY |           |          |
-| 0006   | DIRECT DIVIDE |           |          |
-| 0007   | REGISTER TO REGISTER LOAD  |           |          |
-| 0008   | REGISTER TO REGISTER ADD  |           |          |
-| 0009   | REGISTER TO REGISTER SUBTRACT  |           |          |
-| 000a   | REGISTER TO REGISTER MULTIPLY  |           |          |
-| 000b   | REGISTER TO REGISTER DIVIDE  |           |          |
-| 000c   | COMPARE REGISTER TO DIRECT  |           |          |
-| 000d   | COMPARE REGISTER TO REGISTER  |           |          |
-| 000f   | RETURN  |           |          |
-| 0010   | STRICT LESS THAN REGISTER TO DIRECT  |           |          |
-| 0011   | STRICT LESS THAN REGISTER TO REGISTER  |           |          |
-| 0012   | LESS THAN OR EQUAL REGISTER TO DIRECT  |           |          |
-| 0013   | LESS THAN OR EQUAL REGISTER TO REGISTER  |           |          |
-| 0014   | STRICT GREATER THAN REGISTER TO DIRECT  |           |          |
-| 0015   | STRICT GREATER THAN REGISTER TO REGISTER  |           |          |
-| 0016   | GREATER THAN OR EQUAL REGISTER TO DIRECT  |           |          |
-| 0017   | GREATER THAN OR EQUAL REGISTER TO REGISTER  |           |          |
-| 0018   | BLIT  |           |          |
-| 0019   | DIRECT SQRT  |           |          |
-| 001a   | REGISTER TO REGISTER SQRT  |           |          |
-| 001b   | DIRECT SIN  |           |          |
-| 001c   | REGISTER TO REGISTER SIN  |           |          |
-| 001d   | DIRECT COS  |           |          |
-| 001e   | REGISTER TO REGISTER COS  |           |          |
-| 001f   | LD R[i:j] k |           |          |
-| 0020   | LD R[i:j] R[k] |           |          |
-| 0021   | LD R[i:j] R[k:l] |           |          |
-| 0100   | LD R[U] R[V] |           |          |
-| 0101   | LD R[U:V] R[Y] |           |          |
-| 0102   | LD R[U:V] R[Y:Z] |           |          |
-| 0103   | LD R[U:V] R[i] |           |          |
-| 0104   | LD R[U] R[i] |           |          |
-| 0105   | LD R[U] i |           |          |
-| ffff   | EXIT  |           |          |
+| hex    | description                             |   assembly example     |
+|--------|-----------------------------------------|------------------------|
+| 0001   | GOTO: set PC to where LABEL is defined                | GOTO LABEL         |       
+| 0002   | load 4 at R[0]                             | LD R[0] 4              |       
+| 0003   | add 2 to R[0]                              | ADD R[0] 2            |
+| 0004   | subtract 2 from R[0]                         | SUB R[0] 2          |       
+| 0005   | multiply R[0] by 2                         | MUL R[0] 2         |       
+| 0006   | divide R[0] by 2                           |  DIV R[0] 2         |       
+| 0007   | load R[3] into R[1]              | LD R[1] R[3]          |       
+| 0008   | add R[3] to R[1]                | ADD R[1] R[3]          |       
+| 0009   | subtract R[3] from R[1]           | SUB R[1] R[3]          |       
+| 000a   | multiply R[1] by R[3]           | MUL R[1] R[3]          |       
+| 000b   | divide R[1] by R[3]             | DIV R[1] R[3]          |       
+| 000c   | skip a line if R[4] == 42  |           | CMP R[4] 42   
+| 000d   | skip a line if R[1] == R[2]  | CMP R[1] R[2]          |       
+| 000f   | GOTO+POP                          | RETURN                 |       
+| 0010   | skip a line if R[2] < 3  | LT R[2] 3          |       
+| 0011   | skip a line if R[2] < R[3]  | LT R[2] R[3]          |       
+| 0012   | skip a line if R[2] U+02264 3  | LTE R[2] 3          |       
+| 0013   | skip a line if R[2] U+02264 R[3]  | LTE R[2] R[3]          |       
+| 0014   | skip a line if R[2] > 3  | GT R[2] 3          |       
+| 0015   | skip a line if R[2] > R[3]  | GT R[2] R[3]          |       
+| 0016   | skip a line if R[2] >= 3  | GTE R[2] 3          |       
+| 0017   | skip a line if R[2] >= R[3]  | GTE R[2] R[3]          |       
+| 0018   | update display with rgba values stored in RAM[4101:19200]  | BLIT     |       
+| 0019   | load square root of 16 into R[5]  | SQRT R[5] 16         |       
+| 001a   | load square root of R[16] into R[5]  | SQRT R[5] R[16]          |       
+| 001b   | load sine(16) into R[5]  | SIN R[5] 16         |       
+| 001c   | load sine(R[16]) into R[5]  | SIN R[5] R[16]          |       
+| 001d   | load cos(16) into R[5]  | COS R[5] 16         |       
+| 001e   | load cos(R[16]) into R[5]   |   COS R[5] R[16]        |       
+| 001f   | load RAM[0] to R[4] with 6                           | LD R[0:4] 6       |       
+| 0020   | load RAM[0] to R[4] with R[6]                        | LD R[0:4] R[6]          |       
+| 0021   | load RAM[0:4] with R[13:17]                          | LD R[0:4] R[13:17]          |       
+| 0100   | LD R[R[4096]] R[R[4097]]                             | LD R[U] R[V]   |       
+| 0101   | LD R[R[4096]:R[4097]] R[R[4098]]                     | LD R[U:V] R[Y]          |       
+| 0102   | LD R[R[4096]:R[4097]] R[R[4099]:R[4098]]    | LD R[U:V] R[Z:Y]        |       
+| 0103   | LD R[R[4096]:R[4097]] R[5]                   | LD R[U:V] R[5]         |       
+| 0104   | LD R[R[4096]] R[3]                     | LD R[U] R[3]          |       
+| 0105   | LD R[R[4096]] 42                      | LD R[U] 42      |       
+| ffff   | quit program                             | EXIT         |       
 
 
 ## Technical Details/Slot Dedication
