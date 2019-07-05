@@ -1,2 +1,5 @@
 pygame==1.9.6
 contextlib
+plotly
+pandas
+numpy
