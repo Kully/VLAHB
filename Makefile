@@ -1,6 +1,6 @@
 # TODO - add a debug flag -d for toggling print statements
-filename = ball_bouncing_off_walls.asm
-# filename = logic.asm
+# filename = ball_bouncing_off_walls.asm
+filename = img_to_asm.asm
 
 run:
 	python3 asm.py $(filename)
