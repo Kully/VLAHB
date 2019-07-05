@@ -7,13 +7,12 @@
 
 A Virtual Machine, Assembler, and Compiler written in Python
 
-
-<!-- Some features...
-
-- original processor design
-- peep hole optimizer with unrolling loops
-- statically linked
-- screen display -->
+- 16 bit virtual machine with 32 bit opcodes
+- two pass assembler
+- peephole optimizations such as loop unrolling
+- 47 opcodes
+- 160X120 px resolution display
+- statically-linked library
 
 
 ## Why?
