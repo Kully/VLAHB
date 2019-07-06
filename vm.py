@@ -824,7 +824,7 @@ def exec(lines_from_file_hex):
             util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
 
             # write opcode timings to file
-            a_file = open('opcodes_speed_data.csv', 'w')
+            a_file = open('data/opcodes_speed_data.csv', 'w')
             a_file.write(opcodes_speed_data_str)
             a_file.close()
 

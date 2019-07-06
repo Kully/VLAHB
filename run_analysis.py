@@ -9,9 +9,6 @@ import pandas as pd
 
 from util import int_to_hex, op_codes_dict
 
-df = pd.read_csv('data/opcodes_speed_data.csv')
-inv_op_codes_dict = {v: k for k, v in op_codes_dict.items()}
-
 
 def return_data_for_graph():
     x = []
@@ -77,6 +74,12 @@ def return_data_for_table():
     return table_data
 
 if __name__ == "__main__":
+
+    print('load data')
+    df = pd.read_csv('data/opcodes_speed_data.csv')
+    inv_op_codes_dict = {v: k for k, v in op_codes_dict.items()}
+
+    print('generating chart...')
     table_data = return_data_for_table()
     scatter_data = return_data_for_graph()
 
@@ -92,10 +95,11 @@ if __name__ == "__main__":
 
     layout = dict(
         autosize=True,
-        margin = dict(l=20, r=20, b=150),
+        margin = dict(l=40, r=40, b=150),
         showlegend=False,
+        title='Opcode Execution Speed',
         xaxis1=dict(axis, **dict(domain=[0, 0.48], anchor='y1')),
-        yaxis1=dict(axis, **dict(domain=[0, 1.0], anchor='x1')),  
+        yaxis1=dict(axis, **dict(domain=[0, 1.0], range=[-0.001, 0.03], anchor='x1')),  
         plot_bgcolor='#F5F8FF',
     )
 
