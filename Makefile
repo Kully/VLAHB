@@ -1,10 +1,10 @@
-filename = ball_bouncing_off_walls.asm
+filename = mario_nes.asm
 
 run:
 	python3 asm.py $(filename)
 	python3 vm.py
 
-clean:  # empty /hex dir
+clean:
 	rm -f hex/*.hex
 
 graph:
