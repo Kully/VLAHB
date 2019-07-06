@@ -14,6 +14,7 @@ A Virtual Machine, Assembler, and Compiler written in Python
 - 160X120 px resolution display
 - statically-linked library
 
+![](https://github.com/Kully/vlahb/blob/master/data/opcodes_performance_pic.png/?raw=true?)
 
 ## Why?
 
