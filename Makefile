@@ -10,4 +10,4 @@ clean:  # empty /hex dir
 	rm -f hex/*.hex
 
 graph:
-	python3 analysis.py
+	python3 run_analysis.py
