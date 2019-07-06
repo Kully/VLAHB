@@ -8,6 +8,7 @@ clean:
 	rm -f hex/*.hex
 
 graph:
-	python3 asm.py opcode_speeds.asm
-	python3 vm.py
+#   TODO: pick a designated script to test opcode speeds
+# 	python3 asm.py opcode_speeds.asm
+# 	python3 vm.py
 	python3 run_analysis.py
