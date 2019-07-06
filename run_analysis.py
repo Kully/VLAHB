@@ -9,7 +9,7 @@ import pandas as pd
 
 from util import int_to_hex, op_codes_dict
 
-df = pd.read_csv('analysis/timing_the_opcodes.csv')  # data folder for jpgs too??
+df = pd.read_csv('data/opcodes_speed_data.csv')
 inv_op_codes_dict = {v: k for k, v in op_codes_dict.items()}
 
 
