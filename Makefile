@@ -1,4 +1,4 @@
-filename = ball_bouncing_off_walls.asm
+filename = the_game_of_life.asm
 
 run:
 	python3 asm.py $(filename)

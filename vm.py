@@ -794,6 +794,22 @@ def exec(lines_from_file_hex):
                 word1,
             ))
 
+        #  COMPARE UV TO DIRECT == 0107
+        elif word0_second_half == 263:
+            a = time.time()
+            encoded_letters = util.int_to_hex(word0_first_half)
+            u = util.hex_digit_to_UVYZ[encoded_letters[0]]
+            ram_index_u = util.UVYZ_to_ram_index[u]
+
+            cmp_true = 'false'
+            if RAM[RAM[ram_index_u]] == word1:
+                cmp_true = 'true'
+                PC += 2
+            b = time.time()
+            opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
+            print('    CMP R[%s] %s -> %s' %(RAM[ram_index_u], word1, cmp_true))
+
+
         # EXIT == ffff
         elif word0_second_half == 2**16 - 1:
             a = time.time()

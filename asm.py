@@ -366,20 +366,42 @@ def validate_and_make_hexfile(lines):
             # ==
             elif opcode == 'CMP':
                 valid_opcode = True
-                if len(args) < 2 or not re.search(util.REGEX_LD_R_ONE, args[0]):
+                if len(args) < 2:
                     raise Exception(
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
-                if re.search(util.REGEX_LD_R_ONE, args[1]):
-                    opcode_val = util.op_codes_dict['COMPARE REGISTER TO REGISTER']
-                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
-                else:
-                    opcode_val = util.op_codes_dict['COMPARE REGISTER TO DIRECT']
-                    word1 = util.int_to_hex(args[1]).zfill(8)
+                if re.search(util.REGEX_LD_R_ONE, args[0]):
+                    if re.search(util.REGEX_LD_R_ONE, args[1]):
+                        opcode_val = util.op_codes_dict['COMPARE REGISTER TO REGISTER']
+                        word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
-                word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
-                word0_second_half = opcode_val.zfill(4)
+                        word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
+                        word0_second_half = opcode_val.zfill(4)
+
+                    else:
+                        opcode_val = util.op_codes_dict['COMPARE REGISTER TO DIRECT']
+                        word1 = util.int_to_hex(args[1]).zfill(8)
+
+                        word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
+                        word0_second_half = opcode_val.zfill(4)
+
+                elif re.match(util.REGEX_UV_ONE, args[0]):
+                    letters_arg0 = re.findall(util.REGEX_UV_ONE, args[0])
+                    i = util.UVYZ_to_hex_digit[str(letters_arg0[0])]
+
+                    if re.search(r'\d+', args[1]):
+                        opcode_val = util.op_codes_dict['COMPARE UV TO DIRECT']
+                        word1 = util.int_to_hex(args[1]).zfill(8)
+
+                        word0_first_half = i + '000'
+                        word0_second_half = opcode_val.zfill(4)
+
+
+                hex_file_str = write_two_lines_to_hexfile(
+                    word0_first_half, word0_second_half,
+                    word1, hex_file_str
+                )
 
             # <
             elif opcode == 'LT':
@@ -572,7 +594,7 @@ def validate_and_make_hexfile(lines):
 
             # TODO: ignore line if invalid line of code
 
-            if valid_opcode and opcode != 'LD':
+            if valid_opcode and opcode not in ['LD', 'CMP']:
                 hex_file_str += word0_first_half
                 hex_file_str += word0_second_half
                 hex_file_str += '\n'
