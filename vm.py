@@ -97,14 +97,17 @@ def reset_RAM_values_to_zero():
 
 def manage_overflow_underflow(index_in_RAM):
     pre_modulo_ram_value = RAM[index_in_RAM]
-    RAM[index_in_RAM] = RAM[index_in_RAM] % 0XFFFFFFFF
+    RAM[index_in_RAM] = RAM[index_in_RAM] % MAX_RAM_VALUE
 
-    over_or_under = 'Under'
-    if RAM[index_in_RAM] < pre_modulo_ram_value:
+    over_or_under = None
+    if pre_modulo_ram_value > MAX_RAM_VALUE:
         over_or_under = 'Over'
+    elif pre_modulo_ram_value < 0:
+        over_or_under = 'Under'
 
-    print('    ***Stack %sflow***' %over_or_under)
-    print('        R[%s] -> %s\n' %(index_in_RAM, RAM[index_in_RAM]))
+    if over_or_under:
+        print('    ***Stack %sflow***' %over_or_under)
+        print('        R[%s] -> %s\n' %(index_in_RAM, RAM[index_in_RAM]))
 
 
 def manage_stack_size_overflow():
