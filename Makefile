@@ -1,5 +1,4 @@
-# filename = the_game_of_life.asm
-filename = mario_nes.asm
+filename = the_game_of_life.asm
 
 run:
 	python3 asm.py $(filename)
