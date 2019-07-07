@@ -3,13 +3,77 @@
 // originally written by John Conway in 1970
 // ******************************************
 
+// if N < 2 or N > 3
+LD R[42502] 6
+LD R[0] 0
+LD R[1] 0
+GTE R[42502] 2
+LD R[0] 1
+LTE R[42502] 3
+LD R[1] 1
+CALL LOGIC_OR
+EXIT
 
 
-// LD R[0] 42
-// ADD R[0] 2
-// ADD R[0] 2
-LD R[0] 0XFFFFFFFF
-ADD R[0] 40
+
+
+// spare slots: 42501+
+
+// (x,y) = (2,7)
+R[4096] = 2
+R[4097] = 7
+
+
+// Y -> index for cell state (VRAM2)
+// R[4098] -> 120*160 + vram_idx
+LD R[4098] 120
+MUL R[4098] 160
+
+LD R[0] R[4096]
+LD R[1] R[4097]
+CALL VRAM_INDEX_FROM_X_Y
+ADD R[4098] R[4100]
+
+
+
+// ***********
+// compute |N|
+
+// CALL COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE
+// R[4100] -> 3, say
+
+// LD R[42502] R[4100]
+
+// ***********
+
+
+
+
+
+// decide what to do with |N|
+// R[42502] -> N
+
+CALL RETURN_1_IF_GREATER_THAN_ZER0_ELSE_0
+LD R[Y] R[4100]  // store 0 or 1 in R[ idx + 120*160 ]
+
+
+// transition logic
+
+
+// if N < 2 or N > 3 - // copied above!!!
+// ...
+
+
+
+// if R[Y] == 1:
+// 	if N < 2 or N > 3:
+// 		LD R[Y] 0
+
+// elif R[Y] == 0:
+// 	if N == 3:
+// 		LD R[Y] 1
+
+
 EXIT
 
 
@@ -24,29 +88,40 @@ CALL COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE
 EXIT
 
 
-CALL INIT_TGOL
-CALL MAIN_THE_GAME_OF_LIFE
+// ***********
+// STARTS HERE
+// ***********
+
+// init stuff
+CALL INIT_THE_GAME_OF_LIFE
+CALL SEED0_THE_GAME_OF_LIFE
+
+// game loop
+CALL MAIN_LOOP_THE_GAME_OF_LIFE
 
 EXIT
 
 
 
-INIT_TGOL:
+INIT_THE_GAME_OF_LIFE:
 	LD R[4096] 0  // U -> x index
 	LD R[4097] 0  // V -> y index
 	RETURN
 
 
 // initial states
-INIT_STATE0_THE_GAME_OF_LIFE:
+SEED0_THE_GAME_OF_LIFE:
+	RETURN
 
-INIT_STATE1_THE_GAME_OF_LIFE:
+SEED1_THE_GAME_OF_LIFE:
+	RETURN
+	
 
-INIT_STATE2_THE_GAME_OF_LIFE:
-
+SEED2_THE_GAME_OF_LIFE:
+	RETURN
 
 // main
-MAIN_THE_GAME_OF_LIFE:
+MAIN_LOOP_THE_GAME_OF_LIFE:
 
 	// ****************
 	// update all cells
@@ -74,7 +149,13 @@ MAIN_THE_GAME_OF_LIFE:
 	// LT R[4096] 120
 
 
-	GOTO MAIN_THE_GAME_OF_LIFE
+	GOTO MAIN_LOOP_THE_GAME_OF_LIFE
+
+
+
+// **************
+// util functions
+// **************
 
 
 // R[0] Index of RAM
@@ -225,4 +306,8 @@ IS_VALUE_AT_XY_NOT_ZERO:
 	LD R[4100] 1  // increase count
 	RETURN
 
-
+RETURN_1_IF_GREATER_THAN_ZER0_ELSE_0:
+	LD R[4100] 1
+	GT R[0] 0
+	SUB R[4100] 1
+	RETURN

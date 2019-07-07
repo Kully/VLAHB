@@ -16,7 +16,7 @@ A Virtual Machine, Assembler, and Compiler written in Python
 - 47 opcodes
 - 160X120 px resolution display
 - statically-linked library
-- Avg FPS: 33.7
+- avg fps: 33.7
 
 ![](https://github.com/Kully/vlahb/blob/master/data/opcodes_perf.png/?raw=true?)
 

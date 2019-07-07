@@ -1,23 +1,3 @@
-// AND Truth Table
-LD R[0] 0
-LD R[1] 0
-CALL LOGIC_AND
-
-LD R[0] 0
-LD R[1] 1
-CALL LOGIC_AND
-
-LD R[0] 1
-LD R[1] 0
-CALL LOGIC_AND
-
-LD R[0] 1
-LD R[1] 1
-CALL LOGIC_AND
-
-EXIT
-
-
 LOGIC_OR:
 	LD R[4100] 1
 	CMP R[0] 0
