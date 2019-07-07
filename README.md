@@ -5,6 +5,9 @@
 **H**exadecimal <br>
 **B**inary <br>
 
+<!-- Add Cool GIFS here :)
+![screenshot](img/peekgif.gif) -->
+
 A Virtual Machine, Assembler, and Compiler written in Python
 
 - 16 bit virtual machine with 32 bit opcodes
