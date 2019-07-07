@@ -4,46 +4,36 @@ Virtual Machine
 The vm is what would be the Printed Circuit Board
 as well as the etched silicon and logic gates
 
-For now, vm.py looks at the hex file (file.hex)
-Eventually, vm.py will look at the binary (file.bin)
+vm.py looks at the generated hex file (file.hex) and
+executes the instructions in 2 line chunks.
+
+hex/file.hex may look like this
+
 
 ```
-hhhh hhhh
-hhhh hhhh
-hhhh hhhh
-hhhh hhhh
+0000000e
+000000bc
+
+10020002
+0000fde8
+
+fde80002
+00ff00ff
+
+fde90002
+00000001
+
+fdea0002
+00000001
+
 ...
 ```
 
-where `h` is a hexadecimal value (4 bits, 1/2 a byte) which takes on a value
-between 0-f (16 unique values).
+where each character represetnts a hexadecimal value
+(4 bits) which takes on a value between 0-f totalling 
+16 unique values.
 
-This is how 2 rows is interpreted
 
-```
-hhhh[index in RAM]hhhh[command]
-hhhhhhhh[value]
-```
-
-A WORD is a 4byte string of hex values, or 32 bits
-```
-hhhh hhhh
-```
-
-An example of my setup:
-```python
-ROM = [
-    '0x00030001',
-    '0x00000004',
-    '0x00030002',
-    '0x00000006',
-    '0x00030003',
-    '0x00000001'
-]
-
-RAM = []
-PC = 0  # program counter
-```
 '''
 import math
 import os
@@ -64,8 +54,8 @@ with contextlib.redirect_stdout(None):
 COMMANDS_PER_SEC = 10
 DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
 
-RAM_NUM_OF_SLOTS = 128000  # 512KB == Bill Gates Number
-MAX_RAM_VALUE = 2**32 - 1  # largest value in a slot of RAM (hhhh hhhh) - 4 bytes
+RAM_NUM_OF_SLOTS = 128000  # 512KB (the "Bill Gates Number" is 640K)
+MAX_RAM_VALUE = 0XFFFFFFFF  # largest value in RAM slot is 4 bytes
 RAM = [0] * RAM_NUM_OF_SLOTS
 
 STACK = []
@@ -73,6 +63,8 @@ STACK_FRAME_SIZE = 128
 STACK_MAX_SIZE = 32
 
 ROM = []
+
+VRAM_FIRST_INDEX = 4101
 
 
 opcodes_speed_data_str = 'opcode,time\n'
@@ -103,14 +95,16 @@ def reset_RAM_values_to_zero():
     RAM = [0] * RAM_NUM_OF_SLOTS
 
 
-def manage_ram_slot_overunder_flow(index_in_RAM):
-    if RAM[index_in_RAM] < 0:
-        RAM[index_in_RAM] = MAX_RAM_VALUE + RAM[index_in_RAM]
-        print('    ***Stack Underflow at RAM[%r]***'%index_in_RAM)
+def manage_overflow_underflow(index_in_RAM):
+    pre_modulo_ram_value = RAM[index_in_RAM]
+    RAM[index_in_RAM] = RAM[index_in_RAM] % 0XFFFFFFFF
 
-    elif RAM[index_in_RAM] > MAX_RAM_VALUE:
-        RAM[index_in_RAM] = MAX_RAM_VALUE - RAM[index_in_RAM]
-        print('    ***Stack Overflow at RAM[%r]***'%index_in_RAM)
+    over_or_under = 'Under'
+    if RAM[index_in_RAM] < pre_modulo_ram_value:
+        over_or_under = 'Over'
+
+    print('    ***Stack %sflow***' %over_or_under)
+    print('        R[%s] -> %s\n' %(index_in_RAM, RAM[index_in_RAM]))
 
 
 def manage_stack_size_overflow():
@@ -217,7 +211,7 @@ def exec(lines_from_file_hex):
             a = time.time()
 
             RAM[word0_first_half] += word1
-            manage_ram_slot_overunder_flow(word0_first_half)
+            manage_overflow_underflow(word0_first_half)
             b = time.time()
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    ADD R[%s] %s' %(word0_first_half, word1))
@@ -225,20 +219,20 @@ def exec(lines_from_file_hex):
         # DIRECT SUBTRACT == 0004
         elif word0_second_half == 4:
             a = time.time()
-
             RAM[word0_first_half] -= word1
-            manage_ram_slot_overunder_flow(word0_first_half)
+            manage_overflow_underflow(word0_first_half)
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    SUB R[%s] %s' %(word0_first_half, word1))            
 
         # DIRECT MULTIPLY == 0005
         elif word0_second_half == 5:
             a = time.time()
-
             RAM[word0_first_half] *= word1
-            manage_ram_slot_overunder_flow(word0_first_half)
+            manage_overflow_underflow(word0_first_half)
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    MUL R[%s] %s' %(word0_first_half, word1))
 
@@ -246,8 +240,9 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 6:
             a = time.time()
             RAM[word0_first_half] /= word1
-            manage_ram_slot_overunder_flow(word0_first_half)
+            manage_overflow_underflow(word0_first_half)
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    DIV R[%s] %s' %(word0_first_half, word1))
             
@@ -257,6 +252,7 @@ def exec(lines_from_file_hex):
             a = time.time()
             RAM[word0_first_half] = RAM[word1]
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LD R[%s] R[%s]' %(word0_first_half, word1))
 
@@ -264,8 +260,9 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 8:
             a = time.time()
             RAM[word0_first_half] += RAM[word1]
-            manage_ram_slot_overunder_flow(word0_first_half)
+            manage_overflow_underflow(word0_first_half)
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    ADD R[%s] R[%s]' %(word0_first_half, word1))
             
@@ -274,8 +271,9 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 9:
             a = time.time()
             RAM[word0_first_half] -= RAM[word1]
-            manage_ram_slot_overunder_flow(word0_first_half)
+            manage_overflow_underflow(word0_first_half)
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    SUB R[%s] R[%s]' %(word0_first_half, word1))
             
@@ -284,8 +282,9 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 10:
             a = time.time()
             RAM[word0_first_half] *= RAM[word1]
-            manage_ram_slot_overunder_flow(word0_first_half)
+            manage_overflow_underflow(word0_first_half)
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    MUL R[%s] R[%s]' %(word0_first_half, word1))
 
@@ -293,8 +292,9 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 11:
             a = time.time()
             RAM[word0_first_half] /= RAM[word1]
-            manage_ram_slot_overunder_flow(word0_first_half)
+            manage_overflow_underflow(word0_first_half)
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    DIV R[%s] R[%s]' %(word0_first_half, word1))
             
@@ -307,6 +307,7 @@ def exec(lines_from_file_hex):
                 cmp_true = 'true'
                 PC += 2
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    CMP R[%s] %s -> %s' %(word0_first_half, word1, cmp_true))
 
@@ -318,6 +319,7 @@ def exec(lines_from_file_hex):
                 PC += 2
                 cmp_true = 'true'
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    CMP R[%s] R[%s] -> %s' %(word0_first_half, word1, cmp_true))
 
@@ -325,7 +327,6 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 14:
             eee = time.time()
             STACK.append(PC)
-
             manage_stack_size_overflow()
 
             index = len(STACK)
@@ -334,6 +335,7 @@ def exec(lines_from_file_hex):
             RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
             PC = word1
             fff = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, fff-eee)
             print('    CALL: Push %s to the Stack: PC -> %s' %(word1, word1))
 
@@ -349,6 +351,7 @@ def exec(lines_from_file_hex):
             RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
             PC = STACK.pop()
             hhh = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, hhh-ggg)
             print('    RETURN: Pop %s from the Stack: PC -> %s' %(PC, PC))
 
@@ -364,6 +367,7 @@ def exec(lines_from_file_hex):
             RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
             STACK.pop()
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    POP: Pop %s from the Stack' %(PC))
 
@@ -371,7 +375,6 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 65521:
             a = time.time()
             STACK.append(PC)
-
             manage_stack_size_overflow()
 
             index = len(STACK)
@@ -379,6 +382,7 @@ def exec(lines_from_file_hex):
             b = STACK_FRAME_SIZE * (1 + index)
             RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    PUSH: Push %s to the Stack' %(word1))
 
@@ -386,8 +390,9 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 65522:
             a = time.time()
             len_of_vram = WIDTH_DISPLAY_PIXELS * HEIGHT_DISPLAY_PIXELS
-            RAM[4101:4101 + len_of_vram] = [0] * len_of_vram
+            RAM[ VRAM_FIRST_INDEX : VRAM_FIRST_INDEX + len_of_vram ] = [0] * len_of_vram
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    CLEAR')
 
@@ -400,6 +405,7 @@ def exec(lines_from_file_hex):
                 is_this_true = 'true'
                 PC += 2
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
@@ -411,6 +417,7 @@ def exec(lines_from_file_hex):
                 is_this_true = 'true'
                 PC += 2
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
@@ -422,6 +429,7 @@ def exec(lines_from_file_hex):
                 is_this_true = 'true'
                 PC += 2
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
@@ -433,6 +441,7 @@ def exec(lines_from_file_hex):
                 is_this_true = 'true'
                 PC += 2
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
@@ -444,6 +453,7 @@ def exec(lines_from_file_hex):
                 is_this_true = 'true'
                 PC += 2
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    GT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
@@ -455,6 +465,7 @@ def exec(lines_from_file_hex):
                 is_this_true = 'true'
                 PC += 2
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    GT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
@@ -466,6 +477,7 @@ def exec(lines_from_file_hex):
                 is_this_true = 'true'
                 PC += 2
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    GTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
@@ -477,6 +489,7 @@ def exec(lines_from_file_hex):
                 is_this_true = 'true'
                 PC += 2
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
@@ -489,7 +502,7 @@ def exec(lines_from_file_hex):
                 )
             surf.lock()
             for i in range(WIDTH_DISPLAY_PIXELS * HEIGHT_DISPLAY_PIXELS):
-                color = RAM[4101 + i]
+                color = RAM[VRAM_FIRST_INDEX + i]
                 rgba_tuple = (
                     (color >> 24) & 0xFF,
                     (color >> 16) & 0xFF,
@@ -503,6 +516,7 @@ def exec(lines_from_file_hex):
             pygame.display.update()
 
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    BLIT')
 
@@ -511,6 +525,7 @@ def exec(lines_from_file_hex):
             a = time.time()
             RAM[word0_first_half] = math.sqrt(word1)
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    SQRT R[%s] %s' %(word0_first_half, word1))
 
@@ -519,6 +534,7 @@ def exec(lines_from_file_hex):
             a = time.time()
             RAM[word0_first_half] = math.sqrt(RAM[word1])
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    SQRT R[%s] R[%s]' %(word0_first_half, word1))
 
@@ -527,6 +543,7 @@ def exec(lines_from_file_hex):
             a = time.time()
             RAM[word0_first_half] = math.sin(word1)
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    SIN R[%s] %s' %(word0_first_half, word1))
 
@@ -535,6 +552,7 @@ def exec(lines_from_file_hex):
             a = time.time()
             RAM[word0_first_half] = math.sin(RAM[word1])
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    SIN R[%s] R[%s]' %(word0_first_half, word1))
 
@@ -543,6 +561,7 @@ def exec(lines_from_file_hex):
             a = time.time()
             RAM[word0_first_half] = math.cos(word1)
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    COS R[%s] %s' %(word0_first_half, word1))
 
@@ -551,6 +570,7 @@ def exec(lines_from_file_hex):
             a = time.time()
             RAM[word0_first_half] = math.cos(RAM[word1])
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    COS R[%s] R[%s]' %(word0_first_half, word1))
 
@@ -566,6 +586,7 @@ def exec(lines_from_file_hex):
 
             RAM[i:j+1] = [k] * (j+1-i)
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LD R[%s:%s] %s' %(i, j, k))
 
@@ -581,6 +602,7 @@ def exec(lines_from_file_hex):
 
             RAM[i:j+1] = [RAM[k]] * (j+1-i)
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LD R[%s:%s] R[%s]' %(i, j, k))
 
@@ -595,6 +617,7 @@ def exec(lines_from_file_hex):
 
             RAM[i:i + ram_span+1] = RAM[k:k + ram_span+1]
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LD R[%s:%s] R[%s:%s]' %(i, i+ram_span, k, k+ram_span))
 
@@ -604,6 +627,7 @@ def exec(lines_from_file_hex):
             a = time.time()
             RAM[word1] = math.floor(RAM[word1])
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    FLOOR R[%s]' %word1)
 
@@ -612,6 +636,7 @@ def exec(lines_from_file_hex):
             a = time.time()
             RAM[word1] = math.ceil(RAM[word1])
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    CEIL R[%s]' %word1)
 
@@ -620,6 +645,7 @@ def exec(lines_from_file_hex):
             a = time.time()
             RAM[word1] = random.choice([0, 1])
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    RAND R[%s]' %word1)
 
@@ -641,6 +667,7 @@ def exec(lines_from_file_hex):
 
             RAM[RAM[ram_index_i]] = RAM[RAM[ram_index_j]]
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LD R[%s] R[%s]' %(
                 RAM[ram_index_i],
@@ -669,6 +696,7 @@ def exec(lines_from_file_hex):
             array_span = len(RAM[RAM[ram_index_i]:RAM[ram_index_j]])
             RAM[RAM[ram_index_i]:RAM[ram_index_j]] = [RAM[RAM[ram_index_k]]] * array_span
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LD R[%s:%s] R[%s]' %(
                 RAM[ram_index_i],
@@ -700,6 +728,7 @@ def exec(lines_from_file_hex):
 
             RAM[RAM[ram_index_i]:RAM[ram_index_j]] = RAM[RAM[ram_index_k]:RAM[ram_index_l]]
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LD R[%s:%s] R[%s:%s]' %(
                 RAM[ram_index_i],
@@ -727,6 +756,7 @@ def exec(lines_from_file_hex):
             array_span = len(RAM[RAM[ram_index_i]:RAM[ram_index_j]])
             RAM[RAM[ram_index_i]:RAM[ram_index_j]] = [RAM[word1]] * array_span
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LD R[%s:%s] R[%s]' %(
                 RAM[ram_index_i],
@@ -746,6 +776,7 @@ def exec(lines_from_file_hex):
 
             RAM[RAM[ram_index_i]] = RAM[word1]
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LD R[%s] R[%s]' %(
                 RAM[ram_index_i],
@@ -764,6 +795,7 @@ def exec(lines_from_file_hex):
 
             RAM[RAM[ram_index_i]] = word1
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LD R[%s] %s' %(
                 RAM[ram_index_i],
@@ -787,6 +819,7 @@ def exec(lines_from_file_hex):
             array_span = len(RAM[RAM[ram_index_u] : RAM[ram_index_v]])
             RAM[RAM[ram_index_u] : RAM[ram_index_v]] = [word1] * array_span
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LD R[%s:%s] %s' %(
                 RAM[ram_index_u],
@@ -806,6 +839,7 @@ def exec(lines_from_file_hex):
                 cmp_true = 'true'
                 PC += 2
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    CMP R[%s] %s -> %s' %(RAM[ram_index_u], word1, cmp_true))
 
@@ -815,6 +849,7 @@ def exec(lines_from_file_hex):
             a = time.time()
             EXIT_LOOP = True
             b = time.time()
+
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    EXIT')
 

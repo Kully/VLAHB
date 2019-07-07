@@ -4,6 +4,16 @@
 // ******************************************
 
 
+
+LD R[0] 42
+ADD R[0] 2
+ADD R[0] 2
+// ADD R[0] 0XFFFFFFFF
+EXIT
+
+
+
+
 // |N|=3
 LD R[4101] 0XFFFFFFFF
 LD R[4102] 0XFFFFFFFF
