@@ -1,0 +1,21 @@
+array[]
+{
+    AABBCCDD,
+    BBCCDDAA,
+    CCDDAABB,
+    DDAABBCC
+}
+
+some_function(, , ,)
+{
+    ;
+    ;
+    ;
+}
+
+main(, , ,)
+{
+    ;
+    ;
+    ;
+}
