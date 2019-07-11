@@ -6,16 +6,12 @@ array[]
     DDAABBCC
 }
 
-some_function(, , ,)
+some_function()
 {
-    ;
-    ;
-    ;
+    4 + 3 - 5 / 6 * (5 + 2 - 13) - 3;
 }
 
-main(, , ,)
+main()
 {
-    ;
-    ;
-    ;
+    0;
 }
