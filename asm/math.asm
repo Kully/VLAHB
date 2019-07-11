@@ -62,7 +62,6 @@ MATH_LONG_WINDED:
 
 // TODO: what should happen if you divide by 0?
 
-
 // Python: R[0] // R[1]
 MATH_FLOOR_DIV:
     GTE R[0] R[1]
@@ -71,7 +70,7 @@ MATH_FLOOR_DIV:
     SUB R[0] R[1]
     GOTO MATH_FLOOR_DIV
 
-// Python: R[0] % R[1]
+// Python: R[0] mod R[1]
 MATH_DIV_REMAINDER:
     CALL MATH_FLOOR_DIV
     LD R[3] R[1]

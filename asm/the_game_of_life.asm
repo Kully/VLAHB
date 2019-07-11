@@ -2,179 +2,221 @@
 // THE GAME OF LIFE
 // originally written by John Conway in 1970
 // ******************************************
-
-// if N < 2 or N > 3
-LD R[42502] 6
-LD R[0] 0
-LD R[1] 0
-GTE R[42502] 2
-LD R[0] 1
-LTE R[42502] 3
-LD R[1] 1
-CALL LOGIC_OR
-EXIT
-
-
-
-
 // spare slots: 42501+
-
-// (x,y) = (2,7)
-R[4096] = 2
-R[4097] = 7
+// [---functions---][UVYZ][----VRAM----][---VRAM2---][42501-----192000]
 
 
-// Y -> index for cell state (VRAM2)
-// R[4098] -> 120*160 + vram_idx
-LD R[4098] 120
-MUL R[4098] 160
+// ******************
+// THE GAME OF LIFE *
+// ******************
 
-LD R[0] R[4096]
-LD R[1] R[4097]
-CALL VRAM_INDEX_FROM_X_Y
-ADD R[4098] R[4100]
+// CALL SEED1_THE_GAME_OF_LIFE
+// LD R[4096] 10211
+// LD R[4097] 10213
+// LD R[U:V] 0XFFFFFFFF
 
-
-
-// ***********
-// compute |N|
-
-// CALL COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE
-// R[4100] -> 3, say
-
-// LD R[42502] R[4100]
-
-// ***********
+// left column of values
 
 
-
-
-
-// decide what to do with |N|
-// R[42502] -> N
-
-CALL RETURN_1_IF_GREATER_THAN_ZER0_ELSE_0
-LD R[Y] R[4100]  // store 0 or 1 in R[ idx + 120*160 ]
-
-
-// transition logic
-
-
-// if N < 2 or N > 3 - // copied above!!!
-// ...
-
-
-
-// if R[Y] == 1:
-// 	if N < 2 or N > 3:
-// 		LD R[Y] 0
-
-// elif R[Y] == 0:
-// 	if N == 3:
-// 		LD R[Y] 1
-
-
+LD R[4096] 4101  // init VRAM
+CALL FILL_SIXTH_OF_VRAM_WITH_RAND_VALUES
 EXIT
 
+FILL_SIXTH_OF_VRAM_WITH_RAND_VALUES:
+	// U -> VRAM idx
+	RAND R[4099] 
+	MUL R[4099] 0XFFFFFFFE
+	LD R[U] R[4099]  // load pixel
 
-// |N|=3
-LD R[4101] 0XFFFFFFFF
-LD R[4102] 0XFFFFFFFF
-LD R[4103] 0XFFFFFFFF
+	ADD R[4096] 1  // incr VRAM idx
 
-LD R[4096] 1
-LD R[4097] 0
-CALL COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE
-EXIT
+	BLIT  // draw
+
+	GTE R[4096] 23301
+	GOTO FILL_SIXTH_OF_VRAM_WITH_RAND_VALUES
+	RETURN
 
 
-// ***********
-// STARTS HERE
-// ***********
+LD R[4261] 0XFFFFFFFF
+LD R[4421] 0XFFFFFFFF
+LD R[4581] 0XFFFFFFFF
 
-// init stuff
-CALL INIT_THE_GAME_OF_LIFE
-CALL SEED0_THE_GAME_OF_LIFE
+BLIT
 
-// game loop
+A12394876:
+	GOTO A12394876
+
+// *** initialize
+CALL RESET_POINTERS_THE_GAME_OF_LIFE
+// CALL SEED1_THE_GAME_OF_LIFE
+
+// *** main loop
 CALL MAIN_LOOP_THE_GAME_OF_LIFE
-
 EXIT
 
 
 
-INIT_THE_GAME_OF_LIFE:
-	LD R[4096] 0  // U -> x index
-	LD R[4097] 0  // V -> y index
-	RETURN
 
-
-// initial states
-SEED0_THE_GAME_OF_LIFE:
-	RETURN
-
-SEED1_THE_GAME_OF_LIFE:
-	RETURN
-	
-
-SEED2_THE_GAME_OF_LIFE:
-	RETURN
-
-// main
 MAIN_LOOP_THE_GAME_OF_LIFE:
+	// generate x,y from VRAM index
+	// and put into R[4096] and R[4097] resp
+	
+	LD R[0] R[4099]
+	CALL X_FROM_VRAM_INDEX
+	LD R[4096] R[4100]  // U -> x
 
-	// ****************
-	// update all cells
-	// ****************
-
-	// put (x,y) index in R[65000]
-	LD R[0] R[4096]
-	LD R[1] R[4097]
-	CALL VRAM_INDEX_FROM_X_Y
-	LD R[65000] R[4100]
-
-
-	CALL COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE
+	LD R[0] R[4099]
+	CALL Y_FROM_VRAM_INDEX
+	LD R[4097] R[4100]  // V -> y
 
 
+	// *** find N 
+
+	// LD R[0] R[4096] // x
+	// LD R[1] R[4097] // y
+	// CALL COUNT_LIVE_NEIGHBOURS_THE_GAME_OF_LIFE
+	// LD R[42502] R[4100] // store N in R[42502]
+	LD R[42502] 2  // N = 3
 
 
+	// *** transition logic
 
-	// *************
-	// update screen
-	// *************
+	// VRAM idx
+	LD R[0] R[4099]
+	CALL RETURN_1_IF_GREATER_THAN_ZER0_ELSE_0
+	LD R[Y] R[4100]  // CURRENT state -> VRAM2
+	CALL TRANSITION_LOGIC_GAME_OF_LIFE  // UPDATED cell state -> VRAM2
+
+	// increment VRAM_idx and VRAM2_idx
+	ADD R[4098] 1  // VRAM2 idx++
+	ADD R[4099] 1  // VRAM idx++
+
+	GTE R[4099] 23301  // last idx of VRAM...
+		GOTO MAIN_LOOP_THE_GAME_OF_LIFE
+
+	
 	BLIT
-
-	// increment x and y
-	// LT R[4096] 120
-
-
+	// reset variables: (x,y) -> (0,0)
+	CALL RESET_POINTERS_THE_GAME_OF_LIFE
 	GOTO MAIN_LOOP_THE_GAME_OF_LIFE
 
 
 
-// **************
-// util functions
-// **************
 
 
-// R[0] Index of RAM
+
+
+// ***************
+// other functions
+// ***************
+
+
+RESET_POINTERS_THE_GAME_OF_LIFE:
+	LD R[4096] 0  // U -> x=0
+	LD R[4097] 0  // V -> y=0
+
+	LD R[4098] 160
+	MUL R[4098] 120
+	ADD R[4098] 4101  // Y -> VRAM2 idx
+
+	LD R[4099] 4101 // Z -> VRAM idx
+
+	RETURN
+
+
+SEED1_THE_GAME_OF_LIFE:
+	LD R[4101:4200] 0XFF0000FF
+	RETURN
+
+
+SEED2_THE_GAME_OF_LIFE:
+	RETURN
+
+	
+SEED3_THE_GAME_OF_LIFE:
+	RETURN
+
+
+// R[0]: Index of RAM
 INDEX_IN_DISPLAY_SCOPE:
-	LD R[4100] 0 // false
+	LD R[4100] 0
 
 	GTE R[0] 4101  // vram start: 4101
 	RETURN
 	LTE R[0] 23301 // vram end:   4101 + (120*160)
 	RETURN
 
-	// 4101 <= R[0] <= 23301 true
+	// 4101 <= R[0] <= 23301 passes
 	LD R[4100] 1
 	RETURN
 
 
-COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE:
-	// store count here:R[65002]
-	LD R[65002] 0
+// R[0]: X
+// R[1]: Y
+IS_VALUE_AT_XY_NOT_ZERO:
+	CALL VRAM_INDEX_FROM_X_Y
+
+	LD R[4099] R[4100]  // Z -> index
+	LD R[4100] 0
+	CMP R[Z] 0 // N is dead?
+	LD R[4100] 1  // increase count
+	RETURN
+
+
+RETURN_1_IF_GREATER_THAN_ZER0_ELSE_0:
+	LD R[4100] 1
+	GT R[0] 0
+	LD R[4100] 0
+	RETURN
+
+
+TRANSITION_LOGIC_GAME_OF_LIFE:
+	// ****************
+	// transition logic
+	//
+	// R[Y] -> UPDATED state of cell in R[Y]
+	//
+	// R[42502] -> N
+	// R[Y] -> cell state in VRAM2
+	//
+	// GAME RULES
+	// if alive and (N<2 or N>3), cell dead
+	// if dead and N == 3, cell alive
+	// ************************************
+
+	// return (N<2 or N>3) boolean
+	LD R[0] 0
+	LD R[1] 0
+	GTE R[42502] 2
+	LD R[0] 1
+	LTE R[42502] 3
+	LD R[1] 1
+	CALL LOGIC_OR
+
+	LD R[0] R[4100]  // (N<2 or N>3)
+	LD R[4099] 1
+	LD R[Z] R[Y]  // cell alive
+
+	// R[0]: (N < 2 or N > 3)
+	// R[1]: (cell_state {0,1})
+	CALL LOGIC_AND
+
+	CMP R[4100] 0
+	LD R[Y] 0
+	CMP R[Y] 0
+	RETURN  // leave if cell is alive
+	CMP R[42502] 3
+	RETURN
+	LD R[Y] 1  // revive cell if N == 3
+
+	RETURN
+
+
+COUNT_LIVE_NEIGHBOURS_THE_GAME_OF_LIFE:
+	// store count here:R[12]
+	// LD R[65002] 0
+	LD R[12] 0
+	PUSH
 
 	// Each Cell has 8 neighbours (N1 - N8)
 
@@ -199,7 +241,11 @@ COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE:
 	LD R[0] R[4096]
 	LD R[1] R[4097]
 	CALL IS_VALUE_AT_XY_NOT_ZERO
-	ADD R[65002] R[4100]
+	
+	// ADD R[65002] R[4100]
+	POP
+	ADD R[12] R[4100]
+	PUSH
 
 	// **
 	// N2
@@ -211,7 +257,10 @@ COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE:
 	LD R[0] R[4096]
 	LD R[1] R[4097]
 	CALL IS_VALUE_AT_XY_NOT_ZERO
-	ADD R[65002] R[4100]
+
+	POP
+	ADD R[12] R[4100]
+	PUSH
 
 
 	// **
@@ -224,7 +273,10 @@ COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE:
 	LD R[0] R[4096]
 	LD R[1] R[4097]
 	CALL IS_VALUE_AT_XY_NOT_ZERO
-	ADD R[65002] R[4100]
+
+	POP
+	ADD R[12] R[4100]
+	PUSH
 
 
 	// **
@@ -237,7 +289,10 @@ COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE:
 	LD R[0] R[4096]
 	LD R[1] R[4097]
 	CALL IS_VALUE_AT_XY_NOT_ZERO
-	ADD R[65002] R[4100]
+
+	POP
+	ADD R[12] R[4100]
+	PUSH
 
 	// **
 	// N5
@@ -249,7 +304,10 @@ COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE:
 	LD R[0] R[4096]
 	LD R[1] R[4097]
 	CALL IS_VALUE_AT_XY_NOT_ZERO
-	ADD R[65002] R[4100]
+
+	POP
+	ADD R[12] R[4100]
+	PUSH
 
 	// **
 	// N6
@@ -261,7 +319,10 @@ COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE:
 	LD R[0] R[4096]
 	LD R[1] R[4097]
 	CALL IS_VALUE_AT_XY_NOT_ZERO
-	ADD R[65002] R[4100]
+
+	POP
+	ADD R[12] R[4100]
+	PUSH
 
 	// **
 	// N7
@@ -273,7 +334,11 @@ COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE:
 	LD R[0] R[4096]
 	LD R[1] R[4097]
 	CALL IS_VALUE_AT_XY_NOT_ZERO
-	ADD R[65002] R[4100]
+
+
+	POP
+	ADD R[12] R[4100]
+	PUSH
 
 
 	// **
@@ -286,28 +351,12 @@ COUNT_ALIVE_NEIGHBOURS_THE_GAME_OF_LIFE:
 	LD R[0] R[4096]
 	LD R[1] R[4097]
 	CALL IS_VALUE_AT_XY_NOT_ZERO
-	ADD R[65002] R[4100]
+
+	POP
+	ADD R[12] R[4100]
 
 
 	// load count in return slot
-	LD R[4100] R[65002]
+	LD R[4100] R[12]
 	RETURN
 
-
-
-// R[0]: X
-// R[1]: Y
-IS_VALUE_AT_XY_NOT_ZERO:
-	CALL VRAM_INDEX_FROM_X_Y
-
-	LD R[4099] R[4100]  // Z -> index
-	LD R[4100] 0
-	CMP R[Z] 0 // N is dead?
-	LD R[4100] 1  // increase count
-	RETURN
-
-RETURN_1_IF_GREATER_THAN_ZER0_ELSE_0:
-	LD R[4100] 1
-	GT R[0] 0
-	SUB R[4100] 1
-	RETURN

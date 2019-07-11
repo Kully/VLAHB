@@ -235,13 +235,7 @@ def validate_and_make_hexfile(lines):
                         # LD R[U] R[i]
                         opcode_val = '104'
 
-                        hex_thats_wrong = '''
-                        341000 0104
-                        0000019a
-                        '''
-
-                        # j = args[1][2:-1]
-                        word1 = util.int_to_hex(args[1][2:-1]).zfill(8)  # (j)
+                        word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                     elif re.match(r'\d+', args[1]):
                         # LD R[U] i
