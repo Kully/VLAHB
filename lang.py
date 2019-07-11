@@ -140,7 +140,6 @@ class Compiler:
         self.match(')')
 
     def assign(self, string):
-        self.match('=')
         if self.idents.get(string) is None:
             self.idents[string] = self.sp
         else:
@@ -151,25 +150,29 @@ class Compiler:
         self.match('{')
         if self.look != '}':
             while True:
-                string = self.string()
-                strings.append(string)
-                self.assign(string)
                 self.expression()
+                if self.look == '@':
+                    self.match('@')
+                    string = self.string()
+                    strings.append(string)
+                    self.assign(string)
                 self.match(';')
                 if self.look == '{':
                     self.block()
                 if self.look == '}':
                     break
         self.match('}')
+        sp = self.sp
         for string in strings:
             del self.idents[string]
         self.sp -= len(strings)
+        return sp
 
     def function(self):
         self.sp = 0
         self.args()
-        self.block()
-        self.asm.write("\tLD R[4100] R[%d]\n" % self.sp)
+        sp = self.block()
+        self.asm.write("\tLD R[4100] R[%d]\n" % (sp - 1))
         self.asm.write("\tRETURN\n\n")
 
     def ishex(self, value):
