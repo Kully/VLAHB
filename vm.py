@@ -652,6 +652,12 @@ def exec(lines_from_file_hex):
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    RAND R[%s]' %word1)
 
+        #  ARRAY == 00(25)
+        elif word0_second_half[2:] == 37:  # int
+            print('\narray stuff in vm\n')
+            
+
+
         # LD R[V] R[Z] == 0100
         # 
         # LD R[R[i]] R[R[j]]

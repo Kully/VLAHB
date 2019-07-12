@@ -142,7 +142,36 @@ def validate_and_make_hexfile(lines):
                 if len(args) < 2:
                     raise Exception(util.LD_EXCEPTION_MSG)
 
-                if re.search(util.REGEX_LD_R_ONE, args[0]):
+
+                # LD R[0] R[1] MARIO 123
+                if re.match(util.REGEX_ARRAY_LD, ' '.join(args)):
+                    opcode_val = util.op_codes_dict['ARRAY']
+
+                    all_args = re.findall(util.REGEX_ARRAY_LD, ' '.join(args))
+                    x_sprite = all_args[0][0]
+                    y_sprite = all_args[0][1]
+                    label = all_args[0][2]
+                    width_sprite = all_args[0][3]
+
+                    if label not in LABELS_TO_PC.keys():
+                        raise Exception('\nUnknown Label %s' %label)
+                    label_idx = util.int_to_hex(LABELS_TO_PC[label]).zfill(4)
+
+                    x_sprite = util.int_to_hex(x_sprite).zfill(4)
+                    y_sprite = util.int_to_hex(y_sprite).zfill(4)
+                    width_sprite = util.int_to_hex(width_sprite).zfill(2)
+
+                    word0_first_half = x_sprite
+                    word0_second_half = width_sprite + opcode_val.zfill(4)
+                    word1 = y_sprite + label_idx
+
+                    hex_file_str = write_two_lines_to_hexfile(
+                        word0_first_half, word0_second_half,
+                        word1, hex_file_str
+                    )
+
+
+                elif re.search(util.REGEX_LD_R_ONE, args[0]):
                     if re.match(util.REGEX_LD_R_ONE, args[1]):
                         # LD R[i] R[j]
                         opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']

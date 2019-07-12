@@ -138,6 +138,7 @@ op_codes_dict = {
     'FLOOR': '22',
     'CEIL': '23',
     'RAND': '24',
+    'ARRAY': '25',
     # U,V,Y,Z
     'LD R[U] R[V]': '100',
     'LD R[U:V] R[Y]': '101',
@@ -253,3 +254,5 @@ REGEX_HEX = r'0X[0-9a-fA-F]+'
 REGEX_UV_ONE_AND_ONE = r'R\[([UVYZ])] R\[([UVYZ])]'
 REGEX_UV_ONE = r'R\[([UVYZ])]'
 REGEX_UV_TWO = r'R\[([UVYZ]):([UVYZ])]'
+
+REGEX_ARRAY_LD = r'R\[(\d+)] R\[(\d+)] ([A-Z|\d|_]+) (\d+)'
