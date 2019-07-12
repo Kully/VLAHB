@@ -20,6 +20,7 @@ import util
 
 
 LABELS_TO_PC = {}
+COMMENT_SYMBOL = '//'
 
 
 def write_two_lines_to_hexfile(word0_first_half,
@@ -63,7 +64,7 @@ def compute_label_indices(file_asm, cumsum_hex_lines):
     lines = util.return_lines_from_file(file_asm)
     lines_for_program = []  # all but comments, blank and comments
     for line in lines:
-        first_semicolon_idx = line.find('//')
+        first_semicolon_idx = line.find(COMMENT_SYMBOL)
 
         if first_semicolon_idx == -1:
             comment = ''
@@ -93,7 +94,7 @@ def validate_and_make_hexfile(lines):
     hex_file_str = ''
 
     for line in lines:
-        first_semicolon_idx = line.find('//')
+        first_semicolon_idx = line.find(COMMENT_SYMBOL)
 
         if first_semicolon_idx == -1:
             comment = ''
@@ -120,7 +121,17 @@ def validate_and_make_hexfile(lines):
             word1 = '00000000'
 
             valid_opcode = False
-            if opcode == 'GOTO':
+
+            # raw data
+            if re.match(util.REGEX_HEX, opcode):
+                valid_opcode = False
+                if len(args) > 0:
+                    raise Exception(util.RAW_HEX_EXCEPTION_MSG)
+
+                hex_file_str += opcode
+                hex_file_str += '\n\n'
+
+            elif opcode == 'GOTO':
                 valid_opcode = True
                 if len(args) < 1:
                     raise Exception(util.GOTO_EXCEPTION_MSG)
@@ -141,7 +152,6 @@ def validate_and_make_hexfile(lines):
                 # Validate
                 if len(args) < 2:
                     raise Exception(util.LD_EXCEPTION_MSG)
-
 
                 # LD R[0] R[1] MARIO 123
                 if re.match(util.REGEX_ARRAY_LD, ' '.join(args)):

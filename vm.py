@@ -624,7 +624,6 @@ def exec(lines_from_file_hex):
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LD R[%s:%s] R[%s:%s]' %(i, i+ram_span, k, k+ram_span))
 
-
         # FLOOR == 0022
         elif word0_second_half == 34:
             a = time.time()
@@ -653,9 +652,23 @@ def exec(lines_from_file_hex):
             print('    RAND R[%s]' %word1)
 
         #  ARRAY == 00(25)
-        elif word0_second_half[2:] == 37:  # int
-            print('\narray stuff in vm\n')
+        elif util.hex_to_int(ROM[PC][6:]) == 37:  # int
+            the_opcode_val = util.hex_to_int(ROM[PC][6:])
+
+            a = time.time()
             
+            width_sprite = util.hex_to_int(ROM[PC][4:6])
+            x_sprite = word0_first_half
+            y_sprite = word1_first_half
+            label_idx = word1_second_half
+
+            RAM[4101 + x_sprite + 160*y_sprite] = ROM[label_idx:label_idx+width_sprite]
+
+            b = time.time()
+            opcodes_speed_data_str += '%s,%s\n' %(the_opcode_val, b-a)
+            print('    LD R[%s] R[%s] LABEL %s' %(
+                x_sprite, y_sprite, width_sprite)
+            )
 
 
         # LD R[V] R[Z] == 0100

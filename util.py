@@ -206,7 +206,6 @@ POP_PUSH_EXCEPTION_MSG = (
     '\nThe Opcode {opcode} requires no arguments afterwards'
 )
 
-
 TWO_ARGS_EXCEPTION_MSG = (
     '\nThe Opcode {opcode} must be followed by 2 arguments '
     'either in the form:\n    {opcode} R[X] R[Y]\nor\n'
@@ -241,6 +240,17 @@ LD_VRAM_EXCEPTION_MSG = (
 LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG = (
     '\nThe Label {label} is defined more than once. '
     'Labels can only be defined once across all asm files in ./asm'
+)
+
+RAW_HEX_EXCEPTION_MSG = (
+    '\nIf you are writing raw HEX data into a line of '
+    'assembly, make sure there is just a hex value and '
+    'nothing more.\n\n'
+    'valid example:\n'
+    '>>> 0XFFFFAAFF\n'
+    '\n'
+    'invalid example:\n'
+    '>>> 0XFFFFAAFF R[0]\n'
 )
 
 # regex
