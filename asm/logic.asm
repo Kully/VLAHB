@@ -23,3 +23,9 @@ LOGIC_AND:
 	LD R[4100] 1
 	LD R[4] 0  // reset R[4] to 0
 	RETURN
+
+LOGIC_NOT:
+	CMP R[0] 0
+	LD R[4100] 0
+	LD R[4100] 1
+	RETURN

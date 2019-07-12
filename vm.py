@@ -871,6 +871,8 @@ def exec(lines_from_file_hex):
         print('    RAM[U,V,Y,Z]: [%s, %s, %s, %s]  # stack pointers' %(
             RAM[4096], RAM[4097], RAM[4098], RAM[4099])
         )
+        print('    VRAM -  R[4101 : 4103]: %r' %RAM[4101: 4101+3])
+        print('    VRAM2 - R[23301:23303]: %r' %RAM[23301: 23301+3])
         print('\n\n')
 
         if EXIT_LOOP:
