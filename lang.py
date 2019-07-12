@@ -16,10 +16,14 @@ class Compiler:
         exit(1)
 
     def feed(self):
+        space = False
         while True:
             self.look = self.lang.read(1)
             if not self.look.isspace():
                 break
+            else:
+                space = True
+        return space
 
     def match(self, expected):
         if self.look != expected:
@@ -33,8 +37,8 @@ class Compiler:
         chars = []
         while True:
             chars.append(self.look)
-            self.feed()
-            if not self.isdigit(self.look):
+            space = self.feed()
+            if space or not self.isdigit(self.look):
                 break
         digit = ''.join(chars)
         return digit
@@ -43,11 +47,22 @@ class Compiler:
         self.asm.write("\tCALL %s\n" % ident)
         self.asm.write("\tLD R{%d] R[4100]\n" % self.sp)
 
+    def reassign(self, ident):
+        self.asm.write("\tLD R{%d] R[%d]\n" % (self.idents[ident], self.sp))
+
     def ident(self):
         ident = self.string()
-        if self.idents.get(ident) is None:
+        if ident == 'slot':
+            string = self.string()
+            self.assign(string)
+            self.expression()
+            self.sp += 1
+        elif ident == 'return':
+            self.expression()
+            self.ret()
+        elif self.idents.get(ident) is None:
             self.bomb("'%s' undefined" % ident)
-        if self.look == '(':
+        elif self.look == '(':
             self.match('(')
             # ... args.
             self.match(')')
@@ -70,12 +85,14 @@ class Compiler:
     def mul(self):
         self.match('*')
         self.factor()
-        self.asm.write("\tMUL R[%d] R[%d]\n" % (self.sp - 2, self.sp - 1))
+        self.sp -= 1
+        self.asm.write("\tMUL R[%d] R[%d]\n" % (self.sp - 1, self.sp))
 
     def div(self):
         self.match('/')
         self.factor()
-        self.asm.write("\tDIV R[%d] R[%d]\n" % (self.sp - 2, self.sp - 1))
+        self.sp -= 1
+        self.asm.write("\tDIV R[%d] R[%d]\n" % (self.sp - 1, self.sp))
 
     def term(self):
         self.factor()
@@ -85,17 +102,18 @@ class Compiler:
                 '/': self.div,
             }
             operate[self.look]()
-            self.sp -= 1
 
     def add(self):
         self.match('+')
         self.term()
-        self.asm.write("\tADD R[%d] R[%d]\n" % (self.sp - 2, self.sp - 1))
+        self.sp -= 1
+        self.asm.write("\tADD R[%d] R[%d]\n" % (self.sp - 1, self.sp))
 
     def sub(self):
         self.match('-')
         self.term()
-        self.asm.write("\tSUB R[%d] R[%d]\n" % (self.sp - 2, self.sp - 1))
+        self.sp -= 1
+        self.asm.write("\tSUB R[%d] R[%d]\n" % (self.sp - 1, self.sp))
 
     def expression(self):
         self.term()
@@ -105,7 +123,7 @@ class Compiler:
                 '-': self.sub,
             }
             operate[self.look]()
-            self.sp -= 1
+        self.sp -= 1
 
     def isstring(self, ch):
         return self.look.isalnum() or ch == '_'
@@ -114,8 +132,8 @@ class Compiler:
         chars = []
         while True:
             chars.append(self.look)
-            self.feed()
-            if not self.isstring(self.look):
+            space = self.feed()
+            if space or not self.isstring(self.look):
                 break
         string = ''.join(chars)
         return string
@@ -138,47 +156,49 @@ class Compiler:
                 else:
                     break
         self.match(')')
+        self.match('-')
+        self.match('>')
+        self.string()
 
     def assign(self, string):
+        self.match('=')
         if self.idents.get(string) is None:
             self.idents[string] = self.sp
         else:
             self.bomb("%s already defined" % string)
 
     def block(self):
-        strings = []
+        before = self.idents.copy()
         self.match('{')
         if self.look != '}':
             while True:
                 self.expression()
-                if self.look == '@':
-                    self.match('@')
-                    string = self.string()
-                    strings.append(string)
-                    self.assign(string)
                 self.match(';')
                 if self.look == '{':
                     self.block()
                 if self.look == '}':
                     break
         self.match('}')
-        sp = self.sp
-        for string in strings:
-            del self.idents[string]
-        self.sp -= len(strings)
-        return sp
+        expired = list(set(self.idents) - set(before))
+        for ex in expired:
+            del self.idents[ex]
+
+    def ret(self):
+        self.asm.write("\tLD R[4100] R[%d]\n" % self.sp)
+        self.asm.write("\tRETURN\n")
 
     def function(self):
         self.sp = 0
         self.args()
-        sp = self.block()
-        self.asm.write("\tLD R[4100] R[%d]\n" % (sp - 1))
+        self.block()
         self.asm.write("\tRETURN\n\n")
 
     def ishex(self, value):
         return value in ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
 
     def word(self):
+        self.match('0')
+        self.match('x')
         chars = []
         while True:
             chars.append(self.look)
@@ -186,20 +206,24 @@ class Compiler:
             if not self.ishex(self.look):
                 break
         word = ''.join(chars)
-        self.asm.write("\t0x%s\n" % word)
+        return word
 
     def data(self):
         delim = ','
         while True:
-            self.word()
+            word = self.word()
+            self.asm.write("\t0x%s\n" % word)
             if self.look == delim:
                 self.match(delim)
             else:
                 break
 
-    def array(self):
+    def sprite(self):
         self.match('[')
         self.match(']')
+        self.match('-')
+        self.match('>')
+        self.string()
         self.match('{')
         self.data()
         self.match('}')
@@ -214,7 +238,7 @@ class Compiler:
         while self.look:
             self.label()
             if self.look == '[':
-                self.array()
+                self.sprite()
             if self.look == '(':
                 self.function()
 
