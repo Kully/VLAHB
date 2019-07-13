@@ -35,14 +35,19 @@ fun(slot x, slot y) -> slot
     return cc;
 }
 
+test() -> slot
+{
+    slot xx = 0;
+    slot yy = 1;
+    slot zz = 2;
+    fun(2, 3);
+}
+
 fun_again() -> slot
 {
     slot aa = 1;
     {
-        slot bb = 2;
-        {
-            slot cc = fun(2, 3);
-        }
+        slot bb = fun(99+100, 1);
     }
     slot bb = 2;
     slot cc = thing();

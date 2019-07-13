@@ -44,11 +44,8 @@ class Compiler:
         return digit
 
     def call(self, ident):
-        self.asm.write("\tCALL %s\n" % ident)
-        self.asm.write("\tLD R{%d] R[4100]\n" % self.sp)
-
-    def reassign(self, ident):
-        self.asm.write("\tLD R{%d] R[%d]\n" % (self.idents[ident], self.sp))
+        self.asm.write("\tGOTO %s\n" % ident)
+        self.asm.write("\tLD R[%d] R[4100]\n" % self.sp)
 
     def pass_args(self, ident):
         expected = self.lookup(ident)
@@ -57,6 +54,7 @@ class Compiler:
         if self.look != ')':
             while True:
                 self.expression()
+                self.sp += 1
                 count += 1
                 if self.look == ',':
                     self.match(',')
@@ -64,6 +62,10 @@ class Compiler:
                     break
         if expected != count:
             self.bomb("%s: expected %d args but got %d" % (ident, expected, count))
+        self.sp -= count
+        self.asm.write("\tPUSH\n")
+        for which in range(count):
+            self.asm.write("\tLD R[%d] R[%d]\n" % (which, self.sp + which))
         self.match(')')
 
     def lookup(self, ident):
@@ -161,13 +163,14 @@ class Compiler:
         else:
             self.bomb("'%s' already defined" % ident)
 
-    def declare_args(self, ident):
+    def declare_args(self, ident_label):
         arg_count = 0
         self.match('(')
         if self.look != ')':
             while True:
                 typeof = self.string()
-                var = self.string()
+                ident = self.string()
+                self.sp += 1
                 arg_count += 1
                 if self.look == ',':
                     self.match(',')
@@ -175,7 +178,7 @@ class Compiler:
                     break
         self.match(')')
         self.annotate()
-        self.insert(ident, arg_count)
+        self.insert(ident_label, arg_count)
 
     def assign(self, string):
         self.match('=')
@@ -196,6 +199,7 @@ class Compiler:
         expired = list(set(self.idents) - set(before))
         for ex in expired:
             del self.idents[ex]
+        self.sp -= len(expired)
 
     def ret(self):
         self.asm.write("\tLD R[4100] R[%d]\n" % self.sp)
