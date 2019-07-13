@@ -271,14 +271,14 @@ class Compiler:
             print(key, value)
 
     def loop(self):
-        self.asm.write("LOOP%d:\n" % self.index)
+        self.asm.write("LOOP_%d:\n" % self.index)
         self.asm.write("\tCMP R[%d] 0\n" % self.sp)
-        self.asm.write("\tGOTO DO%d\n" % self.index)
-        self.asm.write("\tGOTO OUT%d\n" % self.index)
-        self.asm.write("DO%d:\n" % self.index)
+        self.asm.write("\tGOTO DO_%d\n" % self.index)
+        self.asm.write("\tGOTO OUT_%d\n" % self.index)
+        self.asm.write("DO_%d:\n" % self.index)
         self.block()
-        self.asm.write("\tGOTO LOOP%d\n" % self.index)
-        self.asm.write("OUT%d:\n" % self.index)
+        self.asm.write("\tGOTO LOOP_%d\n" % self.index)
+        self.asm.write("OUT_%d:\n" % self.index)
         self.index += 1
 
     def compile(self):
