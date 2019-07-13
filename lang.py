@@ -6,6 +6,7 @@ class Compiler:
         self.look = None
         self.sp = 0
         self.idents = {}
+        self.index = 0
 
     def __del__(self):
         self.lang.close()
@@ -83,9 +84,18 @@ class Compiler:
         elif ident == 'return':
             self.expression()
             self.ret()
+        elif ident == 'while':
+            self.match('(')
+            self.expression();
+            self.match(')')
+            self.loop();
         elif self.look == '(':
             self.pass_args(ident)
             self.call(ident)
+        elif self.look == '=':
+            self.match('=')
+            self.expression()
+            self.asm.write("\tLD R[%d] R[%d]\n" % (self.idents[ident], self.sp))
         else:
             self.asm.write("\tLD R[%d] R[%d]\n" % (self.sp, self.idents[ident]))
 
@@ -259,6 +269,17 @@ class Compiler:
     def dump(self):
         for key, value in self.idents.items():
             print(key, value)
+
+    def loop(self):
+        self.asm.write("LOOP%d:\n" % self.index)
+        self.asm.write("\tCMP R[%d] 0\n" % self.sp)
+        self.asm.write("\tGOTO DO%d\n" % self.index)
+        self.asm.write("\tGOTO OUT%d\n" % self.index)
+        self.asm.write("DO%d:\n" % self.index)
+        self.block()
+        self.asm.write("\tGOTO LOOP%d\n" % self.index)
+        self.asm.write("OUT%d:\n" % self.index)
+        self.index += 1
 
     def compile(self):
         self.reset()

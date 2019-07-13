@@ -16,12 +16,6 @@ function() -> slot
     return 10 + 32 * a() / d();
 }
 
-main() -> slot
-{
-    slot test = 4 + (a() + 1) * 3;
-    return test;
-}
-
 thing() -> slot
 {
     return 3 + 2;
@@ -43,13 +37,19 @@ test() -> slot
     fun(2, 3);
 }
 
-fun_again() -> slot
+args() -> none
 {
-    slot aa = 1;
+    slot x = 0;
+    slot y = 1;
+    slot z = 2;
+    fun(10, 42);
+}
+
+main() -> none
+{
+    slot index = 10;
+    while(index)
     {
-        slot bb = fun(99+100, 1);
-    }
-    slot bb = 2;
-    slot cc = thing();
-    return cc;
+        index = index - 1;
+    };
 }
