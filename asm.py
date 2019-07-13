@@ -92,6 +92,7 @@ def compute_label_indices(file_asm, cumsum_hex_lines):
 
 def validate_and_make_hexfile(lines):
     hex_file_str = ''
+    extra_line_for_raw_hex = 0
 
     for line in lines:
         first_semicolon_idx = line.find(COMMENT_SYMBOL)
@@ -128,8 +129,13 @@ def validate_and_make_hexfile(lines):
                 if len(args) > 0:
                     raise Exception(util.RAW_HEX_EXCEPTION_MSG)
 
-                hex_file_str += opcode
-                hex_file_str += '\n\n'
+                opcode_int = util.hex_to_int(opcode)
+                opcode_hex = util.int_to_hex(opcode_int)
+
+                hex_file_str += opcode_hex.zfill(8)
+                hex_file_str += '\n' + '\n' * (extra_line_for_raw_hex % 2)
+
+                extra_line_for_raw_hex += 1
 
             elif opcode == 'GOTO':
                 valid_opcode = True

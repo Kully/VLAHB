@@ -119,12 +119,16 @@ def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
     time.sleep(0.4)
     lines = util.return_lines_from_file(file_hex)
 
-    sys.stdout.write('\n\r    (  )  even number of hex lines')
-    assert len(lines) % 2 == 0, util.EVEN_NUMBER_OF_HEX_LINES_ERROR_MSG
-    sys.stdout.flush()
-    time.sleep(sleeptime)
-    sys.stdout.write('\r    (ok) \n')
-    time.sleep(sleeptime*2)
+
+    # remove this check as a sprite can be an odd # of hexlines
+    # eg 17*1 sprite => 17 colors => 17 hexlines
+
+    # sys.stdout.write('\n\r    (  )  even number of hex lines')
+    # assert len(lines) % 2 == 0, util.EVEN_NUMBER_OF_HEX_LINES_ERROR_MSG
+    # sys.stdout.flush()
+    # time.sleep(sleeptime)
+    # sys.stdout.write('\r    (ok) \n')
+    # time.sleep(sleeptime*2)
 
     sys.stdout.write('\r    (  )  all lines in file.hex are 8 chars long')
     assert all(len(line) == 8 for line in lines), util.CHARS_PER_LINE_ERROR_MSG
