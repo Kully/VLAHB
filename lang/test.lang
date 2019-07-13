@@ -27,7 +27,7 @@ thing() -> slot
     return 3 + 2;
 }
 
-fun() -> slot
+fun(slot x, slot y) -> slot
 {
     slot aa = 1;
     slot bb = 2;
@@ -41,7 +41,7 @@ fun_again() -> slot
     {
         slot bb = 2;
         {
-            slot cc = thing();
+            slot cc = fun(2, 3);
         }
     }
     slot bb = 2;

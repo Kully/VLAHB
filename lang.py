@@ -50,6 +50,27 @@ class Compiler:
     def reassign(self, ident):
         self.asm.write("\tLD R{%d] R[%d]\n" % (self.idents[ident], self.sp))
 
+    def pass_args(self, ident):
+        expected = self.lookup(ident)
+        self.match('(')
+        count = 0
+        if self.look != ')':
+            while True:
+                self.expression()
+                count += 1
+                if self.look == ',':
+                    self.match(',')
+                else:
+                    break
+        if expected != count:
+            self.bomb("%s: expected %d args but got %d" % (ident, expected, count))
+        self.match(')')
+
+    def lookup(self, ident):
+        if self.idents.get(ident) is None:
+            self.bomb("'%s' undefined" % ident)
+        return self.idents.get(ident)
+
     def ident(self):
         ident = self.string()
         if ident == 'slot':
@@ -60,12 +81,8 @@ class Compiler:
         elif ident == 'return':
             self.expression()
             self.ret()
-        elif self.idents.get(ident) is None:
-            self.bomb("'%s' undefined" % ident)
         elif self.look == '(':
-            self.match('(')
-            # ... args.
-            self.match(')')
+            self.pass_args(ident)
             self.call(ident)
         else:
             self.asm.write("\tLD R[%d] R[%d]\n" % (self.sp, self.idents[ident]))
@@ -138,34 +155,31 @@ class Compiler:
         string = ''.join(chars)
         return string
 
-    def label(self):
-        label = self.string()
-        if self.idents.get(label) is None:
-            self.idents[label] = -1
-            self.asm.write("%s:\n" % label)
+    def insert(self, ident, value):
+        if self.idents.get(ident) is None:
+            self.idents[ident] = value
         else:
-            self.bomb("label '%s' already defined" % label)
+            self.bomb("'%s' already defined" % ident)
 
-    def args(self):
+    def declare_args(self, ident):
+        arg_count = 0
         self.match('(')
         if self.look != ')':
             while True:
-                self.expression()
+                typeof = self.string()
+                var = self.string()
+                arg_count += 1
                 if self.look == ',':
                     self.match(',')
                 else:
                     break
         self.match(')')
-        self.match('-')
-        self.match('>')
-        self.string()
+        self.annotate()
+        self.insert(ident, arg_count)
 
     def assign(self, string):
         self.match('=')
-        if self.idents.get(string) is None:
-            self.idents[string] = self.sp
-        else:
-            self.bomb("%s already defined" % string)
+        self.insert(string, self.sp)
 
     def block(self):
         before = self.idents.copy()
@@ -187,9 +201,9 @@ class Compiler:
         self.asm.write("\tLD R[4100] R[%d]\n" % self.sp)
         self.asm.write("\tRETURN\n")
 
-    def function(self):
+    def function(self, ident):
         self.sp = 0
-        self.args()
+        self.declare_args(ident)
         self.block()
         self.asm.write("\tRETURN\n\n")
 
@@ -208,39 +222,51 @@ class Compiler:
         word = ''.join(chars)
         return word
 
-    def data(self):
+    def data(self, ident):
         delim = ','
+        count = 0
         while True:
             word = self.word()
             self.asm.write("\t0x%s\n" % word)
+            count += 1
             if self.look == delim:
                 self.match(delim)
             else:
                 break
+        self.idents[ident] = count
 
-    def sprite(self):
-        self.match('[')
-        self.match(']')
+    def annotate(self):
         self.match('-')
         self.match('>')
         self.string()
+
+    def sprite(self, ident):
+        self.match('[')
+        self.match(']')
+        self.annotate()
         self.match('{')
-        self.data()
+        self.data(ident)
         self.match('}')
         self.asm.write('\n')
 
     def reset(self):
         self.asm.write("GOTO main\n\n")
 
+    def dump(self):
+        for key, value in self.idents.items():
+            print(key, value)
+
     def compile(self):
         self.reset()
         self.feed()
         while self.look:
-            self.label()
+            ident = self.string()
+            self.asm.write("%s:\n" % ident)
             if self.look == '[':
-                self.sprite()
+                self.sprite(ident)
             if self.look == '(':
-                self.function()
+                self.function(ident)
+        self.dump()
 
 if __name__ == "__main__":
     Compiler('lang/test.lang', 'asm/test.asm').compile()
