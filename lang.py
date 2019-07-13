@@ -89,6 +89,16 @@ class Compiler:
             self.expression();
             self.match(')')
             self.loop();
+        elif ident == 'if':
+            self.match('(')
+            self.expression();
+            self.match(')')
+            self.branch()
+        elif ident == 'else':
+            if self.look != '{':
+                self.ident()
+            else:
+                self.block()
         elif self.look == '(':
             self.pass_args(ident)
             self.call(ident)
@@ -200,7 +210,6 @@ class Compiler:
         if self.look != '}':
             while True:
                 self.expression()
-                self.match(';')
                 if self.look == '{':
                     self.block()
                 if self.look == '}':
@@ -278,6 +287,15 @@ class Compiler:
         self.asm.write("DO_%d:\n" % self.index)
         self.block()
         self.asm.write("\tGOTO LOOP_%d\n" % self.index)
+        self.asm.write("OUT_%d:\n" % self.index)
+        self.index += 1
+
+    def branch(self):
+        self.asm.write("\tCMP R[%d] 0\n" % self.sp)
+        self.asm.write("\tGOTO DO_%d\n" % self.index)
+        self.asm.write("\tGOTO OUT_%d\n" % self.index)
+        self.asm.write("DO_%d:\n" % self.index)
+        self.block()
         self.asm.write("OUT_%d:\n" % self.index)
         self.index += 1
 

@@ -6,50 +6,69 @@ mario[] -> static
     0x10101010
 }
 
-a() -> slot { return 1; }
-b() -> slot { return 2; }
-c() -> slot { return 3; }
-d() -> slot { return 4; }
+a() -> slot { return 1 }
+b() -> slot { return 2 }
+c() -> slot { return 3 }
+d() -> slot { return 4 }
 
 function() -> slot
 {
-    return 10 + 32 * a() / d();
+    return 10 + 32 * a() / d()
 }
 
 thing() -> slot
 {
-    return 3 + 2;
+    return 3 + 2
 }
 
 fun(slot x, slot y) -> slot
 {
-    slot aa = 1;
-    slot bb = 2;
-    slot cc = thing();
-    return cc;
+    slot aa = 1
+    slot bb = 2
+    slot cc = thing()
+    return cc
 }
 
 test() -> slot
 {
-    slot xx = 0;
-    slot yy = 1;
-    slot zz = 2;
-    fun(2, 3);
+    slot xx = 0
+    slot yy = 1
+    slot zz = 2
+    fun(2, 3)
 }
 
 args() -> none
 {
-    slot x = 0;
-    slot y = 1;
-    slot z = 2;
-    fun(10, 42);
+    slot x = 0
+    slot y = 1
+    slot z = 2
+    fun(10, 42)
 }
 
-main() -> none
+loop() -> none
 {
-    slot index = 10;
+    slot ret = 0
+    slot index = 10
     while(index)
     {
-        index = index - 1;
-    };
+        index = index - 1
+    }
+}
+
+branch() -> slot
+{
+    slot ret = 0
+    if(0)
+    {
+        ret = 0
+    }
+    else if(0)
+    {
+        ret = 1
+    }
+    else
+    {
+        ret = 2
+    }
+    return ret
 }
