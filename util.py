@@ -243,7 +243,7 @@ LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG = (
 )
 
 # regex
-REGEX_LABEL_PATTERN = r'[\t ]*[A-Z|\d|_]+:'
+REGEX_LABEL_PATTERN = r'[\t ]*[A-z|\d|_]+:'
 REGEX_RGBA_PATTERN = r'\d{1,3},\d{1,3},\d{1,3},\d{1,3}'
 REGEX_LD_R_ONE = r'R\[\d+]'
 REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
