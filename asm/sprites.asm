@@ -1,3 +1,13 @@
+// Width Height
+// SPRITE_NAME
+//     ...
+//     ...   
+
+// *******
+// MARIO *
+// *******
+
+// 16 16
 SPRITE_SMALL_MARIO_STAND_RIGHT:
     0X000000FF
     0X000000FF
