@@ -265,4 +265,4 @@ REGEX_UV_ONE_AND_ONE = r'R\[([UVYZ])] R\[([UVYZ])]'
 REGEX_UV_ONE = r'R\[([UVYZ])]'
 REGEX_UV_TWO = r'R\[([UVYZ]):([UVYZ])]'
 
-REGEX_ARRAY_LD = r'R\[(\d+)] R\[(\d+)] ([A-Z|\d|_]+) (\d+)'
+REGEX_ARRAY_LD = r'([A-z|\d|_]+) (\d+) (\d+) (\d+) (\d+)'

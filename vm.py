@@ -182,6 +182,8 @@ def exec(lines_from_file_hex):
         print('')
 
         # convert all hex to int
+        # TODO - lots of special cases for reading word0 and word1
+        # perhaps write a function that breaks them up easily
         word0_first_half = util.hex_to_int(ROM[PC][:4])
         word0_second_half = util.hex_to_int(ROM[PC][4:])
         word1 = util.hex_to_int(ROM[PC+1])
@@ -655,23 +657,31 @@ def exec(lines_from_file_hex):
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    RAND R[%s]' %word1)
 
-        #  ARRAY == 00(25)
-        elif util.hex_to_int(ROM[PC][6:]) == 37:  # int
-            the_opcode_val = util.hex_to_int(ROM[PC][6:])
-
+        #  ARRAY == 0025
+        elif word0_second_half == 37:
             a = time.time()
-            
-            width_sprite = util.hex_to_int(ROM[PC][4:6])
-            x_sprite = word0_first_half
-            y_sprite = word1_first_half
-            label_idx = word1_second_half
 
-            RAM[4101 + x_sprite + 160*y_sprite] = ROM[label_idx:label_idx+width_sprite]
+            label_idx = word0_first_half
+            x_sprite = util.hex_to_int(ROM[PC-1][ :2])
+            y_sprite = util.hex_to_int(ROM[PC-1][2:4])
+            width_sprite = util.hex_to_int(ROM[PC-1][4:6])
+            height_sprite = util.hex_to_int(ROM[PC-1][6: ])
+
+            vram_idx = 4101 + x_sprite + 160 * y_sprite
+
+            for row_n in range(height_sprite):                
+                jump_by_w = width_sprite * row_n
+
+                rom_subarray = ROM[label_idx + jump_by_w: label_idx + width_sprite + jump_by_w]
+                rom_subarray = [util.hex_to_int(v) for v in rom_subarray]
+
+                _ = 160 * row_n
+                RAM[vram_idx + _: vram_idx+width_sprite + _] = rom_subarray
 
             b = time.time()
-            opcodes_speed_data_str += '%s,%s\n' %(the_opcode_val, b-a)
-            print('    LD R[%s] R[%s] LABEL %s' %(
-                x_sprite, y_sprite, width_sprite)
+            opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
+            print('    LD SPRITE %s %s %s %s' %(
+                x_sprite, y_sprite, width_sprite, height_sprite)
             )
 
 
@@ -912,6 +922,7 @@ def exec(lines_from_file_hex):
 
 if __name__ == "__main__":
     hexfilename = 'hex/file.hex'
+    # remove empty lines
     hex_lines = util.return_lines_from_file(hexfilename)
     fill_ROM_with_hex_lines(hex_lines)
     validate_hex_file(hexfilename)

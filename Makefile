@@ -1,4 +1,4 @@
-filename = the_game_of_life.asm
+filename = array.asm
 
 run:
 	python3 asm.py $(filename)
