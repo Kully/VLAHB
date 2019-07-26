@@ -151,8 +151,15 @@ def exec(lines_from_file_hex):
     pygame.init()
 
     pygame.display.set_caption('VLAHB')
+
+    displayScale = 4
+    screenDimensions = (
+        displayScale * WIDTH_DISPLAY_PIXELS,
+        displayScale * HEIGHT_DISPLAY_PIXELS
+    )
+
     gameDisplay = pygame.display.set_mode(
-        (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
+        screenDimensions
     )
     clock = pygame.time.Clock()
 
@@ -515,9 +522,14 @@ def exec(lines_from_file_hex):
                 y = int(i / WIDTH_DISPLAY_PIXELS)
                 surf.set_at((x, y), rgba_tuple)
             surf.unlock()
+
+            # scale display
+            surf = pygame.transform.scale(
+                surf, screenDimensions
+            )
+            # update screen
             gameDisplay.blit(surf, (0, 0))
             pygame.display.update()
-
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
