@@ -51,6 +51,7 @@ with contextlib.redirect_stdout(None):
 
 # CPU constants and data structures
 
+# TODO: remove later
 COMMANDS_PER_SEC = 10
 DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
 
@@ -63,7 +64,6 @@ STACK_FRAME_SIZE = 128
 STACK_MAX_SIZE = 32
 
 ROM = []
-
 VRAM_FIRST_INDEX = 4101
 
 
@@ -155,18 +155,22 @@ def exec(lines_from_file_hex):
     pygame.init()
 
     pygame.display.set_caption('VLAHB')
+
+    displayScale = 4
+    screenDimensions = (
+        displayScale * WIDTH_DISPLAY_PIXELS,
+        displayScale * HEIGHT_DISPLAY_PIXELS
+    )
+
     gameDisplay = pygame.display.set_mode(
-        (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
+        screenDimensions
     )
     clock = pygame.time.Clock()
-
 
     PC = starting_PC()  # program counter
     EXIT_LOOP = False
 
     while True:
-        # time.sleep(DELAY_BETWEEN_COMMANDS)
-
         try:
             ROM[PC]
             ROM[PC+1]
@@ -521,9 +525,14 @@ def exec(lines_from_file_hex):
                 y = int(i / WIDTH_DISPLAY_PIXELS)
                 surf.set_at((x, y), rgba_tuple)
             surf.unlock()
+
+            # scale display
+            surf = pygame.transform.scale(
+                surf, screenDimensions
+            )
+
             gameDisplay.blit(surf, (0, 0))
             pygame.display.update()
-
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
