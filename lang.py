@@ -7,6 +7,7 @@ class Compiler:
         self.sp = 0
         self.idents = {}
         self.index = 0
+        self.entry = 'main'
 
     def __del__(self):
         self.lang.close()
@@ -74,13 +75,33 @@ class Compiler:
             self.bomb("'%s' undefined" % ident)
         return self.idents.get(ident)
 
+    def array(self):
+        self.match('[')
+        self.match(']')
+        string = self.string()
+        self.match('=')
+        self.match('{')
+        sp = self.sp
+        while True:
+            self.sp += 1
+            self.string()
+            if self.look == '}':
+                break
+            else:
+                self.match(',')
+        self.match('}')
+        self.insert(string, sp)
+        self.dump()
+
     def ident(self):
         ident = self.string()
         if ident == 'slot':
-            string = self.string()
-            self.assign(string)
-            self.expression()
-            self.sp += 1
+            if self.look == '[':
+                self.array()
+            else:
+                self.assign()
+                self.expression()
+                self.sp += 1
         elif ident == 'return':
             self.expression()
             self.ret()
@@ -200,7 +221,8 @@ class Compiler:
         self.annotate()
         self.insert(ident_label, arg_count)
 
-    def assign(self, string):
+    def assign(self):
+        string = self.string()
         self.match('=')
         self.insert(string, self.sp)
 
@@ -228,7 +250,10 @@ class Compiler:
         self.sp = 0
         self.declare_args(ident)
         self.block()
-        self.asm.write("\tRETURN\n\n")
+        if ident == self.entry:
+            self.asm.write("\tEXIT\n\n")
+        else:
+            self.asm.write("\tRETURN\n\n")
 
     def ishex(self, value):
         return value in ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F']
@@ -273,7 +298,7 @@ class Compiler:
         self.asm.write('\n')
 
     def reset(self):
-        self.asm.write("GOTO main\n\n")
+        self.asm.write("GOTO %s\n\n" % self.entry)
 
     def dump(self):
         for key, value in self.idents.items():
@@ -310,6 +335,8 @@ class Compiler:
             if self.look == '(':
                 self.function(ident)
         self.dump()
+        if self.entry not in self.idents.keys():
+            self.bomb("%s function not defined" % self.entry)
 
 if __name__ == "__main__":
     Compiler('lang/test.lang', 'asm/test.asm').compile()
