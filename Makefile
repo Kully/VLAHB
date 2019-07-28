@@ -1,5 +1,4 @@
-filename = array.asm
-# filename = pride_flag.asm
+filename = pride_flag.asm
 
 run:
 	python3 asm.py $(filename)

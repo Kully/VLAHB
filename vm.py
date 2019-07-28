@@ -530,6 +530,7 @@ def exec(lines_from_file_hex):
                 surf, screenDimensions
             )
 
+            # update screen
             gameDisplay.blit(surf, (0, 0))
             pygame.display.update()
             b = time.time()
