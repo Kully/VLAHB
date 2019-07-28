@@ -79,19 +79,21 @@ class Compiler:
         self.match('[')
         self.match(']')
         string = self.string()
+        self.insert(string, self.sp)
+        self.asm.write("\tLD R[%d] 43202\n" % self.sp)
+        self.sp += 1
         self.match('=')
         self.match('{')
-        sp = self.sp
+        index = 0
         while True:
-            self.sp += 1
-            self.string()
+            self.expression()
+            self.asm.write("\tLD R[%d] R[%d]\n" % (43202 + index, self.sp))
+            index += 1
             if self.look == '}':
                 break
             else:
                 self.match(',')
         self.match('}')
-        self.insert(string, sp)
-        self.dump()
 
     def ident(self):
         ident = self.string()
@@ -287,6 +289,9 @@ class Compiler:
         self.match('-')
         self.match('>')
         self.string()
+        if self.look == '[':
+            self.match('[')
+            self.match(']')
 
     def sprite(self, ident):
         self.match('[')
