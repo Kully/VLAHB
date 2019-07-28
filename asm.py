@@ -76,7 +76,7 @@ def compute_label_indices_from_file(file_asm, cumsum_hex_lines):
 
         # match label regex
         if re.match(util.REGEX_LABEL_PATTERN, code):
-            label = re.findall(r'[\t ]*([A-Z|\d|_]+):', code)[0]
+            label = re.findall(r'[\t ]*([A-z|\d|_]+):', code)[0]
 
             if label in LABELS_TO_PC.keys():
                 raise Exception(
