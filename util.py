@@ -138,6 +138,7 @@ op_codes_dict = {
     'FLOOR': '22',
     'CEIL': '23',
     'RAND': '24',
+    'ARRAY': '25',
     # U,V,Y,Z
     'LD R[U] R[V]': '100',
     'LD R[U:V] R[Y]': '101',
@@ -205,7 +206,6 @@ POP_PUSH_EXCEPTION_MSG = (
     '\nThe Opcode {opcode} requires no arguments afterwards'
 )
 
-
 TWO_ARGS_EXCEPTION_MSG = (
     '\nThe Opcode {opcode} must be followed by 2 arguments '
     'either in the form:\n    {opcode} R[X] R[Y]\nor\n'
@@ -242,14 +242,33 @@ LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG = (
     'Labels can only be defined once across all asm files in ./asm'
 )
 
+RAW_HEX_EXCEPTION_MSG = (
+    '\nIf you are writing raw HEX data into a line of '
+    'assembly, make sure there is just a hex value and '
+    'nothing more.\n\n'
+    'valid example:\n'
+    '>>> 0XFFFFAAFF\n'
+    '\n'
+    'invalid example:\n'
+    '>>> 0XFFFFAAFF R[0]\n'
+)
+
+ILLEGAL_LD_INT_EXCEPTION_MSG = (
+    '\n    Illegal assembly: {code}'
+    '\n    Not enough space. Use pointers instead.'
+)
+
 # regex
 REGEX_LABEL_PATTERN = r'[\t ]*[A-z|\d|_]+:'
 REGEX_RGBA_PATTERN = r'\d{1,3},\d{1,3},\d{1,3},\d{1,3}'
 REGEX_LD_R_ONE = r'R\[\d+]'
 REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
 REGEX_HEX = r'0X[0-9a-fA-F]+'
+REGEX_HEX_WITH_SPACE_BEFORE = r'[\t ]*0X[0-9a-fA-F]+'
 
 # for LD R[U:V] R[Z]
 REGEX_UV_ONE_AND_ONE = r'R\[([UVYZ])] R\[([UVYZ])]'
 REGEX_UV_ONE = r'R\[([UVYZ])]'
 REGEX_UV_TWO = r'R\[([UVYZ]):([UVYZ])]'
+
+REGEX_ARRAY_LD = r'([A-z|\d|_]+) (\d+) (\d+) (\d+) (\d+)'

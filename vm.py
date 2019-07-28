@@ -51,6 +51,7 @@ with contextlib.redirect_stdout(None):
 
 # CPU constants and data structures
 
+# TODO: remove later
 COMMANDS_PER_SEC = 10
 DELAY_BETWEEN_COMMANDS = 1. / COMMANDS_PER_SEC  # in seconds
 
@@ -63,7 +64,6 @@ STACK_FRAME_SIZE = 128
 STACK_MAX_SIZE = 32
 
 ROM = []
-
 VRAM_FIRST_INDEX = 4101
 
 
@@ -119,12 +119,16 @@ def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
     time.sleep(0.4)
     lines = util.return_lines_from_file(file_hex)
 
-    sys.stdout.write('\n\r    (  )  even number of hex lines')
-    assert len(lines) % 2 == 0, util.EVEN_NUMBER_OF_HEX_LINES_ERROR_MSG
-    sys.stdout.flush()
-    time.sleep(sleeptime)
-    sys.stdout.write('\r    (ok) \n')
-    time.sleep(sleeptime*2)
+
+    # remove this check as a sprite can be an odd # of hexlines
+    # eg 17*1 sprite => 17 colors => 17 hexlines
+
+    # sys.stdout.write('\n\r    (  )  even number of hex lines')
+    # assert len(lines) % 2 == 0, util.EVEN_NUMBER_OF_HEX_LINES_ERROR_MSG
+    # sys.stdout.flush()
+    # time.sleep(sleeptime)
+    # sys.stdout.write('\r    (ok) \n')
+    # time.sleep(sleeptime*2)
 
     sys.stdout.write('\r    (  )  all lines in file.hex are 8 chars long')
     assert all(len(line) == 8 for line in lines), util.CHARS_PER_LINE_ERROR_MSG
@@ -147,9 +151,8 @@ def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
 def exec(lines_from_file_hex):
     '''Execute lines in ROM'''
     global opcodes_speed_data_str
-    # pygame init
-    pygame.init()
 
+    pygame.init()
     pygame.display.set_caption('VLAHB')
 
     displayScale = 4
@@ -163,13 +166,10 @@ def exec(lines_from_file_hex):
     )
     clock = pygame.time.Clock()
 
-
     PC = starting_PC()  # program counter
     EXIT_LOOP = False
 
     while True:
-        # time.sleep(DELAY_BETWEEN_COMMANDS)
-
         try:
             ROM[PC]
             ROM[PC+1]
@@ -185,6 +185,8 @@ def exec(lines_from_file_hex):
         print('')
 
         # convert all hex to int
+        # TODO - lots of special cases for reading word0 and word1
+        # perhaps write a function that breaks them up easily
         word0_first_half = util.hex_to_int(ROM[PC][:4])
         word0_second_half = util.hex_to_int(ROM[PC][4:])
         word1 = util.hex_to_int(ROM[PC+1])
@@ -527,6 +529,7 @@ def exec(lines_from_file_hex):
             surf = pygame.transform.scale(
                 surf, screenDimensions
             )
+
             # update screen
             gameDisplay.blit(surf, (0, 0))
             pygame.display.update()
@@ -636,7 +639,6 @@ def exec(lines_from_file_hex):
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    LD R[%s:%s] R[%s:%s]' %(i, i+ram_span, k, k+ram_span))
 
-
         # FLOOR == 0022
         elif word0_second_half == 34:
             a = time.time()
@@ -663,6 +665,34 @@ def exec(lines_from_file_hex):
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    RAND R[%s]' %word1)
+
+        #  ARRAY == 0025
+        elif word0_second_half == 37:
+            a = time.time()
+
+            label_idx = word0_first_half
+            x_sprite = util.hex_to_int(ROM[PC-1][ :2])
+            y_sprite = util.hex_to_int(ROM[PC-1][2:4])
+            width_sprite = util.hex_to_int(ROM[PC-1][4:6])
+            height_sprite = util.hex_to_int(ROM[PC-1][6: ])
+
+            vram_idx = 4101 + x_sprite + 160 * y_sprite
+
+            for row_n in range(height_sprite):                
+                jump_by_w = width_sprite * row_n
+
+                rom_subarray = ROM[label_idx + jump_by_w: label_idx + width_sprite + jump_by_w]
+                rom_subarray = [util.hex_to_int(v) for v in rom_subarray]
+
+                _ = 160 * row_n
+                RAM[vram_idx + _: vram_idx+width_sprite + _] = rom_subarray
+
+            b = time.time()
+            opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
+            print('    LD SPRITE %s %s %s %s' %(
+                x_sprite, y_sprite, width_sprite, height_sprite)
+            )
+
 
         # LD R[V] R[Z] == 0100
         # 
@@ -901,6 +931,7 @@ def exec(lines_from_file_hex):
 
 if __name__ == "__main__":
     hexfilename = 'hex/file.hex'
+    # remove empty lines
     hex_lines = util.return_lines_from_file(hexfilename)
     fill_ROM_with_hex_lines(hex_lines)
     validate_hex_file(hexfilename)

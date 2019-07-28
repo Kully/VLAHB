@@ -20,6 +20,7 @@ import util
 
 
 LABELS_TO_PC = {}
+COMMENT_SYMBOL = '//'
 
 
 def write_two_lines_to_hexfile(word0_first_half,
@@ -30,7 +31,8 @@ def write_two_lines_to_hexfile(word0_first_half,
     hex_file_str += word0_second_half
     hex_file_str += '\n'
     hex_file_str += word1
-    hex_file_str += '\n\n'
+    ### hex_file_str += '\n\n'
+    hex_file_str += '\n'
 
     return hex_file_str
 
@@ -58,19 +60,19 @@ def return_hex_instruction_lines(opcode, args, word0_first_half,
     return word0_first_half, word0_second_half, word1
 
 
-def compute_label_indices(file_asm, cumsum_hex_lines):
+def compute_label_indices_from_file(file_asm, cumsum_hex_lines):
     '''line = code // comment'''
     lines = util.return_lines_from_file(file_asm)
-    lines_for_program = []  # all but comments, blank and comments
+    lines_for_program = []  # all but commentsa and blank lines
     for line in lines:
-        first_semicolon_idx = line.find('//')
+        first_comment_idx = line.find(COMMENT_SYMBOL)
 
-        if first_semicolon_idx == -1:
+        comment = line[first_comment_idx+1:]
+        code = line[:first_comment_idx]
+
+        if first_comment_idx == -1:
             comment = ''
             code = line
-        else:
-            comment = line[first_semicolon_idx+1:]
-            code = line[:first_semicolon_idx]
 
         # match label regex
         if re.match(util.REGEX_LABEL_PATTERN, code):
@@ -78,9 +80,15 @@ def compute_label_indices(file_asm, cumsum_hex_lines):
 
             if label in LABELS_TO_PC.keys():
                 raise Exception(
-                    util.LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG.format(label=label)
+                    util.LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG.format(
+                        label=label
+                    )
                 )
             LABELS_TO_PC[label] = cumsum_hex_lines
+
+        elif re.match(util.REGEX_HEX_WITH_SPACE_BEFORE, code):
+            lines_for_program.append(code)
+            cumsum_hex_lines += 1  # eg 0XFF0000FF
 
         elif not code.isspace() and code != '':
             lines_for_program.append(code)
@@ -91,16 +99,17 @@ def compute_label_indices(file_asm, cumsum_hex_lines):
 
 def validate_and_make_hexfile(lines):
     hex_file_str = ''
+    extra_line_for_raw_hex = 0
 
     for line in lines:
-        first_semicolon_idx = line.find('//')
+        first_comment_idx = line.find(COMMENT_SYMBOL)
 
-        if first_semicolon_idx == -1:
+        if first_comment_idx == -1:
             comment = ''
             code = line
         else:
-            comment = line[first_semicolon_idx+1:]
-            code = line[:first_semicolon_idx]
+            comment = line[first_comment_idx+1:]
+            code = line[:first_comment_idx]
 
         # args in code
         code_split = code.split(' ')
@@ -120,7 +129,23 @@ def validate_and_make_hexfile(lines):
             word1 = '00000000'
 
             valid_opcode = False
-            if opcode == 'GOTO':
+
+            # raw data
+            if re.match(util.REGEX_HEX, opcode):
+                valid_opcode = False
+                if len(args) > 0:
+                    raise Exception(util.RAW_HEX_EXCEPTION_MSG)
+
+                opcode_int = util.hex_to_int(opcode)
+                opcode_hex = util.int_to_hex(opcode_int)
+
+                hex_file_str += opcode_hex.zfill(8)
+                ### hex_file_str += '\n' + '\n' * (extra_line_for_raw_hex % 2)
+                hex_file_str += '\n'
+
+                # extra_line_for_raw_hex += 1
+
+            elif opcode == 'GOTO':
                 valid_opcode = True
                 if len(args) < 1:
                     raise Exception(util.GOTO_EXCEPTION_MSG)
@@ -142,7 +167,37 @@ def validate_and_make_hexfile(lines):
                 if len(args) < 2:
                     raise Exception(util.LD_EXCEPTION_MSG)
 
-                if re.search(util.REGEX_LD_R_ONE, args[0]):
+                # LD MARIO X Y W H
+                if re.match(util.REGEX_ARRAY_LD, ' '.join(args)):
+                    opcode_val = util.op_codes_dict['ARRAY']
+
+                    all_args = re.findall(util.REGEX_ARRAY_LD, ' '.join(args))
+
+                    label          = all_args[0][0]
+                    x_sprite       = all_args[0][1]
+                    y_sprite       = all_args[0][2]
+                    width_sprite   = all_args[0][3]
+                    height_sprite  = all_args[0][4]
+
+                    if label not in LABELS_TO_PC.keys():
+                        raise Exception('\nUnknown Label %s' %label)
+
+                    label_idx = util.int_to_hex(LABELS_TO_PC[label]).zfill(4)
+                    x_sprite = util.int_to_hex(x_sprite).zfill(2)
+                    y_sprite = util.int_to_hex(y_sprite).zfill(2)
+                    width_sprite = util.int_to_hex(width_sprite).zfill(2)
+                    height_sprite = util.int_to_hex(height_sprite).zfill(2)
+
+                    word0_first_half = label_idx
+                    word0_second_half = opcode_val.zfill(4)
+                    word1 = x_sprite + y_sprite + width_sprite + height_sprite
+
+                    hex_file_str = write_two_lines_to_hexfile(
+                        word0_first_half, word0_second_half,
+                        word1, hex_file_str
+                    )
+
+                elif re.search(util.REGEX_LD_R_ONE, args[0]):
                     if re.match(util.REGEX_LD_R_ONE, args[1]):
                         # LD R[i] R[j]
                         opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
@@ -166,7 +221,12 @@ def validate_and_make_hexfile(lines):
 
 
                 elif re.search(util.REGEX_LD_R_RANGE, args[0]):
-                    if re.search(util.REGEX_LD_R_ONE, args[1]):
+                    if re.search(r'\d+', args[1]):
+                        raise Exception(
+                            util.ILLEGAL_LD_INT_EXCEPTION_MSG.format(code=code)
+                        )
+
+                    elif re.search(util.REGEX_LD_R_ONE, args[1]):
                         # LD R[i:j] R[k]
                         opcode_val = util.op_codes_dict['LD R[i:j] R[k]']
 
@@ -594,11 +654,10 @@ def validate_and_make_hexfile(lines):
             # TODO: ignore line if invalid line of code
 
             if valid_opcode and opcode not in ['LD', 'CMP']:
-                hex_file_str += word0_first_half
-                hex_file_str += word0_second_half
-                hex_file_str += '\n'
-                hex_file_str += word1
-                hex_file_str += '\n\n'
+                hex_file_str = write_two_lines_to_hexfile(
+                    word0_first_half, word0_second_half,
+                    word1, hex_file_str
+                )
 
     return hex_file_str
 
@@ -606,7 +665,7 @@ def validate_and_make_hexfile(lines):
 if __name__ == "__main__":
     filename = sys.argv[1]
 
-    # collect, sort all .asm files
+    # gather all files in /asm folder
     all_asm_files = []
     all_files_in_asm_folder = os.listdir('./asm')
 
@@ -616,6 +675,7 @@ if __name__ == "__main__":
             filename, all_files_in_asm_folder
         ))
 
+    # gather and sort all .asm files
     for f_name in all_files_in_asm_folder:
         if f_name.endswith('.asm'):
             all_asm_files.append(f_name)
@@ -631,22 +691,23 @@ if __name__ == "__main__":
         if filename == asm_f:
             where_PC_starts = cumsum_hex_lines
 
-        lines_for_program, cumsum_hex_lines = compute_label_indices(
+        # one file at a time
+        lines_for_program, cumsum_hex_lines = compute_label_indices_from_file(
             file_asm, cumsum_hex_lines
         )
         all_lines_for_programs.append(lines_for_program)
 
-    # generate all asm -> hex files
+    # combine all asm files into one BIG hexfile
     for lines_for_program in all_lines_for_programs:
         hex_file_str = validate_and_make_hexfile(lines_for_program)
         giant_hex_file_str += hex_file_str
 
-    # write statically linked hex file
+    # write statically linked hexfile to disk
     f = open('hex/file.hex', 'w')
     f.write(giant_hex_file_str)
     f.close()
 
-    # write PC for program
+    # set PC for program start
     f = open('start_pc.txt', 'w')
     f.write(str(where_PC_starts))
     f.close()

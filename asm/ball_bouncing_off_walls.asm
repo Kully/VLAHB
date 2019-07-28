@@ -1,6 +1,6 @@
 
 // clear screen
-CALL SCREEN_FILL_BLACK
+CALL SCREEN_FILL_RED
 
 // Y points to color
 LD R[4098] 65000
