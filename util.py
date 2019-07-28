@@ -253,12 +253,18 @@ RAW_HEX_EXCEPTION_MSG = (
     '>>> 0XFFFFAAFF R[0]\n'
 )
 
+ILLEGAL_LD_INT_EXCEPTION_MSG = (
+    '\n    Illegal assembly: {code}'
+    '\n    Not enough space. Use pointers instead.'
+)
+
 # regex
 REGEX_LABEL_PATTERN = r'[\t ]*[A-z|\d|_]+:'
 REGEX_RGBA_PATTERN = r'\d{1,3},\d{1,3},\d{1,3},\d{1,3}'
 REGEX_LD_R_ONE = r'R\[\d+]'
 REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
 REGEX_HEX = r'0X[0-9a-fA-F]+'
+REGEX_HEX_WITH_SPACE_BEFORE = r'[\t ]*0X[0-9a-fA-F]+'
 
 # for LD R[U:V] R[Z]
 REGEX_UV_ONE_AND_ONE = r'R\[([UVYZ])] R\[([UVYZ])]'

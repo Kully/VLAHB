@@ -151,9 +151,8 @@ def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
 def exec(lines_from_file_hex):
     '''Execute lines in ROM'''
     global opcodes_speed_data_str
-    # pygame init
-    pygame.init()
 
+    pygame.init()
     pygame.display.set_caption('VLAHB')
 
     displayScale = 4

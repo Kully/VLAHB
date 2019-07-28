@@ -1,3 +1,4 @@
+
 // ******************************************
 // THE GAME OF LIFE
 // originally written by John Conway in 1970
@@ -9,14 +10,6 @@
 // 	GOTO A12394876
 
 LD R[0] 1
-
-0X00020002
-// 0X00000002
-
-0XFFFFFFFF
-0XFFFFFFFA
-
-
 
 
 // LD R[0] R[1] MARIO 44
@@ -139,7 +132,6 @@ MAIN_LOOP_THE_GAME_OF_LIFE:
 
 
 
-
 // ***************
 // other functions
 // ***************
@@ -159,9 +151,9 @@ RESET_POINTERS_THE_GAME_OF_LIFE:
 
 
 SEED1_THE_GAME_OF_LIFE:
-	LD R[4101:4200] 0XFF0000FF
+	BLIT
+	// LD R[4101:4200] 4278190335
 	RETURN
-
 
 SEED2_THE_GAME_OF_LIFE:
 	RETURN
@@ -409,4 +401,3 @@ COUNT_LIVE_NEIGHBOURS_THE_GAME_OF_LIFE:
 	// load count in return slot
 	LD R[4100] R[12]
 	RETURN
-

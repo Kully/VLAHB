@@ -1,5 +1,5 @@
-# filename = ball_bouncing_off_walls.asm
-filename = pride_flag.asm
+filename = array.asm
+# filename = pride_flag.asm
 
 run:
 	python3 asm.py $(filename)

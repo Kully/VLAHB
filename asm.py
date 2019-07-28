@@ -31,7 +31,8 @@ def write_two_lines_to_hexfile(word0_first_half,
     hex_file_str += word0_second_half
     hex_file_str += '\n'
     hex_file_str += word1
-    hex_file_str += '\n\n'
+    ### hex_file_str += '\n\n'
+    hex_file_str += '\n'
 
     return hex_file_str
 
@@ -59,19 +60,19 @@ def return_hex_instruction_lines(opcode, args, word0_first_half,
     return word0_first_half, word0_second_half, word1
 
 
-def compute_label_indices(file_asm, cumsum_hex_lines):
+def compute_label_indices_from_file(file_asm, cumsum_hex_lines):
     '''line = code // comment'''
     lines = util.return_lines_from_file(file_asm)
-    lines_for_program = []  # all but comments, blank and comments
+    lines_for_program = []  # all but commentsa and blank lines
     for line in lines:
-        first_semicolon_idx = line.find(COMMENT_SYMBOL)
+        first_comment_idx = line.find(COMMENT_SYMBOL)
 
-        if first_semicolon_idx == -1:
+        comment = line[first_comment_idx+1:]
+        code = line[:first_comment_idx]
+
+        if first_comment_idx == -1:
             comment = ''
             code = line
-        else:
-            comment = line[first_semicolon_idx+1:]
-            code = line[:first_semicolon_idx]
 
         # match label regex
         if re.match(util.REGEX_LABEL_PATTERN, code):
@@ -79,9 +80,15 @@ def compute_label_indices(file_asm, cumsum_hex_lines):
 
             if label in LABELS_TO_PC.keys():
                 raise Exception(
-                    util.LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG.format(label=label)
+                    util.LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG.format(
+                        label=label
+                    )
                 )
             LABELS_TO_PC[label] = cumsum_hex_lines
+
+        elif re.match(util.REGEX_HEX_WITH_SPACE_BEFORE, code):
+            lines_for_program.append(code)
+            cumsum_hex_lines += 1  # eg 0XFF0000FF
 
         elif not code.isspace() and code != '':
             lines_for_program.append(code)
@@ -95,14 +102,14 @@ def validate_and_make_hexfile(lines):
     extra_line_for_raw_hex = 0
 
     for line in lines:
-        first_semicolon_idx = line.find(COMMENT_SYMBOL)
+        first_comment_idx = line.find(COMMENT_SYMBOL)
 
-        if first_semicolon_idx == -1:
+        if first_comment_idx == -1:
             comment = ''
             code = line
         else:
-            comment = line[first_semicolon_idx+1:]
-            code = line[:first_semicolon_idx]
+            comment = line[first_comment_idx+1:]
+            code = line[:first_comment_idx]
 
         # args in code
         code_split = code.split(' ')
@@ -133,9 +140,10 @@ def validate_and_make_hexfile(lines):
                 opcode_hex = util.int_to_hex(opcode_int)
 
                 hex_file_str += opcode_hex.zfill(8)
-                hex_file_str += '\n' + '\n' * (extra_line_for_raw_hex % 2)
+                ### hex_file_str += '\n' + '\n' * (extra_line_for_raw_hex % 2)
+                hex_file_str += '\n'
 
-                extra_line_for_raw_hex += 1
+                # extra_line_for_raw_hex += 1
 
             elif opcode == 'GOTO':
                 valid_opcode = True
@@ -213,7 +221,12 @@ def validate_and_make_hexfile(lines):
 
 
                 elif re.search(util.REGEX_LD_R_RANGE, args[0]):
-                    if re.search(util.REGEX_LD_R_ONE, args[1]):
+                    if re.search(r'\d+', args[1]):
+                        raise Exception(
+                            util.ILLEGAL_LD_INT_EXCEPTION_MSG.format(code=code)
+                        )
+
+                    elif re.search(util.REGEX_LD_R_ONE, args[1]):
                         # LD R[i:j] R[k]
                         opcode_val = util.op_codes_dict['LD R[i:j] R[k]']
 
@@ -641,11 +654,10 @@ def validate_and_make_hexfile(lines):
             # TODO: ignore line if invalid line of code
 
             if valid_opcode and opcode not in ['LD', 'CMP']:
-                hex_file_str += word0_first_half
-                hex_file_str += word0_second_half
-                hex_file_str += '\n'
-                hex_file_str += word1
-                hex_file_str += '\n\n'
+                hex_file_str = write_two_lines_to_hexfile(
+                    word0_first_half, word0_second_half,
+                    word1, hex_file_str
+                )
 
     return hex_file_str
 
@@ -653,7 +665,7 @@ def validate_and_make_hexfile(lines):
 if __name__ == "__main__":
     filename = sys.argv[1]
 
-    # collect, sort all .asm files
+    # gather all files in /asm folder
     all_asm_files = []
     all_files_in_asm_folder = os.listdir('./asm')
 
@@ -663,6 +675,7 @@ if __name__ == "__main__":
             filename, all_files_in_asm_folder
         ))
 
+    # gather and sort all .asm files
     for f_name in all_files_in_asm_folder:
         if f_name.endswith('.asm'):
             all_asm_files.append(f_name)
@@ -678,22 +691,23 @@ if __name__ == "__main__":
         if filename == asm_f:
             where_PC_starts = cumsum_hex_lines
 
-        lines_for_program, cumsum_hex_lines = compute_label_indices(
+        # one file at a time
+        lines_for_program, cumsum_hex_lines = compute_label_indices_from_file(
             file_asm, cumsum_hex_lines
         )
         all_lines_for_programs.append(lines_for_program)
 
-    # generate all asm -> hex files
+    # combine all asm files into one BIG hexfile
     for lines_for_program in all_lines_for_programs:
         hex_file_str = validate_and_make_hexfile(lines_for_program)
         giant_hex_file_str += hex_file_str
 
-    # write statically linked hex file
+    # write statically linked hexfile to disk
     f = open('hex/file.hex', 'w')
     f.write(giant_hex_file_str)
     f.close()
 
-    # write PC for program
+    # set PC for program start
     f = open('start_pc.txt', 'w')
     f.write(str(where_PC_starts))
     f.close()
