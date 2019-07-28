@@ -66,12 +66,12 @@ STACK_MAX_SIZE = 32
 ROM = []
 VRAM_FIRST_INDEX = 4101
 
-
 opcodes_speed_data_str = 'opcode,time\n'
 
 # pygame
 WIDTH_DISPLAY_PIXELS = 160
 HEIGHT_DISPLAY_PIXELS = 120
+displayScale = 4
 
 
 def starting_PC():
@@ -155,7 +155,6 @@ def exec(lines_from_file_hex):
     pygame.init()
     pygame.display.set_caption('VLAHB')
 
-    displayScale = 4
     screenDimensions = (
         displayScale * WIDTH_DISPLAY_PIXELS,
         displayScale * HEIGHT_DISPLAY_PIXELS
