@@ -163,9 +163,6 @@ pointer_label_to_slot_index = {
 
 # Error Messages
 # HEX
-EVEN_NUMBER_OF_HEX_LINES_ERROR_MSG = (
-	'file.hex must contain exactly an even number of lines'
-)
 CORRECT_HEX_LINE_PREFIX_ERROR_MSG = (
 	'all of lines in file.hex must start with "0x"'
 )

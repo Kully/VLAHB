@@ -10,6 +10,7 @@ Notes/Best Practices about ASM:
    hex from all assembly files in /asm in
    alphabetical order
 '''
+import io
 import json
 import os
 import re

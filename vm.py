@@ -35,6 +35,7 @@ where each character represetnts a hexadecimal value
 
 
 '''
+import io
 import math
 import os
 import random
@@ -115,20 +116,9 @@ def manage_stack_size_overflow():
 
 
 def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
-    util.slow_print('Validating hex file...')
+    util.slow_print('Validating hex file...\n')
     time.sleep(0.4)
     lines = util.return_lines_from_file(file_hex)
-
-
-    # remove this check as a sprite can be an odd # of hexlines
-    # eg 17*1 sprite => 17 colors => 17 hexlines
-
-    # sys.stdout.write('\n\r    (  )  even number of hex lines')
-    # assert len(lines) % 2 == 0, util.EVEN_NUMBER_OF_HEX_LINES_ERROR_MSG
-    # sys.stdout.flush()
-    # time.sleep(sleeptime)
-    # sys.stdout.write('\r    (ok) \n')
-    # time.sleep(sleeptime*2)
 
     sys.stdout.write('\r    (  )  all lines in file.hex are 8 chars long')
     assert all(len(line) == 8 for line in lines), util.CHARS_PER_LINE_ERROR_MSG
@@ -173,6 +163,9 @@ def exec(lines_from_file_hex):
             ROM[PC]
             ROM[PC+1]
         except IndexError:
+            # restore stdout function
+            sys.stdout = sys.__stdout__
+
             util.slow_print('PC out of range...exiting vm',
                             0.1, print_empty_line=True)
             break
@@ -917,6 +910,9 @@ def exec(lines_from_file_hex):
         print('\n\n')
 
         if EXIT_LOOP:
+            # restore stdout function
+            sys.stdout = sys.__stdout__
+
             pygame.quit()
             util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
 
@@ -929,10 +925,14 @@ def exec(lines_from_file_hex):
 
 
 if __name__ == "__main__":
-    hexfilename = 'hex/file.hex'
-    # remove empty lines
-    hex_lines = util.return_lines_from_file(hexfilename)
+
+    hex_lines = util.return_lines_from_file('hex/file.hex')  # remove empty lines
     fill_ROM_with_hex_lines(hex_lines)
-    validate_hex_file(hexfilename)
+    validate_hex_file('hex/file.hex')
+
+    # disable print
+    if len(sys.argv) > 1 and sys.argv[1] == '-O':
+        text_trap = io.StringIO()
+        sys.stdout = text_trap
 
     exec(hex_lines)  # with pygame visualization
