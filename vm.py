@@ -111,7 +111,7 @@ def manage_overflow_underflow(index_in_RAM):
         print('        R[%s] -> %s\n' %(index_in_RAM, RAM[index_in_RAM]))
 
 
-def manage_stack_size_overflow():
+def ensure_stacksize_under_max():
     assert len(STACK) <= STACK_MAX_SIZE, util.STACK_OVERFLOW_ERROR_MSG.format(STACK_MAX_SIZE)
 
 
@@ -331,7 +331,7 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 14:
             eee = time.time()
             STACK.append(PC)
-            manage_stack_size_overflow()
+            ensure_stacksize_under_max()
 
             index = len(STACK)
             a = STACK_FRAME_SIZE * (0 + index)
@@ -347,7 +347,7 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 15:
             ggg = time.time()
 
-            manage_stack_size_overflow()
+            ensure_stacksize_under_max()
 
             index = len(STACK)
             a = STACK_FRAME_SIZE * (0 + index)
@@ -363,7 +363,7 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 65520:
             a = time.time()
             
-            manage_stack_size_overflow()
+            ensure_stacksize_under_max()
 
             index = len(STACK)
             a = STACK_FRAME_SIZE * (0 + index)
@@ -379,7 +379,7 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 65521:
             a = time.time()
             STACK.append(PC)
-            manage_stack_size_overflow()
+            ensure_stacksize_under_max()
 
             index = len(STACK)
             a = STACK_FRAME_SIZE * (0 + index)
