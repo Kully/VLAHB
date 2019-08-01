@@ -1,6 +1,6 @@
 # remove -O to toggle debug printing
-
-filename = array.asm
+# filename = array.asm
+filename = mul.asm
 
 run:
 	python3 asm.py $(filename)
