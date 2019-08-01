@@ -72,7 +72,7 @@ opcodes_speed_data_str = 'opcode,time\n'
 # pygame
 WIDTH_DISPLAY_PIXELS = 160
 HEIGHT_DISPLAY_PIXELS = 120
-displayScale = 4
+displayScale = 3
 
 
 def starting_PC():
@@ -508,7 +508,6 @@ def exec(lines_from_file_hex):
             for i in range(WIDTH_DISPLAY_PIXELS * HEIGHT_DISPLAY_PIXELS):
                 color = RAM[VRAM_FIRST_INDEX + i]
 
-                print(color)
                 # check if color is blank
                 if (color >> 0 & 0xFF) != 0:
                     rgba_tuple = (

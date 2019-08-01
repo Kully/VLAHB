@@ -1,10 +1,8 @@
-# remove -O to toggle debug printing
-# filename = array.asm
-filename = mul.asm
+filename = array.asm
 
 run:
 	python3 asm.py $(filename)
-	python3 vm.py # -O
+	python3 vm.py -O  # -O turns printing off
 
 clean:
 	rm -f hex/*.hex
