@@ -98,7 +98,7 @@ def reset_RAM_values_to_zero():
 
 def manage_overflow_underflow(index_in_RAM):
     pre_modulo_ram_value = RAM[index_in_RAM]
-    RAM[index_in_RAM] = RAM[index_in_RAM] % MAX_RAM_VALUE
+    RAM[index_in_RAM] = RAM[index_in_RAM] % (MAX_RAM_VALUE + 1)
 
     over_or_under = None
     if pre_modulo_ram_value > MAX_RAM_VALUE:
