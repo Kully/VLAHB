@@ -507,14 +507,22 @@ def exec(lines_from_file_hex):
             surf.lock()
             for i in range(WIDTH_DISPLAY_PIXELS * HEIGHT_DISPLAY_PIXELS):
                 color = RAM[VRAM_FIRST_INDEX + i]
-                rgba_tuple = (
-                    (color >> 24) & 0xFF,
-                    (color >> 16) & 0xFF,
-                    (color >>  8) & 0xFF,
-                    (color >>  0) & 0xFF)
+
+                print(color)
+                # check if color is blank
+                if (color >> 0 & 0xFF) != 0:
+                    rgba_tuple = (
+                        (color >> 24) & 0xFF,
+                        (color >> 16) & 0xFF,
+                        (color >>  8) & 0xFF,
+                        (color >>  0) & 0xFF
+                    )
+                else:
+                    rgba_tuple = (1,1,1,0)
                 x = int(i % WIDTH_DISPLAY_PIXELS)
                 y = int(i / WIDTH_DISPLAY_PIXELS)
                 surf.set_at((x, y), rgba_tuple)
+
             surf.unlock()
 
             # scale display
