@@ -98,7 +98,7 @@ def reset_RAM_values_to_zero():
 
 def manage_overflow_underflow(index_in_RAM):
     pre_modulo_ram_value = RAM[index_in_RAM]
-    RAM[index_in_RAM] = RAM[index_in_RAM] % MAX_RAM_VALUE
+    RAM[index_in_RAM] = RAM[index_in_RAM] % (MAX_RAM_VALUE + 1)
 
     over_or_under = None
     if pre_modulo_ram_value > MAX_RAM_VALUE:
@@ -111,7 +111,7 @@ def manage_overflow_underflow(index_in_RAM):
         print('        R[%s] -> %s\n' %(index_in_RAM, RAM[index_in_RAM]))
 
 
-def manage_stack_size_overflow():
+def ensure_stacksize_under_max():
     assert len(STACK) <= STACK_MAX_SIZE, util.STACK_OVERFLOW_ERROR_MSG.format(STACK_MAX_SIZE)
 
 
@@ -331,7 +331,7 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 14:
             eee = time.time()
             STACK.append(PC)
-            manage_stack_size_overflow()
+            ensure_stacksize_under_max()
 
             index = len(STACK)
             a = STACK_FRAME_SIZE * (0 + index)
@@ -347,7 +347,7 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 15:
             ggg = time.time()
 
-            manage_stack_size_overflow()
+            ensure_stacksize_under_max()
 
             index = len(STACK)
             a = STACK_FRAME_SIZE * (0 + index)
@@ -363,7 +363,7 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 65520:
             a = time.time()
             
-            manage_stack_size_overflow()
+            ensure_stacksize_under_max()
 
             index = len(STACK)
             a = STACK_FRAME_SIZE * (0 + index)
@@ -379,7 +379,7 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 65521:
             a = time.time()
             STACK.append(PC)
-            manage_stack_size_overflow()
+            ensure_stacksize_under_max()
 
             index = len(STACK)
             a = STACK_FRAME_SIZE * (0 + index)
@@ -507,14 +507,22 @@ def exec(lines_from_file_hex):
             surf.lock()
             for i in range(WIDTH_DISPLAY_PIXELS * HEIGHT_DISPLAY_PIXELS):
                 color = RAM[VRAM_FIRST_INDEX + i]
-                rgba_tuple = (
-                    (color >> 24) & 0xFF,
-                    (color >> 16) & 0xFF,
-                    (color >>  8) & 0xFF,
-                    (color >>  0) & 0xFF)
+
+                print(color)
+                # check if color is blank
+                if (color >> 0 & 0xFF) != 0:
+                    rgba_tuple = (
+                        (color >> 24) & 0xFF,
+                        (color >> 16) & 0xFF,
+                        (color >>  8) & 0xFF,
+                        (color >>  0) & 0xFF
+                    )
+                else:
+                    rgba_tuple = (1,1,1,0)
                 x = int(i % WIDTH_DISPLAY_PIXELS)
                 y = int(i / WIDTH_DISPLAY_PIXELS)
                 surf.set_at((x, y), rgba_tuple)
+
             surf.unlock()
 
             # scale display

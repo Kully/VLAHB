@@ -1,8 +1,10 @@
-filename = array.asm
+# remove -O to toggle debug printing
+# filename = array.asm
+filename = mul.asm
 
 run:
 	python3 asm.py $(filename)
-	python3 vm.py -O  # remove -O to toggle debug printing
+	python3 vm.py # -O
 
 clean:
 	rm -f hex/*.hex
