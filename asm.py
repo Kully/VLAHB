@@ -647,6 +647,14 @@ def validate_and_make_hexfile(lines):
                 opcode_val = util.op_codes_dict[opcode]
                 word0_second_half = opcode_val.zfill(4)
 
+                # set fill color to black by default
+                word1 = '000000FF'
+
+                # only look at first arg
+                if len(args) > 0 and (re.match(r'\d+', args[0]) or
+                                      re.match(util.REGEX_HEX, args[0])):
+                    word1 = util.int_to_hex(args[0]).zfill(8)
+
             elif opcode == 'EXIT':
                 valid_opcode = True
                 opcode_val = util.op_codes_dict['EXIT']

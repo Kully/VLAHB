@@ -46,7 +46,8 @@ list_of_images = [
     # 'Capemario2.jpeg',
     # 'Capemario3.jpeg',
     # 'Capemario4.jpeg',
-    'Capemario4_alpha.jpeg',
+    # 'Capemario4_alpha.jpeg',
+    'smb2.jpg',
 ]
 
 
@@ -76,7 +77,7 @@ for idx, image_filename in enumerate(list_of_images):
     width_sprite = pixel_values.shape[0]
     height_sprite = pixel_values.shape[1]
 
-    asm_script += '// %s %s' %(width_sprite, height_sprite)
+    asm_script += '// %s %s\n' %(width_sprite, height_sprite)
     asm_script += 'SPRITE_%s_%s:\n' %(image_filename_stripped, idx)
     for y in range(height_sprite):
         for x in range(width_sprite):
