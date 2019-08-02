@@ -394,11 +394,11 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 65522:
             a = time.time()
             len_of_vram = WIDTH_DISPLAY_PIXELS * HEIGHT_DISPLAY_PIXELS
-            RAM[ VRAM_FIRST_INDEX : VRAM_FIRST_INDEX + len_of_vram ] = [0] * len_of_vram
+            RAM[ VRAM_FIRST_INDEX : VRAM_FIRST_INDEX + len_of_vram ] = [word1] * len_of_vram
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    CLEAR')
+            print('    CLEAR %s' %util.int_to_hex(word1))
 
 
         # STRICT LESS THAN REGISTER TO DIRECT == 0010

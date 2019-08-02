@@ -653,7 +653,7 @@ def validate_and_make_hexfile(lines):
                 # only look at first arg
                 if len(args) > 0 and (re.match(r'\d+', args[0]) or
                                       re.match(util.REGEX_HEX, args[0])):
-                    word1 = util.int_to_hex(args[0])
+                    word1 = util.int_to_hex(args[0]).zfill(8)
 
             elif opcode == 'EXIT':
                 valid_opcode = True
