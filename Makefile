@@ -2,7 +2,7 @@ filename = array.asm
 
 run:
 	python3 asm.py $(filename)
-	python3 vm.py -O  # -O turns printing off
+	python3 vm.py # -O  # -O turns printing off
 
 clean:
 	rm -f hex/*.hex

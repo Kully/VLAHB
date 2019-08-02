@@ -38,17 +38,16 @@ DISPLAY_HEIGHT = 120
 VRAM_INDEX_START = 4101
 REGEX_HEX = r'0X[0-9a-fA-F]+'
 
-asm_filename = 'jpg.asm'
+# points to /jpegs folder
+DIR_PREFIX = '../jpegs/'
 
+asm_filename = DIR_PREFIX + 'jpg.asm'
 
 list_of_images = [
-    # 'Capemario1.jpeg',
-    # 'Capemario2.jpeg',
-    # 'Capemario3.jpeg',
-    # 'Capemario4.jpeg',
-    # 'Capemario4_alpha.jpeg',
     'smb2.jpg',
 ]
+for i in range(list_of_images):
+	list_of_images[i] = DIR_PREFIX + img_filename[i]
 
 
 def get_image(image_path):
