@@ -517,7 +517,6 @@ def exec(lines_from_file_hex):
                         (color >>  0) & 0xFF
                     )
                 else:
-                    print('blank')
                     rgba_tuple = (0,255,255,0)
                 x = int(i % WIDTH_DISPLAY_PIXELS)
                 y = int(i / WIDTH_DISPLAY_PIXELS)
