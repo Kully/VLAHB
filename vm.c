@@ -53,6 +53,8 @@ int main(int argc, char* argv[])
                     pixels[x + y * xres] = 0x0000FFFF; // Keep it dumb, clear the screen with blue for now.
 
                 SDL_UnlockTexture(texture);
+                SDL_RenderCopy(renderer, texture, NULL, NULL);
+                SDL_RenderPresent(renderer);
                 break;
             }
             case 0xFFFF:
