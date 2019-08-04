@@ -48,8 +48,8 @@ int main(int argc, char* argv[])
                 SDL_LockTexture(texture, NULL, &raw, &pitch);
                 uint32_t* pixels = (uint32_t*) raw;
 
-                for(int x = 0; x < xres; x++)
                 for(int y = 0; y < yres; y++)
+                for(int x = 0; x < xres; x++)
                     pixels[x + y * xres] = 0x0000FFFF; // Keep it dumb, clear the screen with blue for now.
 
                 SDL_UnlockTexture(texture);
