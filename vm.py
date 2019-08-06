@@ -502,14 +502,16 @@ def exec(lines_from_file_hex):
         elif word0_second_half == 24:
             a = time.time()
             surf = pygame.Surface(
-                (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS), pygame.SRCALPHA
+                (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
                 )
+            print('surf.get_alpha()')
+            surf = surf.convert_alpha()
             surf.lock()
             for i in range(WIDTH_DISPLAY_PIXELS * HEIGHT_DISPLAY_PIXELS):
                 color = RAM[VRAM_FIRST_INDEX + i]
 
                 # check if color is blank
-                if (color >> 0 & 0xFF) != 0:
+                if (color & 0xFF) == 0xFF:
                     rgba_tuple = (
                         (color >> 24) & 0xFF,
                         (color >> 16) & 0xFF,
@@ -517,7 +519,8 @@ def exec(lines_from_file_hex):
                         (color >>  0) & 0xFF
                     )
                 else:
-                    rgba_tuple = (0,255,255,0)
+                    rgba_tuple = (255,0,255,255)
+
                 x = int(i % WIDTH_DISPLAY_PIXELS)
                 y = int(i / WIDTH_DISPLAY_PIXELS)
                 surf.set_at((x, y), rgba_tuple)
