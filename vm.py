@@ -504,8 +504,6 @@ def exec(lines_from_file_hex):
             surf = pygame.Surface(
                 (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
                 )
-            print('surf.get_alpha()')
-            surf = surf.convert_alpha()
             surf.lock()
             for i in range(WIDTH_DISPLAY_PIXELS * HEIGHT_DISPLAY_PIXELS):
                 color = RAM[VRAM_FIRST_INDEX + i]
@@ -519,7 +517,7 @@ def exec(lines_from_file_hex):
                         (color >>  0) & 0xFF
                     )
                 else:
-                    rgba_tuple = (255,0,255,255)
+                    rgba_tuple = (0,0,0,255)  # replace with alpha pixels
 
                 x = int(i % WIDTH_DISPLAY_PIXELS)
                 y = int(i / WIDTH_DISPLAY_PIXELS)

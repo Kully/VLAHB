@@ -132,7 +132,7 @@ op_codes_dict = {
     'REGISTER TO REGISTER SIN': '1c',
     'DIRECT COS': '1d',
     'REGISTER TO REGISTER COS ': '1e',
-    # 'D R[i:j] k': '1f', # does not work - not enough room
+    # 'LD R[i:j] k': '1f', # does not work - not enough room
     'LD R[i:j] R[k]': '20',
     'LD R[i:j] R[k:l]': '21',
     'FLOOR': '22',
