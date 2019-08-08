@@ -81,47 +81,47 @@ int main(int argc, char* argv[])
             }
             case 0x0003:  // DIRECT ADD
             {
-                ram[word0_first_half] += word1
+                ram[word0_first_half] += word1;
                 break;
             }
             case 0x0004:  // DIRECT SUBTRACT
             {
-                ram[word0_first_half] -= word1
+                ram[word0_first_half] -= word1;
                 break;
             }
             case 0x0005:  // DIRECT MULTIPLY
             {
-                ram[word0_first_half] *= word1
+                ram[word0_first_half] *= word1;
                 break;
             }
             case 0x0006:  // DIRECT DIVIDE
             {
-                ram[word0_first_half] /= word1
+                ram[word0_first_half] /= word1;
                 break;
             }
             case 0x0007:  // REGISTER TO REGISTER LOAD
             {
-                ram[word0_first_half] = ram[word1]
+                ram[word0_first_half] = ram[word1];
                 break;
             }
             case 0x0008:  // REGISTER TO REGISTER ADD
             {
-                ram[word0_first_half] += ram[word1]
+                ram[word0_first_half] += ram[word1];
                 break;
             }
             case 0x0009:  // REGISTER TO REGISTER SUBTRACT
             {
-                ram[word0_first_half] -= ram[word1]
+                ram[word0_first_half] -= ram[word1];
                 break;
             }
             case 0x000a:  // REGISTER TO REGISTER MULTIPLY
             {
-                ram[word0_first_half] *= ram[word1]
+                ram[word0_first_half] *= ram[word1];
                 break;
             }
             case 0x000b:  // REGISTER TO REGISTER DIVIDE
             {
-                ram[word0_first_half] /= ram[word1]
+                ram[word0_first_half] /= ram[word1];
                 break;
             }
             case 0x000c:  // COMPARE REGISTER TO DIRECT
@@ -279,7 +279,6 @@ int main(int argc, char* argv[])
             case 0x0025:  // ARRAY
             {
                 int label_idx = word0_first_half;
-                
 
                 uint8_t x_sprite = (rom[pc - 1] >> 24) & 0xFF;
                 uint8_t y_sprite = (rom[pc - 1] >> 16) & 0XFF;
