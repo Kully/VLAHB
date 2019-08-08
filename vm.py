@@ -301,7 +301,7 @@ def exec(lines_from_file_hex):
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
             print('    DIV R[%s] R[%s]' %(word0_first_half, word1))
-            
+
 
         # COMPARE REGISTER TO DIRECT  == 000c
         elif word0_second_half == 12:
