@@ -3,6 +3,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
+#include <math.h>
+#include <time.h>
+
 
 #define ROM_SLOTS 128000
 #define RAM_SLOTS 128000
@@ -13,6 +16,9 @@ uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
 int16_t sp;
 int16_t pc;
+
+// seed the random generator
+srand(time(NULL));
 
 int main(int argc, char* argv[])
 {
@@ -216,32 +222,32 @@ int main(int argc, char* argv[])
             }
             case 0x0019:  // DIRECT SQRT
             {
-                // Code goes here
+                ram[word0_first_half] = sqrt(double word1);
                 break;
             }
             case 0x001a:  // REGISTER TO REGISTER SQRT
             {
-                // Code goes here
+                ram[word0_first_half] = sqrt(double ram[word1]);
                 break;
             }
             case 0x001b:  // DIRECT SIN
             {
-                // Code goes here
+                ram[word0_first_half] = sin(double word1);
                 break;
             }
             case 0x001c:  // REGISTER TO REGISTER SIN
             {
-                // Code goes here
+                ram[word0_first_half] = sin(double ram[word1]);
                 break;
             }
             case 0x001d:  // DIRECT COS
             {
-                // Code goes here
+                ram[word0_first_half] = cos(double word1);
                 break;
             }
             case 0x001e:  // REGISTER TO REGISTER COS
             {
-                // Code goes here
+                ram[word0_first_half] = cos(double ram[word1]);
                 break;
             }
             case 0x0020:  // LD R[i:j] R[k]
@@ -256,22 +262,32 @@ int main(int argc, char* argv[])
             }
             case 0x0022:  // FLOOR
             {
-                // Code goes here
+                ram[word1] = double floor(double ram[word1]);
                 break;
             }
             case 0x0023:  // CEIL
             {
-                // Code goes here
+                ram[word1] = double ceil(double ram[word1]);
                 break;
             }
             case 0x0024:  // RAND
-            {
-                // Code goes here
+            {   
+                int random_bit = rand() % 2;
+                ram[word1] = random_bit;
                 break;
             }
             case 0x0025:  // ARRAY
             {
-                // Code goes here
+                int label_idx = word0_first_half;
+                
+
+                uint8_t x_sprite = (rom[pc - 1] >> 24) & 0xFF;
+                uint8_t y_sprite = (rom[pc - 1] >> 16) & 0XFF;
+                uint8_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
+                uint8_t height_sprite = (rom[pc - 1]) & 0xFF;
+
+                // WIP
+
                 break;
             }
             case 0x0100:  // LD R[U] R[V]
@@ -326,7 +342,18 @@ int main(int argc, char* argv[])
             }
             case 0xfff2:  // CLEAR
             {
-                // Code goes here
+                void* raw;
+                int32_t pitch;
+                SDL_LockTexture(texture, NULL, &raw, &pitch);
+                uint32_t* pixels = (uint32_t*) raw;
+
+                for(int y = 0; y < yres; y++)
+                for(int x = 0; x < xres; x++)
+                    pixels[x + y * xres] = word1;
+
+                SDL_UnlockTexture(texture);
+                SDL_RenderCopy(renderer, texture, NULL, NULL);
+                SDL_RenderPresent(renderer);
                 break;
             }
             case 0xFFFF:
