@@ -18,7 +18,7 @@ int16_t sp;
 int16_t pc;
 
 // seed the random generator
-srand(time(NULL));
+// srand(time(int 0));  // error here
 
 int main(int argc, char* argv[])
 {
@@ -127,14 +127,14 @@ int main(int argc, char* argv[])
             case 0x000c:  // COMPARE REGISTER TO DIRECT
             {
                 if(ram[word0_first_half] == word1) {
-                    pc += 2
+                    pc += 2;
                 }
                 break;
             }
             case 0x000d:  // COMPARE REGISTER TO REGISTER
             {
                 if(ram[word0_first_half] == ram[word1]) {
-                    pc += 2
+                    pc += 2;
                 }
                 break;
             }
@@ -151,56 +151,56 @@ int main(int argc, char* argv[])
             case 0x0010:  // STRICT LESS THAN REGISTER TO DIRECT a < b
             {
                 if(ram[word0_first_half] < word1) {
-                    pc += 2
+                    pc += 2;
                 }
                 break;
             }
             case 0x0011:  // STRICT LESS THAN REGISTER TO REGISTER a < b
             {
                 if(ram[word0_first_half] < ram[word1]) {
-                    pc += 2
+                    pc += 2;
                 }
                 break;
             }
             case 0x0012:  // LESS THAN OR EQUAL REGISTER TO DIRECT a <= b
             {
                 if(ram[word0_first_half] <= word1) {
-                    pc += 2
+                    pc += 2;
                 }
                 break;
             }
             case 0x0013:  // LESS THAN OR EQUAL REGISTER TO REGISTER a <= b
             {
                 if(ram[word0_first_half] <= ram[word1]) {
-                    pc += 2
+                    pc += 2;
                 }
                 break;
             }
             case 0x0014:  // STRICT GREATER THAN REGISTER TO DIRECT a > b
             {
                 if(ram[word0_first_half] > word1) {
-                    pc += 2
+                    pc += 2;
                 }
                 break;
             }
             case 0x0015:  // STRICT GREATER THAN REGISTER TO REGISTER a > b
             {
                 if(ram[word0_first_half] > ram[word1]) {
-                    pc += 2
+                    pc += 2;
                 }
                 break;
             }
             case 0x0016:  // GREATER THAN OR EQUAL REGISTER TO DIRECT a >= b
             {
                 if(ram[word0_first_half] >= word1) {
-                    pc += 2
+                    pc += 2;
                 }
                 break;
             }
             case 0x0017:  // GREATER THAN OR EQUAL REGISTER TO REGISTER a >= b
             {
                 if(ram[word0_first_half] >= ram[word1]) {
-                    pc += 2
+                    pc += 2;
                 }
                 break;
             }
@@ -222,32 +222,32 @@ int main(int argc, char* argv[])
             }
             case 0x0019:  // DIRECT SQRT
             {
-                ram[word0_first_half] = sqrt(double word1);
+                ram[word0_first_half] = sqrt(word1);
                 break;
             }
             case 0x001a:  // REGISTER TO REGISTER SQRT
             {
-                ram[word0_first_half] = sqrt(double ram[word1]);
+                ram[word0_first_half] = sqrt(ram[word1]);
                 break;
             }
             case 0x001b:  // DIRECT SIN
             {
-                ram[word0_first_half] = sin(double word1);
+                ram[word0_first_half] = sin(word1);
                 break;
             }
             case 0x001c:  // REGISTER TO REGISTER SIN
             {
-                ram[word0_first_half] = sin(double ram[word1]);
+                ram[word0_first_half] = sin(ram[word1]);
                 break;
             }
             case 0x001d:  // DIRECT COS
             {
-                ram[word0_first_half] = cos(double word1);
+                ram[word0_first_half] = cos(word1);
                 break;
             }
             case 0x001e:  // REGISTER TO REGISTER COS
             {
-                ram[word0_first_half] = cos(double ram[word1]);
+                ram[word0_first_half] = cos(ram[word1]);
                 break;
             }
             case 0x0020:  // LD R[i:j] R[k]
@@ -262,12 +262,12 @@ int main(int argc, char* argv[])
             }
             case 0x0022:  // FLOOR
             {
-                ram[word1] = double floor(double ram[word1]);
+                ram[word1] = floor(ram[word1]);
                 break;
             }
             case 0x0023:  // CEIL
             {
-                ram[word1] = double ceil(double ram[word1]);
+                ram[word1] = ceil(ram[word1]);
                 break;
             }
             case 0x0024:  // RAND
