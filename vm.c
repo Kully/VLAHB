@@ -3,14 +3,14 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
+#include <limits.h>
 #include <math.h>
 #include <time.h>
 
 
 #define ROM_SLOTS 128000
 #define RAM_SLOTS 128000
-#define MAX_RAM_VALUE 0XFFFFFFFF  // does this work ?
-
+#define UINT_MAX 0XFFFFFFFF
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
