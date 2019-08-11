@@ -17,18 +17,12 @@ uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
 int16_t sp;  // stack pointer
 int16_t pc;  // program counter
-int16_t stack[1];  // stack
+int16_t STACK[1];  // stack
+int STACK_FRAME_SIZE = 128;
+int STACK_MAX_SIZE = 32;
 
 // seed the random generator
 // srand(time(int 0));  // error here
-
-
-int ensure_stacksize_under_max(void)
-{
-
-}
-
-
 
 
 int main(int argc, char* argv[])
@@ -155,23 +149,19 @@ int main(int argc, char* argv[])
             }
             case 0x000e:  // CALL (GOTO AND PUSH)
             {
-            
-            STACK.append(PC)
-            ensure_stacksize_under_max()
+                size_t index = sizeof(STACK);
+                STACK[index] = pc;
 
-            index = len(STACK)
-            a = STACK_FRAME_SIZE * (0 + index)
-            b = STACK_FRAME_SIZE * (1 + index)
-            RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
-            PC = word1
-            
+                int a = STACK_FRAME_SIZE * (0 + index);
+                int b = STACK_FRAME_SIZE * (1 + index);
+                
+                // RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
+                for(int x = 0; x < b; x++)
+                {
+                    ram[a + x] = ram[0 + x];
+                }
 
-            opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, fff-eee)
-
-
-
-
-
+                pc = word1;
                 break;
             }
             case 0x000f:  // RETURN (GOTO AND POP)
