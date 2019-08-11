@@ -371,9 +371,21 @@ int main(int argc, char* argv[])
                 }
                 break;
             }
-            case 0x0103:  // LD R[U:V] R[i]
+            case 0x0103:  // LD R[U:V] R[k]
             {
-                // Code goes here - WIP
+                int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
+                int32_t j = (word0_first_half >> 6*4) & 0XF; // 0j00 000
+
+                int32_t ram_index_i = letter_code_to_ram_index(i);
+                int32_t ram_index_j = letter_code_to_ram_index(j);
+
+                int32_t array_span = ram[ram_index_j] - ram[ram_index_i];
+
+                for(int idx = 0; idx < array_span; idx++)
+                {
+                    ram[ram[ram_index_i] + idx] = ram[word1];
+                }
+
                 break;
             }
             case 0x0104:  // LD R[U] R[i]
