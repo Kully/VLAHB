@@ -10,15 +10,26 @@
 
 #define ROM_SLOTS 128000
 #define RAM_SLOTS 128000
-#define UINT_MAX 0XFFFFFFFF
+
+// UINT_MAX = 0XFFFFFFFF;  // largest value in RAM slot
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
-int16_t sp;
-int16_t pc;
+int16_t sp;  // stack pointer
+int16_t pc;  // program counter
+int16_t stack[1];  // stack
 
 // seed the random generator
 // srand(time(int 0));  // error here
+
+
+int ensure_stacksize_under_max(void)
+{
+
+}
+
+
+
 
 int main(int argc, char* argv[])
 {
@@ -56,6 +67,8 @@ int main(int argc, char* argv[])
         // *=====*
         // legend
         // *=====*
+        //
+        // All of these are equivalent
         //
         // [0000][0000]
         // [0000][0000]
@@ -126,80 +139,106 @@ int main(int argc, char* argv[])
             }
             case 0x000c:  // COMPARE REGISTER TO DIRECT
             {
-                if(ram[word0_first_half] == word1) {
+                if(ram[word0_first_half] == word1)
+                {
                     pc += 2;
                 }
                 break;
             }
             case 0x000d:  // COMPARE REGISTER TO REGISTER
             {
-                if(ram[word0_first_half] == ram[word1]) {
+                if(ram[word0_first_half] == ram[word1])
+                {
                     pc += 2;
                 }
                 break;
             }
-            case 0x000e:  // CALL
+            case 0x000e:  // CALL (GOTO AND PUSH)
             {
-                // Code goes here
+            
+            STACK.append(PC)
+            ensure_stacksize_under_max()
+
+            index = len(STACK)
+            a = STACK_FRAME_SIZE * (0 + index)
+            b = STACK_FRAME_SIZE * (1 + index)
+            RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
+            PC = word1
+            
+
+            opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, fff-eee)
+
+
+
+
+
                 break;
             }
-            case 0x000f:  // RETURN
+            case 0x000f:  // RETURN (GOTO AND POP)
             {
                 // Code goes here
                 break;
             }
             case 0x0010:  // STRICT LESS THAN REGISTER TO DIRECT a < b
             {
-                if(ram[word0_first_half] < word1) {
+                if(ram[word0_first_half] < word1)
+                {
                     pc += 2;
                 }
                 break;
             }
             case 0x0011:  // STRICT LESS THAN REGISTER TO REGISTER a < b
             {
-                if(ram[word0_first_half] < ram[word1]) {
+                if(ram[word0_first_half] < ram[word1])
+                {
                     pc += 2;
                 }
                 break;
             }
             case 0x0012:  // LESS THAN OR EQUAL REGISTER TO DIRECT a <= b
             {
-                if(ram[word0_first_half] <= word1) {
+                if(ram[word0_first_half] <= word1)
+                {
                     pc += 2;
                 }
                 break;
             }
             case 0x0013:  // LESS THAN OR EQUAL REGISTER TO REGISTER a <= b
             {
-                if(ram[word0_first_half] <= ram[word1]) {
+                if(ram[word0_first_half] <= ram[word1])
+                {
                     pc += 2;
                 }
                 break;
             }
             case 0x0014:  // STRICT GREATER THAN REGISTER TO DIRECT a > b
             {
-                if(ram[word0_first_half] > word1) {
+                if(ram[word0_first_half] > word1)
+                {
                     pc += 2;
                 }
                 break;
             }
             case 0x0015:  // STRICT GREATER THAN REGISTER TO REGISTER a > b
             {
-                if(ram[word0_first_half] > ram[word1]) {
+                if(ram[word0_first_half] > ram[word1])
+                {
                     pc += 2;
                 }
                 break;
             }
             case 0x0016:  // GREATER THAN OR EQUAL REGISTER TO DIRECT a >= b
             {
-                if(ram[word0_first_half] >= word1) {
+                if(ram[word0_first_half] >= word1)
+                {
                     pc += 2;
                 }
                 break;
             }
             case 0x0017:  // GREATER THAN OR EQUAL REGISTER TO REGISTER a >= b
             {
-                if(ram[word0_first_half] >= ram[word1]) {
+                if(ram[word0_first_half] >= ram[word1])
+                {
                     pc += 2;
                 }
                 break;
