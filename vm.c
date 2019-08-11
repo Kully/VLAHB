@@ -36,7 +36,7 @@ int16_t uvyz_to_ram_index(char* letter)
     } else if(!strcmp(letter, "Z")) {
         return 4099;
     }
-    return 0;
+    return -1;  // if not matching anything
 }
 
 
@@ -281,7 +281,7 @@ int main(int argc, char* argv[])
             }
             case 0x0021:  // LD R[i:j] R[k:l]
             {
-                // Code goes here
+                // Code goes here - WIP
                 break;
             }
             case 0x0022:  // FLOOR
@@ -309,48 +309,48 @@ int main(int argc, char* argv[])
                 uint8_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
                 uint8_t height_sprite = (rom[pc - 1]) & 0xFF;
 
-                // *WIP*
+                // Code goes here - WIP
 
                 break;
             }
             case 0x0100:  // LD R[U] R[V]
             {
-                ram[]
+                // Code goes here - WIP
                 break;
             }
             case 0x0101:  // LD R[U:V] R[Y]
             {
-                // Code goes here
+                // Code goes here - WIP
                 break;
             }
             case 0x0102:  // LD R[U:V] R[Y:Z]
             {
-                // Code goes here
+                // Code goes here - WIP
                 break;
             }
             case 0x0103:  // LD R[U:V] R[i]
             {
-                // Code goes here
+                // Code goes here - WIP
                 break;
             }
             case 0x0104:  // LD R[U] R[i]
             {
-                // Code goes here
+                // Code goes here - WIP
                 break;
             }
             case 0x0105:  // LD R[U] i
             {
-                // Code goes here
+                // Code goes here - WIP
                 break;
             }
             case 0x0106:  // LD R[U:V] i
             {
-                // Code goes here
+                // Code goes here - WIP
                 break;
             }
             case 0x0107:  // COMPARE UV TO DIRECT
             {
-                // Code goes here
+                // Code goes here - WIP
                 break;
             }
             case 0xfff0:  // POP
