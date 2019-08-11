@@ -12,7 +12,7 @@
 #define STACK_FRAME_SIZE 128
 #define STACK_MAX_SIZE 32
 
-// UINT_MAX = 0XFFFFFFFF;  // largest value in RAM slot
+// UINT_MAX = 0XFFFFFFFF;  // largest value in ram slot
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
@@ -327,7 +327,21 @@ int main(int argc, char* argv[])
             }
             case 0x0101:  // LD R[U:V] R[Y]
             {
-                // Code goes here - WIP
+                int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
+                int32_t j = (word0_first_half >> 6*4) & 0XF; // 0j00 000
+                int32_t k = (word0_first_half >> 5*4) & 0XF; // 00k0 000
+
+                int ram_index_i = uvyz_to_ram_index(i);
+                int ram_index_j = uvyz_to_ram_index(j);
+                int ram_index_k = uvyz_to_ram_index(k);
+
+                array_span = ram[ram_index_j] - ram[ram_index_i]
+
+                for(int idx = 0; idx < array_span; idx++)
+                {
+                    ram[ram[ram_index_i + idx]] = [ram[ram[ram_index_k]]];    
+                }
+
                 break;
             }
             case 0x0102:  // LD R[U:V] R[Y:Z]
