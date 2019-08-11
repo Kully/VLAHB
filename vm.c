@@ -17,9 +17,9 @@
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
-int16_t sp;  // stack pointer
-int16_t pc;  // program counter
-int16_t stack[32];  // stack
+int16_t sp;               // stack pointer
+int16_t pc;               // program counter
+int16_t stack[32];        // stack
 
 
 // seed the random generator
