@@ -24,6 +24,21 @@ int16_t stack[32];  // stack
 // seed the random generator
 // srand(time(int 0));  // error here
 
+int16_t uvyz_to_ram_index(char* letter)
+{
+    if(!strcmp(letter, "U"))
+    {
+        return 4096;
+    } else if(!strcmp(letter, "V")) {
+        return 4097;
+    } else if(!strcmp(letter, "Y")) {
+        return 4098;
+    } else if(!strcmp(letter, "Z")) {
+        return 4099;
+    }
+    return 0;
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -159,7 +174,7 @@ int main(int argc, char* argv[])
                 int b = STACK_FRAME_SIZE * (1 + sp);
                 for(int x = 0; x < b; x++) ram[0 + x] = ram[a + x];
 
-                // pop from stack
+                // pop from stack and assign to pc
                 pc = stack[sp];
                 sp -= 1;
 
@@ -205,16 +220,17 @@ int main(int argc, char* argv[])
                 if(ram[word0_first_half] >= ram[word1]) pc += 2;
                 break;
             }
-            case 0x0018: // BLIT
+            case 0x0018:  // BLIT
             {
                 void* raw;
                 int32_t pitch;
                 SDL_LockTexture(texture, NULL, &raw, &pitch);
                 uint32_t* pixels = (uint32_t*) raw;
 
+                // Keep it dumb, clear the screen with blue for now
                 for(int y = 0; y < yres; y++)
                 for(int x = 0; x < xres; x++)
-                    pixels[x + y * xres] = 0x0000FFFF; // Keep it dumb, clear the screen with blue for now.
+                    pixels[x + y * xres] = 0x0000FFFF;
 
                 SDL_UnlockTexture(texture);
                 SDL_RenderCopy(renderer, texture, NULL, NULL);
@@ -258,7 +274,7 @@ int main(int argc, char* argv[])
                 uint16_t k = (rom[ pc - 1] >> 0) & 0XFFFF;
 
                 for(int x=0; x<(j+1-i); x++) {
-                    ram[i+x] = ram[k];
+                    ram[i + x] = ram[k];
                 }
 
                 break;
@@ -293,13 +309,13 @@ int main(int argc, char* argv[])
                 uint8_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
                 uint8_t height_sprite = (rom[pc - 1]) & 0xFF;
 
-                // WIP
+                // *WIP*
 
                 break;
             }
             case 0x0100:  // LD R[U] R[V]
             {
-                // Code goes here
+                ram[]
                 break;
             }
             case 0x0101:  // LD R[U:V] R[Y]
@@ -339,12 +355,22 @@ int main(int argc, char* argv[])
             }
             case 0xfff0:  // POP
             {
-                // Code goes here
+                int a = STACK_FRAME_SIZE * (0 + sp);
+                int b = STACK_FRAME_SIZE * (1 + sp);
+                for(int x = 0; x < b; x++) ram[0 + x] = ram[a + x];
+
+                // pop from stack and don't change pc
+                sp -= 1;
                 break;
             }
             case 0xfff1:  // PUSH
             {
-                // Code goes here
+                stack[sp] = pc;
+                int a = STACK_FRAME_SIZE * (0 + sp);
+                int b = STACK_FRAME_SIZE * (1 + sp);
+                for(int x = 0; x < b; x++) ram[a + x] = ram[0 + x];
+
+                sp += 1;  // increment stack pointer
                 break;
             }
             case 0xfff2:  // CLEAR
