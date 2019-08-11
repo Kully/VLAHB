@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 {
     if(argc != 2)
     {
-        puts("./a.out file.bin");
+        puts("./a.out file_r.bin");
         exit(1);
     }
 
@@ -94,6 +94,9 @@ int main(int argc, char* argv[])
 
         const uint16_t word1_first_half = (word1 >> 16) & 0xFFFF;
         const uint16_t word1_second_half = (word1 >> 0) & 0xFFFF;
+
+        printf("word0: 0x%08X \n", word0);
+        printf("word1: 0x%08X \n", word1);
 
         pc += 2;
         switch(word0_second_half) // Or was it upper?
