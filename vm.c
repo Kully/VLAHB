@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
         const uint16_t word1_second_half = (word1 >> 0) & 0xFFFF;
 
         printf("word0: 0x%08X \n", word0);
-        printf("word1: 0x%08X \n", word1);
+        printf("word1: 0x%08X \n\n", word1);
 
         pc += 2;
         switch(word0_second_half) // Or was it upper?
@@ -451,7 +451,7 @@ int main(int argc, char* argv[])
 
                 for(int y = 0; y < yres; y++)
                 for(int x = 0; x < xres; x++)
-                    pixels[x + y * xres] = word1;
+                    pixels[x + y * xres] = 0XFF00FFFF;
 
                 SDL_UnlockTexture(texture);
                 SDL_RenderCopy(renderer, texture, NULL, NULL);
