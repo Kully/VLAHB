@@ -46,8 +46,8 @@ int32_t letter_code_to_ram_index(int32_t letter_code)
         case 3: {
             return 4099;
         }
-        return -1;
     }
+    return -1;
 }
 
 // Delete Eventually
@@ -86,11 +86,6 @@ int main(int argc, char* argv[])
     bool done = false;
     while(!done)
     {
-        // const uint32_t cmd = rom[pc + 0];
-        // const uint32_t num = rom[pc + 1];
-        // const uint16_t lower = (num >>  0) & 0xFFFF;
-        // const uint16_t upper = (cmd >> 16) & 0xFFFF;
-
         const uint32_t word0 = rom[pc + 0];
         const uint32_t word1 = rom[pc + 1];
 
@@ -99,21 +94,6 @@ int main(int argc, char* argv[])
 
         const uint16_t word1_first_half = (word1 >> 16) & 0xFFFF;
         const uint16_t word1_second_half = (word1 >> 0) & 0xFFFF;
-
-        // *=====*
-        // legend
-        // *=====*
-        //
-        // All of these are equivalent
-        //
-        // [0000][0000]
-        // [0000][0000]
-        //
-        // [word0]
-        // [word1]
-        //
-        // [word0_first_half][word0_second_half]
-        // [word1_first_half][word1_second_half]
 
         pc += 2;
         switch(word0_second_half) // Or was it upper?
@@ -366,14 +346,29 @@ int main(int argc, char* argv[])
 
                 for(int idx = 0; idx < array_span; idx++)
                 {
-                    ram[ram[ram_index_i + idx]] = ram[ram[ram_index_k]];    
+                    ram[ram[ram_index_i] + idx] = ram[ram[ram_index_k]];    
                 }
 
                 break;
             }
             case 0x0102:  // LD R[U:V] R[Y:Z]
             {
-                // Code goes here - WIP
+                int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
+                int32_t j = (word0_first_half >> 6*4) & 0XF; // 0j00 000
+                int32_t k = (word0_first_half >> 5*4) & 0XF; // 00k0 000
+                int32_t l = (word0_first_half >> 5*4) & 0XF; // 000l 000
+
+                int32_t ram_index_i = letter_code_to_ram_index(i);
+                int32_t ram_index_j = letter_code_to_ram_index(j);
+                int32_t ram_index_k = letter_code_to_ram_index(k);
+                int32_t ram_index_l = letter_code_to_ram_index(l);
+
+                int32_t array_span = ram[ram_index_j] - ram[ram_index_i];
+
+                for(int idx = 0; idx < array_span; idx++)
+                {
+                    ram[ram[ram_index_i] + idx] = ram[ram[ram_index_k] + idx];
+                }
                 break;
             }
             case 0x0103:  // LD R[U:V] R[i]
