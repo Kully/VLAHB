@@ -133,18 +133,12 @@ int main(int argc, char* argv[])
             }
             case 0x000c:  // COMPARE REGISTER TO DIRECT
             {
-                if(ram[word0_first_half] == word1)
-                {
-                    pc += 2;
-                }
+                if(ram[word0_first_half] == word1) pc += 2;
                 break;
             }
             case 0x000d:  // COMPARE REGISTER TO REGISTER
             {
-                if(ram[word0_first_half] == ram[word1])
-                {
-                    pc += 2;
-                }
+                if(ram[word0_first_half] == ram[word1]) pc += 2;
                 break;
             }
             case 0x000e:  // CALL (GOTO AND PUSH)
@@ -173,66 +167,42 @@ int main(int argc, char* argv[])
             }
             case 0x0010:  // STRICT LESS THAN REGISTER TO DIRECT a < b
             {
-                if(ram[word0_first_half] < word1)
-                {
-                    pc += 2;
-                }
+                if(ram[word0_first_half] < word1) pc += 2;
                 break;
             }
             case 0x0011:  // STRICT LESS THAN REGISTER TO REGISTER a < b
             {
-                if(ram[word0_first_half] < ram[word1])
-                {
-                    pc += 2;
-                }
+                if(ram[word0_first_half] < ram[word1]) pc += 2;
                 break;
             }
             case 0x0012:  // LESS THAN OR EQUAL REGISTER TO DIRECT a <= b
             {
-                if(ram[word0_first_half] <= word1)
-                {
-                    pc += 2;
-                }
+                if(ram[word0_first_half] <= word1) pc += 2;
                 break;
             }
             case 0x0013:  // LESS THAN OR EQUAL REGISTER TO REGISTER a <= b
             {
-                if(ram[word0_first_half] <= ram[word1])
-                {
-                    pc += 2;
-                }
+                if(ram[word0_first_half] <= ram[word1]) pc += 2;
                 break;
             }
             case 0x0014:  // STRICT GREATER THAN REGISTER TO DIRECT a > b
             {
-                if(ram[word0_first_half] > word1)
-                {
-                    pc += 2;
-                }
+                if(ram[word0_first_half] > word1) pc += 2;
                 break;
             }
             case 0x0015:  // STRICT GREATER THAN REGISTER TO REGISTER a > b
             {
-                if(ram[word0_first_half] > ram[word1])
-                {
-                    pc += 2;
-                }
+                if(ram[word0_first_half] > ram[word1]) pc += 2;
                 break;
             }
             case 0x0016:  // GREATER THAN OR EQUAL REGISTER TO DIRECT a >= b
             {
-                if(ram[word0_first_half] >= word1)
-                {
-                    pc += 2;
-                }
+                if(ram[word0_first_half] >= word1) pc += 2;
                 break;
             }
             case 0x0017:  // GREATER THAN OR EQUAL REGISTER TO REGISTER a >= b
             {
-                if(ram[word0_first_half] >= ram[word1])
-                {
-                    pc += 2;
-                }
+                if(ram[word0_first_half] >= ram[word1]) pc += 2;
                 break;
             }
             case 0x0018: // BLIT
