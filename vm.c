@@ -68,8 +68,13 @@ int32_t uvyz_to_ram_index(char* letter)
 
 void convert_endianess()
 {
-    for(int i = 0; i < ROM_SLOTS; i++)
-        rom[i] = ((rom[i] << 16) & 0xFFFF0000) | ((rom[i] >> 16) & 0x0000FFFF);
+    for(int32_t i = 0; i < ROM_SLOTS; i++)
+    {
+        const uint32_t temp = rom[i];
+        rom[i] =
+            (((temp >> 24) & 0xFF) << 0x00) | (((temp >> 16) & 0xFF) << 0x08) |
+            (((temp >>  8) & 0xFF) << 0x10) | (((temp >>  0) & 0xFF) << 0x18);
+    }
 }
 
 int main(int argc, char* argv[])
