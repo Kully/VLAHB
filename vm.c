@@ -7,9 +7,10 @@
 #include <math.h>
 #include <time.h>
 
-
+// global constants
 #define ROM_SLOTS 128000
-#define RAM_SLOTS 128000
+#define STACK_FRAME_SIZE 128
+#define STACK_MAX_SIZE 32
 
 // UINT_MAX = 0XFFFFFFFF;  // largest value in RAM slot
 
@@ -17,9 +18,8 @@ uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
 int16_t sp;  // stack pointer
 int16_t pc;  // program counter
-int16_t STACK[1];  // stack
-int STACK_FRAME_SIZE = 128;
-int STACK_MAX_SIZE = 32;
+int16_t stack[1];  // stack
+
 
 // seed the random generator
 // srand(time(int 0));  // error here
@@ -149,24 +149,25 @@ int main(int argc, char* argv[])
             }
             case 0x000e:  // CALL (GOTO AND PUSH)
             {
-                size_t index = sizeof(STACK);
-                STACK[index] = pc;
+                size_t index = sizeof(stack);
+                stack[index] = pc;
 
                 int a = STACK_FRAME_SIZE * (0 + index);
                 int b = STACK_FRAME_SIZE * (1 + index);
                 
                 // RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
-                for(int x = 0; x < b; x++)
-                {
-                    ram[a + x] = ram[0 + x];
-                }
-
-                pc = word1;
+                for(int x = 0; x < b; x++) ram[a + x] = ram[0 + x];
+                
+                pc = word1; // GOTO
                 break;
             }
             case 0x000f:  // RETURN (GOTO AND POP)
             {
-                // Code goes here
+            index = len(stack)
+            a = STACK_FRAME_SIZE * (0 + index)
+            b = STACK_FRAME_SIZE * (1 + index)
+            RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
+            PC = stack.pop()
                 break;
             }
             case 0x0010:  // STRICT LESS THAN REGISTER TO DIRECT a < b
