@@ -1,6 +1,6 @@
 #!/bin/bash
 
-filename="array"
+filename="pride_flag"
 
 # -O turns printing off
 python3 asm.py $filename.asm

@@ -9,6 +9,7 @@
 
 // global constants
 #define ROM_SLOTS 128000
+#define RAM_SLOTS 128000
 #define STACK_FRAME_SIZE 128
 #define STACK_MAX_SIZE 32
 
@@ -24,6 +25,32 @@ int16_t stack[32];  // stack
 // seed the random generator
 // srand(time(int 0));  // error here
 
+
+// 0 -> U -> 4096
+// 1 -> V -> 4097
+// 2 -> Y -> 4098
+// 3 -> Z -> 4099
+int32_t letter_code_to_ram_index(int32_t letter_code)
+{
+    switch(letter_code)
+    {
+        case 0: {
+            return 4096;
+        }
+        case 1: {
+            return 4097;
+        }
+        case 2: {
+            return 4098;
+        }
+        case 3: {
+            return 4099;
+        }
+        return -1;
+    }
+}
+
+// Delete Eventually
 int32_t uvyz_to_ram_index(char* letter)
 {
     if(!strcmp(letter, "U"))
@@ -318,8 +345,8 @@ int main(int argc, char* argv[])
                 int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
                 int32_t j = (word0_first_half >> 6*4) & 0XF; // 0j00 000
 
-                int ram_index_i = uvyz_to_ram_index(i);
-                int ram_index_j = uvyz_to_ram_index(j);
+                int32_t ram_index_i = letter_code_to_ram_index(i);
+                int32_t ram_index_j = letter_code_to_ram_index(j);
 
                 ram[ram[ram_index_i]] = ram[ram[ram_index_j]];
 
@@ -331,15 +358,15 @@ int main(int argc, char* argv[])
                 int32_t j = (word0_first_half >> 6*4) & 0XF; // 0j00 000
                 int32_t k = (word0_first_half >> 5*4) & 0XF; // 00k0 000
 
-                int ram_index_i = uvyz_to_ram_index(i);
-                int ram_index_j = uvyz_to_ram_index(j);
-                int ram_index_k = uvyz_to_ram_index(k);
+                int32_t ram_index_i = letter_code_to_ram_index(i);
+                int32_t ram_index_j = letter_code_to_ram_index(j);
+                int32_t ram_index_k = letter_code_to_ram_index(k);
 
-                array_span = ram[ram_index_j] - ram[ram_index_i]
+                int32_t array_span = ram[ram_index_j] - ram[ram_index_i];
 
                 for(int idx = 0; idx < array_span; idx++)
                 {
-                    ram[ram[ram_index_i + idx]] = [ram[ram[ram_index_k]]];    
+                    ram[ram[ram_index_i + idx]] = ram[ram[ram_index_k]];    
                 }
 
                 break;
