@@ -66,6 +66,11 @@ int32_t uvyz_to_ram_index(char* letter)
     return -1;  // if not matching anything
 }
 
+void convert_endianess()
+{
+    for(int i = 0; i < ROM_SLOTS; i++)
+        rom[i] = ((rom[i] << 16) & 0xFFFF0000) | ((rom[i] >> 16) & 0x0000FFFF);
+}
 
 int main(int argc, char* argv[])
 {
@@ -83,6 +88,7 @@ int main(int argc, char* argv[])
     SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, xres, yres);
     FILE* fp = fopen(argv[1], "rb");
     fread(rom, sizeof(uint32_t), ROM_SLOTS, fp);
+    convert_endianess();
     bool done = false;
     while(!done)
     {
