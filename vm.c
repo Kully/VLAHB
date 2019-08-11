@@ -24,7 +24,7 @@ int16_t stack[32];  // stack
 // seed the random generator
 // srand(time(int 0));  // error here
 
-int16_t uvyz_to_ram_index(char* letter)
+int32_t uvyz_to_ram_index(char* letter)
 {
     if(!strcmp(letter, "U"))
     {
@@ -313,9 +313,16 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0100:  // LD R[U] R[V]
+            case 0x0100:  // LD R[U] R[V] (LD R[R[i]] R[R[j]])
             {
-                // Code goes here - WIP
+                int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
+                int32_t j = (word0_first_half >> 6*4) & 0XF; // 0j00 000
+
+                int ram_index_i = uvyz_to_ram_index(i);
+                int ram_index_j = uvyz_to_ram_index(j);
+
+                ram[ram[ram_index_i]] = ram[ram[ram_index_j]];
+
                 break;
             }
             case 0x0101:  // LD R[U:V] R[Y]
