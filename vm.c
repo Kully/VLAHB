@@ -18,7 +18,7 @@ uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
 int16_t sp;  // stack pointer
 int16_t pc;  // program counter
-int16_t stack[1];  // stack
+int16_t stack[32];  // stack
 
 
 // seed the random generator
@@ -149,25 +149,26 @@ int main(int argc, char* argv[])
             }
             case 0x000e:  // CALL (GOTO AND PUSH)
             {
-                size_t index = sizeof(stack);
-                stack[index] = pc;
-
-                int a = STACK_FRAME_SIZE * (0 + index);
-                int b = STACK_FRAME_SIZE * (1 + index);
-                
-                // RAM[a : b] = RAM[0 : STACK_FRAME_SIZE]
+                stack[sp] = pc;
+                int a = STACK_FRAME_SIZE * (0 + sp);
+                int b = STACK_FRAME_SIZE * (1 + sp);
                 for(int x = 0; x < b; x++) ram[a + x] = ram[0 + x];
-                
+
+                sp += 1;  // increment stack pointer
                 pc = word1; // GOTO
+
                 break;
             }
             case 0x000f:  // RETURN (GOTO AND POP)
             {
-            index = len(stack)
-            a = STACK_FRAME_SIZE * (0 + index)
-            b = STACK_FRAME_SIZE * (1 + index)
-            RAM[0 : STACK_FRAME_SIZE] = RAM[a : b]
-            PC = stack.pop()
+                int a = STACK_FRAME_SIZE * (0 + sp);
+                int b = STACK_FRAME_SIZE * (1 + sp);
+                for(int x = 0; x < b; x++) ram[0 + x] = ram[a + x];
+
+                // pop from stack
+                pc = stack[sp];
+                sp -= 1;
+
                 break;
             }
             case 0x0010:  // STRICT LESS THAN REGISTER TO DIRECT a < b
