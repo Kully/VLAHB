@@ -1,6 +1,6 @@
 #!/bin/bash
 
-filename="***test_c"
+filename="ball_bouncing_off_walls"
 
 # -O turns printing off
 python3 asm.py $filename.asm

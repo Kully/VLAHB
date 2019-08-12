@@ -18,13 +18,21 @@
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
 int16_t sp;               // stack pointer
-int16_t pc;               // program counter
 int16_t stack[32];        // stack
-
 
 // seed the random generator
 // srand(time(int 0));  // error here
 
+int16_t pc;
+
+int16_t init_pc()
+{
+    FILE* file = fopen("start_pc.txt", "r");
+    fscanf(file, "%d\n", &pc);
+    fclose(file);
+    return pc;
+}
+int16_t pc = init_pc();
 
 // 0 -> U -> 4096
 // 1 -> V -> 4097
