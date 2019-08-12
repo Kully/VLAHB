@@ -20,59 +20,39 @@ uint32_t ram[RAM_SLOTS];
 int16_t sp;               // stack pointer
 int16_t stack[32];        // stack
 
-// seed the random generator
-// srand(time(int 0));  // error here
 
-int16_t pc;
-
-int16_t init_pc()
-{
+int init_pc(int pc)
+{   
     FILE* file = fopen("start_pc.txt", "r");
     fscanf(file, "%d\n", &pc);
     fclose(file);
     return pc;
 }
-int16_t pc = init_pc();
 
-// 0 -> U -> 4096
-// 1 -> V -> 4097
-// 2 -> Y -> 4098
-// 3 -> Z -> 4099
+// seed the random generator
+// srand(time(int 0));  // error here
+
+
 int32_t letter_code_to_ram_index(int32_t letter_code)
 {
     switch(letter_code)
     {
         case 0: {
-            return 4096;
+            return 4096;  // U
         }
         case 1: {
-            return 4097;
+            return 4097;  // V
         }
         case 2: {
-            return 4098;
+            return 4098;  // Y
         }
         case 3: {
-            return 4099;
+            return 4099;  // Z
         }
     }
     return -1;
 }
 
-// Delete Eventually
-int32_t uvyz_to_ram_index(char* letter)
-{
-    if(!strcmp(letter, "U"))
-    {
-        return 4096;
-    } else if(!strcmp(letter, "V")) {
-        return 4097;
-    } else if(!strcmp(letter, "Y")) {
-        return 4098;
-    } else if(!strcmp(letter, "Z")) {
-        return 4099;
-    }
-    return -1;  // if not matching anything
-}
 
 void convert_endianess()
 {
@@ -93,7 +73,6 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-    const int displayScale = 1;  // see vm.py for same const
     const int xres = 800;  // why is this not 160
     const int yres = 640;  // why is this not 120
     SDL_Window* window = SDL_CreateWindow("VLAB VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, xres, yres, SDL_WINDOW_SHOWN);
@@ -103,6 +82,10 @@ int main(int argc, char* argv[])
     fread(rom, sizeof(uint32_t), ROM_SLOTS, fp);
     convert_endianess();
     bool done = false;
+
+    int pc = 0;
+    pc = init_pc(pc);
+
     while(!done)
     {
         const uint32_t word0 = rom[pc + 0];
