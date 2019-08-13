@@ -1,6 +1,6 @@
 #!/bin/bash
 
-filename="ball_bouncing_off_walls"
+filename="pride_flag"
 
 # -O turns printing off
 python3 asm.py $filename.asm

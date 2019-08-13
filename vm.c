@@ -12,6 +12,7 @@
 #define RAM_SLOTS 128000
 #define STACK_FRAME_SIZE 128
 #define STACK_MAX_SIZE 32
+#define VRAM_FIRST_INDEX 4100
 
 // UINT_MAX = 0XFFFFFFFF;  // largest value in ram slot
 
@@ -99,6 +100,7 @@ int main(int argc, char* argv[])
 
         printf("pc: %i\n", pc);
         printf("sp: %i\n", sp);
+        printf("stack[0,1,2]: %i,%i,%i\n", stack[0],stack[1],stack[2]);
         printf("word0: 0x%08X\n", word0);
         printf("word1: 0x%08X\n\n", word1);
 
@@ -242,9 +244,13 @@ int main(int argc, char* argv[])
                 uint32_t* pixels = (uint32_t*) raw;
 
                 // Keep it dumb, clear the screen with blue for now
+                // for(int y = 0; y < yres; y++)
+                // for(int x = 0; x < xres; x++)
+                //     pixels[x + y * xres] = 0x0000FFFF;
+
                 for(int y = 0; y < yres; y++)
                 for(int x = 0; x < xres; x++)
-                    pixels[x + y * xres] = 0x0000FFFF;
+                    pixels[x + y * xres] = ram[VRAM_FIRST_INDEX + x + y * xres];
 
                 SDL_UnlockTexture(texture);
                 SDL_RenderCopy(renderer, texture, NULL, NULL);
