@@ -15,6 +15,9 @@
 
 // UINT_MAX = 0XFFFFFFFF;  // largest value in ram slot
 
+// seed the random generator
+// srand(time(int 0));  // error here
+
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
 int16_t sp;               // stack pointer
@@ -28,9 +31,6 @@ int init_pc(int pc)
     fclose(file);
     return pc;
 }
-
-// seed the random generator
-// srand(time(int 0));  // error here
 
 
 int32_t letter_code_to_ram_index(int32_t letter_code)
@@ -189,8 +189,8 @@ int main(int argc, char* argv[])
                 for(int x = 0; x < b; x++) ram[0 + x] = ram[a + x];
 
                 // pop from stack and assign to pc
-                pc = stack[sp];
                 sp -= 1;
+                pc = stack[sp];
 
                 break;
             }
