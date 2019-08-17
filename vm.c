@@ -13,6 +13,7 @@
 #define STACK_FRAME_SIZE 128
 #define STACK_MAX_SIZE 32
 #define VRAM_FIRST_INDEX 4100
+#define MAX_RAM_VALUE 4294967295 // 0XFFFFFFFF
 
 // UINT_MAX = 0XFFFFFFFF;  // largest value in ram slot
 
@@ -52,6 +53,19 @@ int32_t letter_code_to_ram_index(int32_t letter_code)
         }
     }
     return -1;
+}
+
+
+void manage_overflow_underflow(int index_in_RAM)
+{
+    // 4294967296 == MAX_RAM_VALUE + 1
+    ram[index_in_RAM] = ram[index_in_RAM] % (MAX_RAM_VALUE+1);
+
+    // correct if negative
+    if(ram[index_in_RAM] > 0) {
+        ram[index_in_RAM] = ram[index_in_RAM] + MAX_RAM_VALUE+1;
+    }
+
 }
 
 
@@ -95,12 +109,27 @@ int main(int argc, char* argv[])
         const uint16_t word0_first_half = (word0 >> 16) & 0xFFFF;
         const uint16_t word0_second_half = (word0 >> 0) & 0xFFFF;
 
-        const uint16_t word1_first_half = (word1 >> 16) & 0xFFFF;
-        const uint16_t word1_second_half = (word1 >> 0) & 0xFFFF;
+        // const uint16_t word1_first_half = (word1 >> 16) & 0xFFFF;
+        // const uint16_t word1_second_half = (word1 >> 0) & 0xFFFF;
 
         printf("pc: %i\n", pc);
         printf("sp: %i\n", sp);
-        printf("stack[0,1,2]: %i,%i,%i\n", stack[0],stack[1],stack[2]);
+
+        // printf("\nram[0-3]:\n");
+
+        // hex
+        // printf("    0: 0x%08X\n", ram[0]);
+        // printf("    1: 0x%08X\n", ram[1]);
+        // printf("    2: 0x%08X\n", ram[2]);
+        // printf("    3: 0x%08X\n\n", ram[3]);
+
+        // ints
+        printf("    0: %i\n", ram[0]);
+        printf("    1: %i\n", ram[1]);
+        printf("    2: %i\n", ram[2]);
+        printf("    3: %i\n\n", ram[3]);
+
+        // printf("stack[0,1,2]: %i,%i,%i\n", stack[0],stack[1],stack[2]);
         printf("word0: 0x%08X\n", word0);
         printf("word1: 0x%08X\n\n", word1);
 
@@ -125,6 +154,7 @@ int main(int argc, char* argv[])
             case 0x0004:  // DIRECT SUBTRACT
             {
                 ram[word0_first_half] -= word1;
+                manage_overflow_underflow(word0_first_half);
                 break;
             }
             case 0x0005:  // DIRECT MULTIPLY
@@ -322,12 +352,12 @@ int main(int argc, char* argv[])
             }
             case 0x0025:  // ARRAY
             {
-                int label_idx = word0_first_half;
+                // int label_idx = word0_first_half;
 
-                uint8_t x_sprite = (rom[pc - 1] >> 24) & 0xFF;
-                uint8_t y_sprite = (rom[pc - 1] >> 16) & 0XFF;
-                uint8_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
-                uint8_t height_sprite = (rom[pc - 1]) & 0xFF;
+                // uint8_t x_sprite = (rom[pc - 1] >> 24) & 0xFF;
+                // uint8_t y_sprite = (rom[pc - 1] >> 16) & 0XFF;
+                // uint8_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
+                // uint8_t height_sprite = (rom[pc - 1]) & 0xFF;
 
                 // Code goes here - WIP
 
@@ -369,12 +399,12 @@ int main(int argc, char* argv[])
                 int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
                 int32_t j = (word0_first_half >> 6*4) & 0XF; // 0j00 000
                 int32_t k = (word0_first_half >> 5*4) & 0XF; // 00k0 000
-                int32_t l = (word0_first_half >> 5*4) & 0XF; // 000l 000
+                // int32_t l = (word0_first_half >> 5*4) & 0XF; // 000l 000
 
                 int32_t ram_index_i = letter_code_to_ram_index(i);
                 int32_t ram_index_j = letter_code_to_ram_index(j);
                 int32_t ram_index_k = letter_code_to_ram_index(k);
-                int32_t ram_index_l = letter_code_to_ram_index(l);
+                // int32_t ram_index_l = letter_code_to_ram_index(l);
 
                 int32_t array_span = ram[ram_index_j] - ram[ram_index_i];
 
@@ -403,12 +433,20 @@ int main(int argc, char* argv[])
             }
             case 0x0104:  // LD R[U] R[i]
             {
-                // Code goes here - WIP
+                int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
+                int32_t ram_index_i = letter_code_to_ram_index(i);
+
+                ram[ram[ram_index_i]] = ram[word1];
+
                 break;
             }
             case 0x0105:  // LD R[U] i
             {
-                // Code goes here - WIP
+                int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
+                int32_t ram_index_i = letter_code_to_ram_index(i);
+
+                ram[ram[ram_index_i]] = word1;
+
                 break;
             }
             case 0x0106:  // LD R[U:V] i
