@@ -1,12 +1,10 @@
-LD R[4096] 2
+LD R[3] 1  // set as true
 
-LD R[4097] 22
-LD R[4099] 3
+LD R[69] 7
+LD R[4096] 69
 
-
-LD R[U] 44
-// LD R[U:Z] R[V]
-
+CMP R[U] 7
+LD R[3] 0  // set as false
 EXIT
 
 // let's try to do alpha of 0

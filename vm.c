@@ -467,7 +467,11 @@ int main(int argc, char* argv[])
             }
             case 0x0107:  // COMPARE UV TO DIRECT
             {
-                // Code goes here - WIP
+                const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
+                const uint16_t ram_index_i = letter_code_to_ram_index(i);
+
+                if(ram[ram[ram_index_i]] == word1) pc += 2;
+
                 break;
             }
             case 0xfff0:  // POP
