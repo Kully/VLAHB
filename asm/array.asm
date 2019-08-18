@@ -1,10 +1,13 @@
-LD R[4096] 0
-LD R[4099] 2
+LD R[4096] 2
 
-LD R[2] 69
-LD R[U] R[Z]
+LD R[4097] 22
+LD R[4099] 3
+
+
+LD R[U] 44
+// LD R[U:Z] R[V]
+
 EXIT
-
 
 // let's try to do alpha of 0
 CLEAR 0XFF0000FF

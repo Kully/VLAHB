@@ -115,14 +115,6 @@ int main(int argc, char* argv[])
         printf("pc: %i\n", pc);
         printf("sp: %i\n", sp);
 
-        // printf("\nram[0-3]:\n");
-
-        // hex
-        // printf("    0: 0x%08X\n", ram[0]);
-        // printf("    1: 0x%08X\n", ram[1]);
-        // printf("    2: 0x%08X\n", ram[2]);
-        // printf("    3: 0x%08X\n\n", ram[3]);
-
         // ints
         printf("    0: %i\n", ram[0]);
         printf("    1: %i\n", ram[1]);
@@ -375,17 +367,22 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0101:  // LD R[U:V] R[Y]
+            case 0x0101:  // LD R[U:V] R[Y] ???
             {
-                int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
-                int32_t j = (word0_first_half >> 6*4) & 0XF; // 0j00 000
-                int32_t k = (word0_first_half >> 5*4) & 0XF; // 00k0 000
+                const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
+                const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
+                const uint16_t k = (word0_first_half >> 4) & 0XF;  // 00k0
 
-                int32_t ram_index_i = letter_code_to_ram_index(i);
-                int32_t ram_index_j = letter_code_to_ram_index(j);
-                int32_t ram_index_k = letter_code_to_ram_index(k);
+                const uint16_t ram_index_i = letter_code_to_ram_index(i);
+                const uint16_t ram_index_j = letter_code_to_ram_index(j);
+                const uint16_t ram_index_k = letter_code_to_ram_index(k);
 
                 int32_t array_span = ram[ram_index_j] - ram[ram_index_i];
+
+                printf("ram_index_i: %i \n", ram_index_i);
+                printf("ram_index_j: %i \n", ram_index_j);
+                printf("ram_index_k: %i \n", ram_index_k);
+                printf("array span: %i \n", array_span);
 
                 for(int idx = 0; idx < array_span; idx++)
                 {
@@ -442,10 +439,8 @@ int main(int argc, char* argv[])
             }
             case 0x0105:  // LD R[U] i
             {
-                int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
-                int32_t ram_index_i = letter_code_to_ram_index(i);
-
-                printf("i is %i \n", i);
+                const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
+                const uint16_t ram_index_i = letter_code_to_ram_index(i);
 
                 ram[ram[ram_index_i]] = word1;
 
