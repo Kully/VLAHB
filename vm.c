@@ -365,11 +365,11 @@ int main(int argc, char* argv[])
             }
             case 0x0100:  // LD R[U] R[V] (LD R[R[i]] R[R[j]])
             {
-                int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
-                int32_t j = (word0_first_half >> 6*4) & 0XF; // 0j00 000
+                const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
+                const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
 
-                int32_t ram_index_i = letter_code_to_ram_index(i);
-                int32_t ram_index_j = letter_code_to_ram_index(j);
+                const uint16_t ram_index_i = letter_code_to_ram_index(i);
+                const uint16_t ram_index_j = letter_code_to_ram_index(j);
 
                 ram[ram[ram_index_i]] = ram[ram[ram_index_j]];
 
@@ -435,9 +435,6 @@ int main(int argc, char* argv[])
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t ram_index_i = letter_code_to_ram_index(i);
-
-                // int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
-                // int32_t ram_index_i = letter_code_to_ram_index(i);
 
                 ram[ram[ram_index_i]] = ram[word1];
 
