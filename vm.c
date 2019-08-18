@@ -503,7 +503,7 @@ int main(int argc, char* argv[])
 
                 for(int y = 0; y < yres; y++)
                 for(int x = 0; x < xres; x++)
-                    pixels[x + y * xres] = 0XFF00FFFF;
+                    pixels[x + y * xres] = word1;
 
                 SDL_UnlockTexture(texture);
                 SDL_RenderCopy(renderer, texture, NULL, NULL);
