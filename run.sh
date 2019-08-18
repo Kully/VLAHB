@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# filename="pride_flag"
+# filename="***ball_bouncing_off_walls"
 filename="array"
 
 # -O turns printing off

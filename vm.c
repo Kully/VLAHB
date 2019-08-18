@@ -35,20 +35,20 @@ int init_pc(int pc)
 }
 
 
-int32_t letter_code_to_ram_index(int32_t letter_code)
+uint16_t letter_code_to_ram_index(uint16_t letter_code)
 {
     switch(letter_code)
     {
-        case 0: {
+        case 1: {
             return 4096;  // U
         }
-        case 1: {
+        case 2: {
             return 4097;  // V
         }
-        case 2: {
+        case 3: {
             return 4098;  // Y
         }
-        case 3: {
+        case 4: {
             return 4099;  // Z
         }
     }
@@ -416,11 +416,11 @@ int main(int argc, char* argv[])
             }
             case 0x0103:  // LD R[U:V] R[k]
             {
-                int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
-                int32_t j = (word0_first_half >> 6*4) & 0XF; // 0j00 000
+                const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
+                const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
 
-                int32_t ram_index_i = letter_code_to_ram_index(i);
-                int32_t ram_index_j = letter_code_to_ram_index(j);
+                const uint16_t ram_index_i = letter_code_to_ram_index(i);
+                const uint16_t ram_index_j = letter_code_to_ram_index(j);
 
                 int32_t array_span = ram[ram_index_j] - ram[ram_index_i];
 
@@ -445,13 +445,29 @@ int main(int argc, char* argv[])
                 int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
                 int32_t ram_index_i = letter_code_to_ram_index(i);
 
+                printf("i is %i \n", i);
+
                 ram[ram[ram_index_i]] = word1;
 
                 break;
             }
             case 0x0106:  // LD R[U:V] i
             {
-                // Code goes here - WIP
+                const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
+                const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
+
+                const uint16_t ram_index_i = letter_code_to_ram_index(i);
+                const uint16_t ram_index_j = letter_code_to_ram_index(j);
+
+                int32_t array_span = ram[ram_index_j] - ram[ram_index_i];
+
+                for(int idx = 0; idx < array_span; idx++)
+                {
+                    ram[ram[ram_index_i] + idx] = word1;
+                }
+
+                printf("LD R[U:V] i\n");
+
                 break;
             }
             case 0x0107:  // COMPARE UV TO DIRECT
