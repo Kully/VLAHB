@@ -433,8 +433,11 @@ int main(int argc, char* argv[])
             }
             case 0x0104:  // LD R[U] R[i]
             {
-                int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
-                int32_t ram_index_i = letter_code_to_ram_index(i);
+                const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
+                const uint16_t ram_index_i = letter_code_to_ram_index(i);
+
+                // int32_t i = (word0_first_half >> 7*4) & 0XF; // i000 000
+                // int32_t ram_index_i = letter_code_to_ram_index(i);
 
                 ram[ram[ram_index_i]] = ram[word1];
 

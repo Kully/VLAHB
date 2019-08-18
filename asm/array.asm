@@ -1,11 +1,8 @@
 // LD R[U:V] i
-LD R[4096] 1
-LD R[4099] 3
+LD R[4099] 1
 
-// LD R[U:Z] 69
-
-LD R[0] 81
-LD R[U:Z] R[0]
+LD R[66] 5
+LD R[Z] R[66]
 EXIT
 
 
