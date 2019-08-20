@@ -1,7 +1,4 @@
 
-// clear screen
-CALL SCREEN_FILL_RED
-
 // Y points to color
 LD R[4098] 65000
 
@@ -62,11 +59,10 @@ BALL_BOUNCING_OFF_WALLS_MAIN:
 	// ****
 	// draw
 	// ****
-	CLEAR
+	CLEAR 0X000000FF
 	// ADD R[65000] 255
 	LD R[Z] R[Y] // load color in display
 	BLIT
-
 
 	GOTO BALL_BOUNCING_OFF_WALLS_MAIN
 
