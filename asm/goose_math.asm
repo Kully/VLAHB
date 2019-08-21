@@ -1,3 +1,5 @@
+GOTO MAIN
+
 // void MAIN()
 // {
 //   var a = 10

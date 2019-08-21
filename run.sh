@@ -1,6 +1,6 @@
 #!/bin/bash
 
-filename="array"
+filename="goose_math"
 
 python3 asm.py $filename.asm
 gcc -Og -g -Wall -Wextra -Wpedantic -fsanitize=address bin.c && ./a.out hex/file.hex bin/file.bin

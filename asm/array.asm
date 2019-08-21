@@ -1,5 +1,4 @@
 LD R[0] 16
-SQRT R[0]
 EXIT
 
 

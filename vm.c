@@ -98,6 +98,7 @@ int main(int argc, char* argv[])
     convert_endianess();
     bool done = false;
 
+    // set program counter
     int pc = 0;
     pc = init_pc(pc);
 
@@ -355,8 +356,6 @@ int main(int argc, char* argv[])
                 //         ...
                 //     }
                 // }
-                    
-                }
 
                 break;
             }
