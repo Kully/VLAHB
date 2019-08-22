@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
         printf("\n\n");
 
         pc += 2;
-        switch(word0_second_half) // Or was it upper?
+        switch(word0_second_half)
         {
             case 0x0001:  // GOTO //
             {
