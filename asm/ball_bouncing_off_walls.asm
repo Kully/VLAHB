@@ -3,7 +3,7 @@
 LD R[4098] 65000
 
 // init variables
-LD R[65000] 0X00FF00FF  // ball color
+LD R[65000] 0X30FA00FF  // ball color
 LD R[65001] 1  // ball X coord
 LD R[65002] 1  // ball Y coord
 
@@ -59,9 +59,13 @@ BALL_BOUNCING_OFF_WALLS_MAIN:
 	// ****
 	// draw
 	// ****
-	CLEAR 0X000000FF
-	// ADD R[65000] 255
+
+	LD R[4096] 4100
+	LD R[4097] 23300
+	LD R[U:V] 0X000000FF
+
 	LD R[Z] R[Y] // load color in display
+
 	BLIT
 
 	GOTO BALL_BOUNCING_OFF_WALLS_MAIN

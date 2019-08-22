@@ -498,12 +498,18 @@ int main(int argc, char* argv[])
                 uint32_t* pixels = (uint32_t*) raw;
 
                 for(int y = 0; y < yres; y++)
-                for(int x = 0; x < xres; x++)
-                    pixels[x + y * xres] = word1;
+                {
+                    for(int x = 0; x < xres; x++)
+                    {
+                        ram[VRAM_FIRST_INDEX + x + y * xres] = word1;
+                        pixels[x + y * xres] = ram[VRAM_FIRST_INDEX + x + y * xres];
+                    }
+                }
 
                 SDL_UnlockTexture(texture);
                 SDL_RenderCopy(renderer, texture, NULL, NULL);
                 SDL_RenderPresent(renderer);
+
                 break;
             }
             case 0xffff:
