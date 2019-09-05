@@ -64,7 +64,12 @@ void copySubArray(uint32_t array0[ ], uint32_t array1[ ], uint32_t i, uint32_t j
     // equivalent to `array0[i:i+width] = array1[j:j+width]` in Python
     for(uint32_t x = 0; x < width; x++)
     {
-        array0[i+x] = array1[j+x];
+        printf("this is the pixel stuff: 0x%08X \n", array1[j+x]);
+        if((array1[j+x] & 0xFF) == 255)  // check if alpha is 0XFF
+        {
+            printf("in here\n");
+            array0[i+x] = array1[j+x];
+        }
     }
 }
 
@@ -124,20 +129,22 @@ int main(int argc, char* argv[])
         const uint16_t word0_first_half = (word0 >> 16) & 0xFFFF;
         const uint16_t word0_second_half = (word0 >> 0) & 0xFFFF;
 
+        // *** UNUSED ***
         // const uint16_t word1_first_half = (word1 >> 16) & 0xFFFF;
         // const uint16_t word1_second_half = (word1 >> 0) & 0xFFFF;
 
-        printf("word0: 0x%08X\n", word0);
-        printf("word1: 0x%08X\n", word1);
-        printf("pc: %i\n", pc);
-        printf("sp: %i\n", sp);
-        printf("stack[0,1,2]: [%i,%i,%i]\n", stack[0],stack[1],stack[2]);
-        printf("ram\n");
-        printf("    0: %i\n", ram[0]);
-        printf("    1: %i\n", ram[1]);
-        printf("    2: %i\n", ram[2]);
-        printf("    3: %i\n", ram[3]);
-        printf("\n\n");
+        // *** PRINTS ***
+        // printf("word0: 0x%08X\n", word0);
+        // printf("word1: 0x%08X\n", word1);
+        // printf("pc: %i\n", pc);
+        // printf("sp: %i\n", sp);
+        // printf("stack[0,1,2]: [%i,%i,%i]\n", stack[0],stack[1],stack[2]);
+        // printf("ram\n");
+        // printf("    0: %i\n", ram[0]);
+        // printf("    1: %i\n", ram[1]);
+        // printf("    2: %i\n", ram[2]);
+        // printf("    3: %i\n", ram[3]);
+        // printf("\n\n");
 
         pc += 2;
         switch(word0_second_half)
@@ -360,15 +367,7 @@ int main(int argc, char* argv[])
                 const uint16_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
                 const uint16_t height_sprite = (rom[pc - 1]) & 0xFF;
 
-
                 const uint16_t vram_idx = 4101 + x_sprite + 160*y_sprite;
-
-                // print stuff
-                printf("this is the best:\n");
-                printf("  x >> %i\n", x_sprite);
-                printf("  y >> %i\n", y_sprite);
-                printf("  w >> %i\n", width_sprite);
-                printf("  h >> %i\n", height_sprite);
 
                 for(int h = 0; h < height_sprite; h++)
                 {
@@ -376,7 +375,6 @@ int main(int argc, char* argv[])
                                  label_idx + h*width_sprite,
                                  width_sprite);
                 }
-
 
                 break;
             }
@@ -479,6 +477,7 @@ int main(int argc, char* argv[])
                 {
                     ram[ram[ram_index_i] + idx] = word1;
                 }
+
 
                 break;
             }
