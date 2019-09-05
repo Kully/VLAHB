@@ -653,6 +653,16 @@ def validate_and_make_hexfile(lines):
                                       re.match(util.REGEX_HEX, args[0])):
                     word1 = util.int_to_hex(args[0]).zfill(8)
 
+            elif opcode == 'INPUT':
+                valid_opcode = True
+                opcode_val = util.op_codes_dict[opcode]
+                word0_second_half = opcode_val.zfill(4)
+
+                if len(args) == 1 and re.match(util.REGEX_LD_R_ONE, args[0]):
+                    ram_slot_idx = re.findall(r'R\[(\d+)]', args[0])[0]
+
+                word0_first_half = util.int_to_hex(ram_slot_idx).zfill(4)
+
             elif opcode == 'EXIT':
                 valid_opcode = True
                 opcode_val = util.op_codes_dict['EXIT']

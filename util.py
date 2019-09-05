@@ -151,6 +151,7 @@ op_codes_dict = {
     'POP': 'fff0',
     'PUSH': 'fff1',
     'CLEAR': 'fff2',
+    'INPUT': 'fff3',
     'EXIT': 'ffff',
 }
 

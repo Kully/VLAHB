@@ -132,17 +132,17 @@ int main(int argc, char* argv[])
         // const uint16_t word1_second_half = (word1 >> 0) & 0xFFFF;
 
         // *** PRINTS ***
-        // printf("word0: 0x%08X\n", word0);
-        // printf("word1: 0x%08X\n", word1);
-        // printf("pc: %i\n", pc);
-        // printf("sp: %i\n", sp);
-        // printf("stack[0,1,2]: [%i,%i,%i]\n", stack[0],stack[1],stack[2]);
-        // printf("ram\n");
-        // printf("    0: %i\n", ram[0]);
-        // printf("    1: %i\n", ram[1]);
-        // printf("    2: %i\n", ram[2]);
-        // printf("    3: %i\n", ram[3]);
-        // printf("\n\n");
+        printf("word0: 0x%08X\n", word0);
+        printf("word1: 0x%08X\n", word1);
+        printf("pc: %i\n", pc);
+        printf("sp: %i\n", sp);
+        printf("stack[0,1,2]: [%i,%i,%i]\n", stack[0],stack[1],stack[2]);
+        printf("ram\n");
+        printf("    0: %i\n", ram[0]);
+        printf("    1: %i\n", ram[1]);
+        printf("    2: %i\n", ram[2]);
+        printf("    3: %i\n", ram[3]);
+        printf("\n\n");
 
         pc += 2;
         switch(word0_second_half)
@@ -527,6 +527,13 @@ int main(int argc, char* argv[])
                 SDL_UnlockTexture(texture);
                 SDL_RenderCopy(renderer, texture, NULL, NULL);
                 SDL_RenderPresent(renderer);
+
+                break;
+            }
+            case 0Xfff3:  // INPUT //
+            {
+                ram[word0_first_half] = 0XFFFFFFFF;
+                manage_overflow_underflow(word0_first_half);
 
                 break;
             }
