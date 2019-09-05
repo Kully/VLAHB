@@ -80,6 +80,19 @@ void convert_endianess()
     }
 }
 
+
+float sine(float x)
+{
+    return x - pow(x,3)/6 + pow(x,5)/120 - pow(x,7)/5040 + pow(x,9)/362880 - pow(x,11)/39916800 + pow(x,13)/6227020800;
+}
+
+
+float cosine(float x)
+{
+    return 1 - pow(x,2)/2 + pow(x,4)/24 - pow(x,6)/720 + pow(x,8)/40320 - pow(x,10)/3628800 + pow(x,12)/479001600;
+}
+
+
 int main(int argc, char* argv[])
 {
     if(argc != 2)
