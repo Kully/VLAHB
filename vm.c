@@ -56,6 +56,19 @@ uint16_t letter_code_to_ram_index(uint16_t letter_code)
 }
 
 
+void copySubArray(int array0[ ], int array1[ ], int i, int j, int width)
+{
+    // i: array0 start index
+    // j: array1 end index
+    //
+    // equivalent to `array0[i:i+width] = array1[j:j+width]` in Python
+    for(int x = 0; x < width; x++)
+    {
+        array0[i+x] = array1[j+x];
+    }
+}
+
+
 void manage_overflow_underflow(int index_in_RAM)
 {
     // 4294967296 == MAX_RAM_VALUE + 1
