@@ -522,7 +522,18 @@ int main(int argc, char* argv[])
             }
             case 0Xfff3:  // INPUT //
             {
-                ram[word0_first_half] = 0XFFFFFFFF;
+                SDL_PumpEvents();
+                const uint8_t* key = SDL_GetKeyboardState(NULL);
+                uint32_t word = 0x0;
+                if(key[SDL_SCANCODE_W]) word |= (1 << 0);
+                if(key[SDL_SCANCODE_A]) word |= (1 << 1);
+                if(key[SDL_SCANCODE_S]) word |= (1 << 2);
+                if(key[SDL_SCANCODE_D]) word |= (1 << 3);
+                if(key[SDL_SCANCODE_H]) word |= (1 << 4);
+                if(key[SDL_SCANCODE_J]) word |= (1 << 5);
+                if(key[SDL_SCANCODE_K]) word |= (1 << 6);
+                if(key[SDL_SCANCODE_L]) word |= (1 << 7);
+                ram[word0_first_half] = word;
                 break;
             }
             case 0xffff:
