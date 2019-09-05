@@ -56,7 +56,7 @@ uint16_t letter_code_to_ram_index(uint16_t letter_code)
 }
 
 
-void copySubArray(uint32_t array0[ ], uint32_t array1[ ], uint32_t i, uint32_t j, uint32_t width)
+void loadPixelsToVram(uint32_t array0[ ], uint32_t array1[ ], uint32_t i, uint32_t j, uint32_t width)
 {
     // i: array0 start index
     // j: array1 end index
@@ -64,10 +64,8 @@ void copySubArray(uint32_t array0[ ], uint32_t array1[ ], uint32_t i, uint32_t j
     // equivalent to `array0[i:i+width] = array1[j:j+width]` in Python
     for(uint32_t x = 0; x < width; x++)
     {
-        printf("this is the pixel stuff: 0x%08X \n", array1[j+x]);
         if((array1[j+x] & 0xFF) == 255)  // check if alpha is 0XFF
         {
-            printf("in here\n");
             array0[i+x] = array1[j+x];
         }
     }
@@ -371,9 +369,9 @@ int main(int argc, char* argv[])
 
                 for(int h = 0; h < height_sprite; h++)
                 {
-                    copySubArray(ram, rom, vram_idx + (h*160),
-                                 label_idx + h*width_sprite,
-                                 width_sprite);
+                    loadPixelsToVram(ram, rom, vram_idx + (h*160),
+                                     label_idx + h*width_sprite,
+                                     width_sprite);
                 }
 
                 break;

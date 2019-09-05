@@ -1,6 +1,6 @@
 #!/bin/bash
 
-filename="ball_bouncing_off_walls"
+filename="array"
 
 # remove -fsanitize=address to run much faster
 python3 asm.py $filename.asm
