@@ -1,4 +1,3 @@
-
 // Y points to color
 LD R[4098] 65000
 

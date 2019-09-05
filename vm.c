@@ -56,13 +56,13 @@ uint16_t letter_code_to_ram_index(uint16_t letter_code)
 }
 
 
-void copySubArray(int array0[ ], int array1[ ], int i, int j, int width)
+void copySubArray(uint32_t array0[ ], uint32_t array1[ ], uint32_t i, uint32_t j, uint32_t width)
 {
     // i: array0 start index
     // j: array1 end index
     //
     // equivalent to `array0[i:i+width] = array1[j:j+width]` in Python
-    for(int x = 0; x < width; x++)
+    for(uint32_t x = 0; x < width; x++)
     {
         array0[i+x] = array1[j+x];
     }
@@ -353,23 +353,30 @@ int main(int argc, char* argv[])
             }
             case 0x0025:  // ARRAY
             {
-                // const uint16_t label_idx = word0_first_half;
+                const uint16_t label_idx = word0_first_half;
 
-                // const uint16_t x_sprite = (rom[pc - 1] >> 24) & 0xFF;
-                // const uint16_t y_sprite = (rom[pc - 1] >> 16) & 0XFF;
-                // const uint16_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
-                // const uint16_t height_sprite = (rom[pc - 1]) & 0xFF;
+                const uint16_t x_sprite = (rom[pc - 1] >> 24) & 0xFF;
+                const uint16_t y_sprite = (rom[pc - 1] >> 16) & 0XFF;
+                const uint16_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
+                const uint16_t height_sprite = (rom[pc - 1]) & 0xFF;
 
 
-                // const uint16_t vram_idx = 4101 + x_sprite + 160 * y_sprite;
+                const uint16_t vram_idx = 4101 + x_sprite + 160*y_sprite;
 
-                // for(...)
-                // {
-                //     for(...)
-                //     {
-                //         ...
-                //     }
-                // }
+                // print stuff
+                printf("this is the best:\n");
+                printf("  x >> %i\n", x_sprite);
+                printf("  y >> %i\n", y_sprite);
+                printf("  w >> %i\n", width_sprite);
+                printf("  h >> %i\n", height_sprite);
+
+                for(int h = 0; h < height_sprite; h++)
+                {
+                    copySubArray(ram, rom, vram_idx + (h*160),
+                                 label_idx + h*width_sprite,
+                                 width_sprite);
+                }
+
 
                 break;
             }
