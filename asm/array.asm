@@ -1,5 +1,7 @@
 INPUT R[1]
 INPUT R[2]
+LD R[0] 0XFFFFFFFF
+ADD R[0] 1
 EXIT
 
 // let's try to do alpha of 0

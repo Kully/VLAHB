@@ -72,19 +72,6 @@ void loadPixelsToVram(uint32_t array0[ ], uint32_t array1[ ], uint32_t i, uint32
 }
 
 
-void manage_overflow_underflow(int index_in_RAM)
-{
-    // 4294967296 == MAX_RAM_VALUE + 1
-    ram[index_in_RAM] = ram[index_in_RAM] % (MAX_RAM_VALUE+1);
-
-    // correct if negative
-    if(ram[index_in_RAM] > 0) {
-        ram[index_in_RAM] = ram[index_in_RAM] + MAX_RAM_VALUE+1;
-    }
-
-}
-
-
 void convert_endianess()
 {
     for(int32_t i = 0; i < ROM_SLOTS; i++)
@@ -138,10 +125,10 @@ int main(int argc, char* argv[])
         printf("sp: %i\n", sp);
         printf("stack[0,1,2]: [%i,%i,%i]\n", stack[0],stack[1],stack[2]);
         printf("ram\n");
-        printf("    0: %i\n", ram[0]);
-        printf("    1: %i\n", ram[1]);
-        printf("    2: %i\n", ram[2]);
-        printf("    3: %i\n", ram[3]);
+        printf("    0: %u\n", ram[0]);
+        printf("    1: %u\n", ram[1]);
+        printf("    2: %u\n", ram[2]);
+        printf("    3: %u\n", ram[3]);
         printf("\n\n");
 
         pc += 2;
@@ -165,7 +152,6 @@ int main(int argc, char* argv[])
             case 0x0004:  // DIRECT SUBTRACT //
             {
                 ram[word0_first_half] -= word1;
-                manage_overflow_underflow(word0_first_half);
                 break;
             }
             case 0x0005:  // DIRECT MULTIPLY //
@@ -533,8 +519,6 @@ int main(int argc, char* argv[])
             case 0Xfff3:  // INPUT //
             {
                 ram[word0_first_half] = 0XFFFFFFFF;
-                manage_overflow_underflow(word0_first_half);
-
                 break;
             }
             case 0xffff:
