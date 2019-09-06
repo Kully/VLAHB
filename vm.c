@@ -56,7 +56,11 @@ uint16_t letter_code_to_ram_index(uint16_t letter_code)
 }
 
 
-void loadPixelsToVram(uint32_t array0[ ], uint32_t array1[ ], uint32_t i, uint32_t j, uint32_t width)
+void loadPixelsToVram(uint32_t array0[ ],
+                      uint32_t array1[ ],
+                      uint32_t i,
+                      uint32_t j,
+                      uint32_t width)
 {
     // i: array0 start index
     // j: array1 end index
