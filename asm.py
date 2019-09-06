@@ -660,8 +660,25 @@ def validate_and_make_hexfile(lines):
 
                 if len(args) == 1 and re.match(util.REGEX_LD_R_ONE, args[0]):
                     ram_slot_idx = re.findall(r'R\[(\d+)]', args[0])[0]
+                    word0_first_half = util.int_to_hex(ram_slot_idx).zfill(4)
 
-                word0_first_half = util.int_to_hex(ram_slot_idx).zfill(4)
+            elif opcode == 'SHT':  # shift right plus AND
+                valid_opcode = True
+                opcode_val = util.op_codes_dict[opcode]
+                word0_second_half = opcode_val.zfill(4)
+
+                if len(args) == 3 and (re.match(util.REGEX_LD_R_ONE, args[0]) and
+                                       re.match(util.REGEX_LD_R_ONE, args[1]) and
+                                       re.match(r'\d+', args[2])):
+
+                    ram_idx_from = re.findall(r'R\[(\d+)]', args[0])[0]
+                    ram_idx_to = re.findall(r'R\[(\d+)]', args[1])[0]
+                    bitshift = args[2]
+
+                    word0_first_half = util.int_to_hex(ram_idx_to).zfill(4)
+                    word1_first_half = util.int_to_hex(ram_idx_from).zfill(4)
+                    word1_second_half = util.int_to_hex(bitshift).zfill(4)
+                    word1 = word1_first_half + word1_second_half
 
             elif opcode == 'EXIT':
                 valid_opcode = True

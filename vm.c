@@ -14,7 +14,7 @@
 #define STACK_MAX_SIZE 32
 #define VRAM_FIRST_INDEX 4100
 #define MAX_RAM_VALUE UINT_MAX
-#define DEBUG 0
+#define DEBUG 1
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
@@ -112,6 +112,9 @@ int main(int argc, char* argv[])
         const uint32_t word1 = rom[pc + 1];
         const uint16_t word0_first_half = (word0 >> 16) & 0xFFFF;
         const uint16_t word0_second_half = (word0 >> 0) & 0xFFFF;
+
+        const uint16_t word1_first_half = (word1 >> 16) & 0xFFFF;
+        const uint16_t word1_second_half = (word1 >> 0) & 0xFFFF;
 #if DEBUG == 1
         printf("word0: 0x%08X\n", word0);
         printf("word1: 0x%08X\n", word1);
@@ -524,6 +527,22 @@ int main(int argc, char* argv[])
                 if(key[SDL_SCANCODE_K]) word |= (1 << 6);
                 if(key[SDL_SCANCODE_L]) word |= (1 << 7);
                 ram[word0_first_half] = word;
+                break;
+            }
+            case 0Xfff4:  // SHT - SHIFT RIGHT, AND //
+            {
+                // Assembly is SHT R[X] R[Y] Z
+                //
+                // What it Does:
+                //   right shift R[X] by Z then
+                //   & 0XF and store in R[Y]
+                //
+                // word1_first_half:  X
+                // word0_first_half:  Y
+                // word1_second_half: Z
+
+                const uint16_t bit = (ram[word1_first_half] >> 4*word1_second_half) & 0XF;
+                ram[word0_first_half] = bit;
                 break;
             }
             case 0xffff:
