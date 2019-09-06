@@ -13,22 +13,19 @@
 #define STACK_FRAME_SIZE 128
 #define STACK_MAX_SIZE 32
 #define VRAM_FIRST_INDEX 4100
-#define MAX_RAM_VALUE 4294967295 // 0XFFFFFFFF
-
-// UINT_MAX = 0XFFFFFFFF;  // largest value in ram slot
-
-// seed the random generator
-// srand(time(int 0));  // TODO - raises error/warning
+#define MAX_RAM_VALUE UINT_MAX
+#define DEBUG 0
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
-int16_t sp;               // stack pointer
-int16_t stack[32];        // stack
+int16_t sp;                    // stack pointer
+int16_t stack[STACK_MAX_SIZE]; // stack
 
 
-int init_pc(int pc)
-{   
+int init_pc(void)
+{
     FILE* file = fopen("start_pc.txt", "r");
+    int pc = 0;
     fscanf(file, "%d\n", &pc);
     fclose(file);
     return pc;
@@ -76,7 +73,7 @@ void loadPixelsToVram(uint32_t array0[ ],
 }
 
 
-void convert_endianess()
+void convert_endianess(void)
 {
     for(int32_t i = 0; i < ROM_SLOTS; i++)
     {
@@ -107,34 +104,27 @@ int main(int argc, char* argv[])
     bool done = false;
 
     // set program counter
-    int pc = 0;
-    pc = init_pc(pc);
+    int pc = init_pc();
 
     while(!done)
     {
         const uint32_t word0 = rom[pc + 0];
         const uint32_t word1 = rom[pc + 1];
-
         const uint16_t word0_first_half = (word0 >> 16) & 0xFFFF;
         const uint16_t word0_second_half = (word0 >> 0) & 0xFFFF;
-
-        // *** UNUSED ***
-        // const uint16_t word1_first_half = (word1 >> 16) & 0xFFFF;
-        // const uint16_t word1_second_half = (word1 >> 0) & 0xFFFF;
-
-        // *** PRINTS ***
-        // printf("word0: 0x%08X\n", word0);
-        // printf("word1: 0x%08X\n", word1);
-        // printf("pc: %i\n", pc);
-        // printf("sp: %i\n", sp);
-        // printf("stack[0,1,2]: [%i,%i,%i]\n", stack[0],stack[1],stack[2]);
-        // printf("ram\n");
-        // printf("    0: %u\n", ram[0]);
-        // printf("    1: %u\n", ram[1]);
-        // printf("    2: %u\n", ram[2]);
-        // printf("    3: %u\n", ram[3]);
-        // printf("\n\n");
-
+#if DEBUG == 1
+        printf("word0: 0x%08X\n", word0);
+        printf("word1: 0x%08X\n", word1);
+        printf("pc: %i\n", pc);
+        printf("sp: %i\n", sp);
+        printf("stack[0,1,2]: [%i,%i,%i]\n", stack[0],stack[1],stack[2]);
+        printf("ram\n");
+        printf("    0: %u\n", ram[0]);
+        printf("    1: %u\n", ram[1]);
+        printf("    2: %u\n", ram[2]);
+        printf("    3: %u\n", ram[3]);
+        printf("\n\n");
+#endif
         pc += 2;
         switch(word0_second_half)
         {
