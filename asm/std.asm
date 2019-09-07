@@ -169,10 +169,6 @@ STD_DRAW_LINE_FROM_X_Y_DOWN:
 	RETURN
 
 
-
-// Here I use RAM slot 512 as the return register.
-// We should agree on a proper return register.
-
 // var STD_MATH_ADD(var a, var b)
 // {
 //     a += b
@@ -290,10 +286,6 @@ STD_MATH_ABS_DIFF:
         RETURN
 
     RETURN
-
-
-
-
 
 
 STD_LOGIC_OR:

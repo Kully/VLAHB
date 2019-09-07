@@ -1,21 +1,3 @@
-CALL STD_FILL_VRAM_WITH_RAND_VALUES
-EXIT
-
-STD_FILL_VRAM_WITH_RAND_VALUES:
-    // U -> VRAM idx
-    RAND R[4099] 
-    MUL R[4099] 0XFFFFFFFE
-    LD R[U] R[4099]  // load pixel
-
-    ADD R[4096] 1  // incr VRAM idx
-
-    BLIT  // draw
-
-    GTE R[4096] 23301 // 23301 needs to change if screen res is changing
-    GOTO STD_FILL_VRAM_WITH_RAND_VALUES
-    RETURN
-EXIT
-
 // store sprite X and Y values
 LD R[220] 20  // X
 LD R[221] 50  // Y 
@@ -37,8 +19,8 @@ GAME_LOOP_1:
     // EXIT
     // LD R[24003] 1
 
-    // move mario right if you press D
-    CMP R[24000] 0
+    // move mario right if you press W
+    CMP R[24004] 0
     EXIT
 
     CLEAR

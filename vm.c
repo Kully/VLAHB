@@ -551,8 +551,8 @@ int main(int argc, char* argv[])
                 // word0_first_half:  Y
                 // word1_second_half: Z
 
-                const uint16_t bit = (ram[word1_first_half] >> 4*word1_second_half) & 0XF;
-                ram[word0_first_half] = bit;
+                const uint32_t button = (ram[word1_first_half] >> word1_second_half) & 0x1;
+                ram[word0_first_half] = button;
                 break;
             }
             case 0xffff:
