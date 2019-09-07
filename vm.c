@@ -14,7 +14,7 @@
 #define STACK_MAX_SIZE 32
 #define VRAM_FIRST_INDEX 4100
 #define MAX_RAM_VALUE UINT_MAX
-#define DEBUG 1
+#define DEBUG 0
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
@@ -525,7 +525,10 @@ int main(int argc, char* argv[])
                 if(key[SDL_SCANCODE_H]) word |= (1 << 4);
                 if(key[SDL_SCANCODE_J]) word |= (1 << 5);
                 if(key[SDL_SCANCODE_K]) word |= (1 << 6);
-                if(key[SDL_SCANCODE_L]) word |= (1 << 7);
+                // if(key[SDL_SCANCODE_L]) word |= (1 << 7);
+
+                // use esc to exit the game
+                if(key[SDL_SCANCODE_ESCAPE]) word |= (1 << 7);
                 ram[word0_first_half] = word;
                 break;
             }

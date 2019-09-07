@@ -1,4 +1,19 @@
-GOTO GAME_LOOP_1
+MAIN_MAIN_LOOP:
+	CALL WAIT_N_SECONDS
+	CALL SCREEN_FILL_RED
+	
+	CALL WAIT_N_SECONDS
+	CALL SCREEN_FILL_BLACK
+
+	GOTO MAIN_MAIN_LOOP
+
+WAIT_N_SECONDS:
+	LD R[24000] 0
+	WAIT_N_SECONDS_INNER_LOOP:
+		ADD R[24000] 1
+		CMP R[24000] 1500000
+		GOTO WAIT_N_SECONDS_INNER_LOOP
+	RETURN
 
 // GAME_LOOP_1:
 //     INPUT
@@ -10,10 +25,38 @@ GOTO GAME_LOOP_1
 // EXIT
 
 GAME_LOOP_1:
-    INPUT
-    MOVE MARIO
-    PLACE MARIO ARRAY IN VRAM
-    CLEAR SCREEN
+    // INPUT
+    INPUT R[0]
+
+    // put bits into seperate slots
+    SHT R[0] R[24000] 0  // W
+    SHT R[0] R[24001] 1  // A
+    SHT R[0] R[24002] 2  // S
+    SHT R[0] R[24003] 3  // D
+    SHT R[0] R[24004] 4
+    SHT R[0] R[24005] 5
+    SHT R[0] R[24006] 6
+    SHT R[0] R[24007] 7
+
+    // game logic
+    // CMP R[24000] 0
+    // CALL SCREEN_FILL_RED
+    // CMP R[24007] 0  // exit game if esc
+    // EXIT
+
+    LD SPRITE_SMB_MARIO_SMALL_STAND_RIGHT_ALPHA0 0 0 32 32
+    CLEAR
     BLIT
-    GOTO LOOP
+
+    // add a clock for 60fps
+
+    // LD R[127999] 0
+    // GAME_LOOP_1_CLOCK:
+    // 	ADD R[127999] 1
+    // 	CMP R[127999] 900000
+
+    // 60 fps
+    CALL WAIT_N_SECONDS
+
+    GOTO GAME_LOOP_1
 EXIT
