@@ -148,14 +148,16 @@ These variables only work with respect to the `LD` opcode and some of the uses a
 | ffff   | quit program      | EXIT         |       
 
 
-#### Slot Dedication Reference Table
+#### Slot Dedication Reference Table - WIP
+
+WIP as Resolution is going to be 160X144 to match Original Gameboy Res
 
 | Indices in RAM  | Dedication |
 | ------------- |----------------|
 | 0-4095  | Function Inputs*  |
 | 4096:4099  | Pointers for Indices (U,V,Y,Z resp)  |
 | 4100    | Return slot for function outputs |
-| 4101:19200 | Indices for VRAM** |
+| 4101:23301 | Indices for VRAM** |
 
 * Functions takes a maximum of 16 inputs from R[0:15]
-** Liable to change if screen display changes (currently 160X120)
+** VRAM_START_IDX + (SCREEN_WIDTH * SCREEN_HEIGHT): Liable to change if screen display changes (currently 160X120)

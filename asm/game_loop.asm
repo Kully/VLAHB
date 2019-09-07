@@ -1,29 +1,38 @@
+// CALL STD_GET_LAST_VRAM_INDEX
+// EXIT
+
 // store sprite X and Y values
-LD R[220] 20  // X
-LD R[221] 50  // Y 
+// LD R[220] 20  // X
+// LD R[221] 50  // Y 
+
+LD R[4100] 0X00FF00FF
+LD R[4096] 4101
+LD R[4097] 23300
+LD R[U:V] 0XFF0000FF
+BLIT
 
 
 GAME_LOOP_1:
     INPUT R[0]  // INPUT
 
     // put bits into seperate slots
-    SHT R[0] R[24000] 0  // W
-    SHT R[0] R[24001] 1  // A
-    SHT R[0] R[24002] 2  // S
-    SHT R[0] R[24003] 3  // D
+    SHT R[0] R[24000] 0  // UP
+    SHT R[0] R[24001] 1  // RIGHT
+    SHT R[0] R[24002] 2  // DOWN
+    SHT R[0] R[24003] 3  // RIGHT
     SHT R[0] R[24004] 4  // H
     SHT R[0] R[24005] 5  // J
     SHT R[0] R[24006] 6  // K
-    SHT R[0] R[24007] 7  // L
+    SHT R[0] R[24007] 7  // ESC
 
-    // EXIT
-    // LD R[24003] 1
-
-    // move mario right if you press W
-    CMP R[24004] 0
+    CMP R[24000] 0
+    CALL STD_SCREEN_FILL_GREEN
+    CMP R[24001] 0
+    CALL STD_SCREEN_FILL_BLUE
+    CMP R[24007] 0  // ESC exits the VM
     EXIT
 
-    CLEAR
+    // CLEAR
     BLIT
 
     // clock tick

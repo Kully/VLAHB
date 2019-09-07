@@ -12,7 +12,7 @@
 #define RAM_SLOTS 128000
 #define STACK_FRAME_SIZE 128
 #define STACK_MAX_SIZE 32
-#define VRAM_FIRST_INDEX 4100
+#define VRAM_FIRST_INDEX 4101
 #define MAX_RAM_VALUE UINT_MAX
 #define DEBUG 1
 
@@ -127,15 +127,7 @@ int main(int argc, char* argv[])
         printf("    1: %u\n", ram[1]);
         printf("    2: %u\n", ram[2]);
         printf("    3: %u\n", ram[3]);
-        printf("\n");
-        printf("    24000: %u\n", ram[24000]);
-        printf("    24001: %u\n", ram[24001]);
-        printf("    24002: %u\n", ram[24002]);
-        printf("    24003: %u\n", ram[24003]);
-        printf("    24004: %u\n", ram[24004]);
-        printf("    24005: %u\n", ram[24005]);
-        printf("    24006: %u\n", ram[24006]);
-        printf("    24007: %u\n", ram[24007]);
+        printf("    4100: %u\n", ram[4100]);
         printf("\n\n");
 #endif
         pc += 2;
@@ -528,14 +520,14 @@ int main(int argc, char* argv[])
                 SDL_PumpEvents();
                 const uint8_t* key = SDL_GetKeyboardState(NULL);
                 uint32_t word = 0x0;
-                if(key[SDL_SCANCODE_W]) word |= (1 << 0);
-                if(key[SDL_SCANCODE_A]) word |= (1 << 1);
-                if(key[SDL_SCANCODE_S]) word |= (1 << 2);
-                if(key[SDL_SCANCODE_D]) word |= (1 << 3);
+                if(key[SDL_SCANCODE_UP]) word |= (1 << 0);
+                if(key[SDL_SCANCODE_LEFT]) word |= (1 << 1);
+                if(key[SDL_SCANCODE_DOWN]) word |= (1 << 2);
+                if(key[SDL_SCANCODE_RIGHT]) word |= (1 << 3);
                 if(key[SDL_SCANCODE_H]) word |= (1 << 4);
                 if(key[SDL_SCANCODE_J]) word |= (1 << 5);
                 if(key[SDL_SCANCODE_K]) word |= (1 << 6);
-                if(key[SDL_SCANCODE_L]) word |= (1 << 7);
+                if(key[SDL_SCANCODE_ESCAPE]) word |= (1 << 7);
                 ram[word0_first_half] = word;
                 break;
             }
