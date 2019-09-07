@@ -1,3 +1,21 @@
+CALL STD_FILL_VRAM_WITH_RAND_VALUES
+EXIT
+
+STD_FILL_VRAM_WITH_RAND_VALUES:
+    // U -> VRAM idx
+    RAND R[4099] 
+    MUL R[4099] 0XFFFFFFFE
+    LD R[U] R[4099]  // load pixel
+
+    ADD R[4096] 1  // incr VRAM idx
+
+    BLIT  // draw
+
+    GTE R[4096] 23301 // 23301 needs to change if screen res is changing
+    GOTO STD_FILL_VRAM_WITH_RAND_VALUES
+    RETURN
+EXIT
+
 // store sprite X and Y values
 LD R[220] 20  // X
 LD R[221] 50  // Y 
@@ -54,7 +72,7 @@ WAIT_N_SECONDS:
 //  CALL STD_SCREEN_FILL_RED
     
 //  CALL WAIT_N_SECONDS
-//  CALL STD_STD_SCREEN_FILL_RED
+//  CALL STD_SCREEN_FILL_RED
 
 //  GOTO MAIN_MAIN_LOOP
 

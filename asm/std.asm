@@ -170,22 +170,6 @@ STD_DRAW_LINE_FROM_X_Y_DOWN:
 
 
 
-
-STD_FILL_VRAM_WITH_RAND_VALUES:
-	// U -> VRAM idx
-	RAND R[4099] 
-	MUL R[4099] 0XFFFFFFFE
-	LD R[U] R[4099]  // load pixel
-
-	ADD R[4096] 1  // incr VRAM idx
-
-	BLIT  // draw
-
-	GTE R[4096] 23301 // 23301 needs to change if screen res is changing
-	GOTO STD_FILL_VRAM_WITH_RAND_VALUES
-	RETURN
-
-
 // Here I use RAM slot 512 as the return register.
 // We should agree on a proper return register.
 

@@ -87,6 +87,7 @@ void convert_endianess(void)
 
 int main(int argc, char* argv[])
 {
+    srand(time(NULL));
     if(argc != 2)
     {
         puts("./a.out file_r.bin");
@@ -122,7 +123,7 @@ int main(int argc, char* argv[])
         printf("sp: %i\n", sp);
         printf("stack[0,1,2]: [%i,%i,%i]\n", stack[0],stack[1],stack[2]);
         printf("ram\n");
-        printf("    0: 0x%08X\n", ram[0]);
+        printf("    0: %u\n", ram[0]);
         printf("    1: %u\n", ram[1]);
         printf("    2: %u\n", ram[2]);
         printf("    3: %u\n", ram[3]);
