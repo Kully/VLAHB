@@ -98,8 +98,8 @@ int main(int argc, char* argv[])
     const int yres = 120;
     const int resize = 3;
 
-    SDL_Window* window = SDL_CreateWindow("VLAB VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, xres, yres, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    SDL_SetWindowSize(window, xres * resize, yres * resize);
+    SDL_Window* window = SDL_CreateWindow("vlahb vm", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, xres, yres, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
+    SDL_SetWindowSize(window, xres * resize, yres * resize);    
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, xres, yres);
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-filename="super_mario_world_gif"
+filename="game_loop"
 
 # remove -fsanitize=address to run much faster
 python3 asm.py $filename.asm
