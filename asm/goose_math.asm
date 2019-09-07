@@ -4,30 +4,30 @@ GOTO MAIN
 // {
 //   var a = 10
 //   var b = 5
-//   var c = MATH_ADD(a, b)
-//   var d = MATH_SUB(a, b)
-//   var e = MATH_MUL(a, b)
-//   var f = MATH_DIV(a, b)
-//   var g = MATH_LONG_WINDED(a, b)
+//   var c = STD_MATH_ADD(a, b)
+//   var d = STD_MATH_SUB(a, b)
+//   var e = STD_MATH_MUL(a, b)
+//   var f = STD_MATH_DIV(a, b)
+//   var g = STD_MATH_LONG_WINDED(a, b)
 // }
 MAIN:
     LD R[0] 10
 
     LD R[1] 5
 
-    CALL MATH_ADD
+    CALL STD_MATH_ADD
     LD R[2] R[4100]
 
-    CALL MATH_SUB
+    CALL STD_MATH_SUB
     LD R[3] R[4100]
 
-    CALL MATH_MUL
+    CALL STD_MATH_MUL
     LD R[4] R[4100]
 
-    CALL MATH_DIV
+    CALL STD_MATH_DIV
     LD R[5] R[4100]
 
-    CALL MATH_LONG_WINDED
+    CALL STD_MATH_LONG_WINDED
     LD R[6] R[4100]
 
     EXIT

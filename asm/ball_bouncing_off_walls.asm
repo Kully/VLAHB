@@ -51,7 +51,7 @@ BALL_BOUNCING_OFF_WALLS_MAIN:
 	// ****************
 	LD R[0] R[65001]
 	LD R[1] R[65002]
-	CALL VRAM_INDEX_FROM_X_Y
+	CALL STD_VRAM_INDEX_FROM_X_Y
 
 	LD R[4099] R[4100] // Z -> vram_index
 

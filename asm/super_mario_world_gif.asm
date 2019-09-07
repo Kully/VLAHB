@@ -1,4 +1,4 @@
-CALL SCREEN_FILL_GREY
+CALL STD_SCREEN_FILL_GREY
 
 // load x and y for sprite
 LD R[220] 60
