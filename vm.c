@@ -14,7 +14,7 @@
 #define STACK_MAX_SIZE 32
 #define VRAM_FIRST_INDEX 4101
 #define MAX_RAM_VALUE UINT_MAX
-#define DEBUG 1
+#define DEBUG 0
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
@@ -94,17 +94,20 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-    const int xres = 160;  // new res 800
-    const int yres = 120;  // new res 640
-    SDL_Window* window = SDL_CreateWindow("VLAB VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, xres, yres, SDL_WINDOW_SHOWN);
+    const int xres = 160;
+    const int yres = 120;
+    const int resize = 3;
+
+    SDL_Window* window = SDL_CreateWindow("VLAB VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, xres, yres, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    SDL_SetWindowSize(window, xres * resize, yres * resize);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, xres, yres);
+
     FILE* fp = fopen(argv[1], "rb");
     fread(rom, sizeof(uint32_t), ROM_SLOTS, fp);
     convert_endianess();
     bool done = false;
 
-    // set program counter
     int pc = init_pc();
 
     while(!done)
@@ -113,7 +116,6 @@ int main(int argc, char* argv[])
         const uint32_t word1 = rom[pc + 1];
         const uint16_t word0_first_half = (word0 >> 16) & 0xFFFF;
         const uint16_t word0_second_half = (word0 >> 0) & 0xFFFF;
-
         const uint16_t word1_first_half = (word1 >> 16) & 0xFFFF;
         const uint16_t word1_second_half = (word1 >> 0) & 0xFFFF;
 #if DEBUG == 1
