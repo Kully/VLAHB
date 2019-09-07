@@ -526,7 +526,7 @@ int main(int argc, char* argv[])
                 if(key[SDL_SCANCODE_RIGHT]) word |= (1 << 3);
                 if(key[SDL_SCANCODE_H]) word |= (1 << 4);
                 if(key[SDL_SCANCODE_J]) word |= (1 << 5);
-                if(key[SDL_SCANCODE_K]) word |= (1 << 6);
+                if(key[SDL_SCANCODE_END]) word |= (1 << 6);
                 if(key[SDL_SCANCODE_ESCAPE]) word |= (1 << 7);
                 ram[word0_first_half] = word;
                 break;
