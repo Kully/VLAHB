@@ -8,7 +8,7 @@
 // If you want to load MY_SPRITE to position (3,7)
 // then you would write
 //
-// LD MY_SPRITE 3 7 16 16
+// LD MY_SPRITE R[U] R[V] 16 16
 //
 // ***********************************************
 // ***********************************************

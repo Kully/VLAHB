@@ -14,7 +14,7 @@
 #define STACK_MAX_SIZE 32
 #define VRAM_FIRST_INDEX 4100
 #define MAX_RAM_VALUE UINT_MAX
-#define DEBUG 0
+#define DEBUG 1
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
@@ -122,10 +122,19 @@ int main(int argc, char* argv[])
         printf("sp: %i\n", sp);
         printf("stack[0,1,2]: [%i,%i,%i]\n", stack[0],stack[1],stack[2]);
         printf("ram\n");
-        printf("    0: %u\n", ram[0]);
+        printf("    0: 0x%08X\n", ram[0]);
         printf("    1: %u\n", ram[1]);
         printf("    2: %u\n", ram[2]);
         printf("    3: %u\n", ram[3]);
+        printf("\n");
+        printf("    24000: %u\n", ram[24000]);
+        printf("    24001: %u\n", ram[24001]);
+        printf("    24002: %u\n", ram[24002]);
+        printf("    24003: %u\n", ram[24003]);
+        printf("    24004: %u\n", ram[24004]);
+        printf("    24005: %u\n", ram[24005]);
+        printf("    24006: %u\n", ram[24006]);
+        printf("    24007: %u\n", ram[24007]);
         printf("\n\n");
 #endif
         pc += 2;
@@ -339,7 +348,7 @@ int main(int argc, char* argv[])
                 ram[word1] = random_bit;
                 break;
             }
-            case 0x0025:  // ARRAY
+            case 0x0025:  // LD MARIO R[X] R[Y] W H //
             {
                 const uint16_t label_idx = word0_first_half;
 
@@ -348,7 +357,7 @@ int main(int argc, char* argv[])
                 const uint16_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
                 const uint16_t height_sprite = (rom[pc - 1]) & 0xFF;
 
-                const uint16_t vram_idx = 4101 + x_sprite + 160*y_sprite;
+                const uint16_t vram_idx = 4101 + ram[x_sprite] + 160*ram[y_sprite];
 
                 for(int h = 0; h < height_sprite; h++)
                 {
@@ -525,10 +534,7 @@ int main(int argc, char* argv[])
                 if(key[SDL_SCANCODE_H]) word |= (1 << 4);
                 if(key[SDL_SCANCODE_J]) word |= (1 << 5);
                 if(key[SDL_SCANCODE_K]) word |= (1 << 6);
-                // if(key[SDL_SCANCODE_L]) word |= (1 << 7);
-
-                // use esc to exit the game
-                if(key[SDL_SCANCODE_ESCAPE]) word |= (1 << 7);
+                if(key[SDL_SCANCODE_L]) word |= (1 << 7);
                 ram[word0_first_half] = word;
                 break;
             }

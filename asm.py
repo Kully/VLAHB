@@ -166,7 +166,8 @@ def validate_and_make_hexfile(lines):
                 if len(args) < 2:
                     raise Exception(util.LD_EXCEPTION_MSG)
 
-                # LD MARIO X Y W H
+                # LD MARIO R[X] R[Y] W H
+                # X,Y must be <= 255
                 if re.match(util.REGEX_ARRAY_LD, ' '.join(args)):
                     opcode_val = util.op_codes_dict['ARRAY']
 
