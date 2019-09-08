@@ -15,7 +15,7 @@
 #define STACK_MAX_SIZE 32
 #define VRAM_FIRST_INDEX 4101
 #define MAX_RAM_VALUE UINT_MAX
-#define DEBUG 0
+#define DEBUG 1
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];

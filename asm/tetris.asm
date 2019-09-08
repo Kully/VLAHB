@@ -13,8 +13,9 @@ LD R[30000] 100  // init X pos
 LD R[30001] 0  // init Y pos
 LD R[30002] 3  // width from GIMP
 LD R[30003] 2  // height from GIMP
-LD R[30004] 21  // width in pixels
-LD R[30005] 14  // height in pixels
+// automate these!!
+LD R[30004] 24  // width in pixels
+LD R[30005] 16  // height in pixels
 
 // slots that store if key is held
 LD R[40000] 0  // UP    held
@@ -23,6 +24,10 @@ LD R[40002] 0  // DOWN  held
 LD R[40003] 0  // RIGHT held
 LD R[40004] 0  // Z     held
 LD R[40005] 0  // X     held
+
+// R[U]: pointer to active piece function, say
+
+// R[50000:] - boundary information
 
 GOTO TETRIS_MAIN_LOOP
 
@@ -54,13 +59,13 @@ TETRIS_MAIN_LOOP:
     CMP R[28003] 0
     ADD R[30000] 1  // move piece right
 
-    // move piece - Y direction - DISABLED!!!
-    // CMP R[28000] 0
-    // SUB R[30001] 1  // move piece up
-    // CMP R[28002] 0
-    // ADD R[30001] 1  // move piece down
+    // rotate piece - Z
+    // CMP R[28004] 0
+    // CALL ROTATE_ACTIVE_PIECE
 
-    CALL STD_SCREEN_FILL_BLACK
+    
+    CALL STD_SCREEN_FILL_BLACK  // clear screen
+    EXIT
 
     // *********************
     // PLACE SPRITES IN VRAM
@@ -68,12 +73,16 @@ TETRIS_MAIN_LOOP:
     // Note: move values in high slots to slots < 255
     // so that opcode can work correctly
 
+    LD R[0] 0
+    LD R[1] 0
+    LD TETRIS_GAMEBOY_BACKGROUND R[0] R[1] 160 144
+
     LD R[240] R[30000]
     LD R[241] R[30001]
-    LD SPRITE_TETRIS_TETROMINO_S_X7_ROT0 R[240] R[241] 21 14
+    LD SPRITE_TETRIS_TETROMINO_S_ROT0_X8 R[240] R[241] 24 16
 
     BLIT  // draw to screen
-    WAIT  // 17 ms wait
+    WAIT  // wait 17 ms
 
     // increment counter
     ADD R[65535] 1
@@ -91,7 +100,6 @@ EXIT
 //  UTIL
 // ======
 
-
 FIRE_LOGIC_EVERY_N_FRAMES:
     // -----------------------------------------------
     // this function resets a counter that goes up by
@@ -99,8 +107,6 @@ FIRE_LOGIC_EVERY_N_FRAMES:
     // once it hits some number N (see the function in
     // the main loop). Triggers logic too
     // -----------------------------------------------
-
-
     LD R[65535] 0  // reset counter at R[65535] to 0
 
     // store (pieceHeight + pieceYpos) in R[45678]
@@ -110,8 +116,10 @@ FIRE_LOGIC_EVERY_N_FRAMES:
     // check if bottom of piece is lower than bottom of screen
     LT R[45678] 144
     LD R[30001] 0 // if >= 160, place piece on board
+    ADD R[30001] 1  // move active tetromino down 1 pixel
 
-    // move active tetromino down 1 pixel
-    ADD R[30001] 1
+    RETURN
 
+
+ROTATE_ACTIVE_PIECE:
     RETURN
