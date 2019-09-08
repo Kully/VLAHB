@@ -153,6 +153,7 @@ op_codes_dict = {
     'CLEAR': 'fff2',
     'INPUT': 'fff3',
     'SHT': 'fff4',
+    'WAIT': 'fff5',
     'EXIT': 'ffff',
 }
 

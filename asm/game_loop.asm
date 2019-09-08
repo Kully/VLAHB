@@ -19,26 +19,28 @@ GAME_LOOP_1:
     SHT R[0] R[28006] 6  // K
     SHT R[0] R[28007] 7  // ESC
 
-    CMP R[28000] 0
-    CALL STD_SCREEN_FILL_GREEN
-    CMP R[28001] 0
-    CALL STD_SCREEN_FILL_BLUE
-    CMP R[28002] 0
-    CALL STD_SCREEN_FILL_RED
-    CMP R[28003] 0
-    CALL STD_SCREEN_FILL_ORANGE
-    CMP R[28004] 0
-    CALL STD_SCREEN_FILL_GREY
+    // player controller
+    // CMP R[28000] 0
+    // CALL STD_SCREEN_FILL_GREEN
+    // CMP R[28001] 0
+    // CALL STD_SCREEN_FILL_BLUE
+    // CMP R[28002] 0
+    // CALL STD_SCREEN_FILL_RED
+    // CMP R[28003] 0
+    // CALL STD_SCREEN_FILL_ORANGE
+    // CMP R[28004] 0
+    // CALL STD_SCREEN_FILL_GREY
     CMP R[28007] 0  // ESC exits the VM
     EXIT
     CMP R[28006] 0  // END exits the VM
     EXIT
 
-    // CLEAR
+    // CLEAR 0XFF0000FF
+    CALL STD_SCREEN_FILL_RED
     BLIT
 
     // clock tick
-    // WAIT
+    WAIT
 
     // go to start of loop
     GOTO GAME_LOOP_1

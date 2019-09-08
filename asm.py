@@ -681,6 +681,11 @@ def validate_and_make_hexfile(lines):
                     word1_second_half = util.int_to_hex(bitshift).zfill(4)
                     word1 = word1_first_half + word1_second_half
 
+            elif opcode == 'WAIT':  # wait 1/60 sec
+                valid_opcode = True
+                opcode_val = util.op_codes_dict[opcode]
+                word0_second_half = opcode_val.zfill(4)    
+
             elif opcode == 'EXIT':
                 valid_opcode = True
                 opcode_val = util.op_codes_dict['EXIT']

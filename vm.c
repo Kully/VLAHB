@@ -549,6 +549,12 @@ int main(int argc, char* argv[])
                 ram[word0_first_half] = button;
                 break;
             }
+            case 0xfff5:  // WAIT //
+            {
+                const uint32_t wait = 17;  // true 60fps is 16.666
+                SDL_Delay(wait);
+                break;
+            }
             case 0xffff:
             {
                 done = true;
