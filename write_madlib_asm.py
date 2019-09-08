@@ -27,6 +27,6 @@ for _ in range(how_many_steps):
 script += 'EXIT\n'
 
 
-f = open('../asm/madlib_clears.asm', 'w')
+f = open('madlib_clears.asm', 'w')
 f.writelines(script)
 print(script)

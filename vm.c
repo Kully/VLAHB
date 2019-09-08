@@ -8,6 +8,7 @@
 #include <time.h>
 
 // global constants
+// biggest accesible index for RAM and ROM is 0XFFFF or 65535
 #define ROM_SLOTS 128000
 #define RAM_SLOTS 128000
 #define STACK_FRAME_SIZE 128
@@ -49,7 +50,7 @@ uint16_t letter_code_to_ram_index(uint16_t letter_code)
             return 4099;  // Z
         }
     }
-    return -1;
+    return 0;  // should never happen
 }
 
 
@@ -129,6 +130,7 @@ int main(int argc, char* argv[])
         printf("    1: %u\n", ram[1]);
         printf("    2: %u\n", ram[2]);
         printf("    3: %u\n", ram[3]);
+        printf("    240: %u\n", ram[240]);
         printf("    4100: %u\n", ram[4100]);
         printf("\n\n");
 #endif
@@ -526,8 +528,8 @@ int main(int argc, char* argv[])
                 if(key[SDL_SCANCODE_LEFT]) word |= (1 << 1);
                 if(key[SDL_SCANCODE_DOWN]) word |= (1 << 2);
                 if(key[SDL_SCANCODE_RIGHT]) word |= (1 << 3);
-                if(key[SDL_SCANCODE_H]) word |= (1 << 4);
-                if(key[SDL_SCANCODE_J]) word |= (1 << 5);
+                if(key[SDL_SCANCODE_Z]) word |= (1 << 4);
+                if(key[SDL_SCANCODE_X]) word |= (1 << 5);
                 if(key[SDL_SCANCODE_END]) word |= (1 << 6);
                 if(key[SDL_SCANCODE_ESCAPE]) word |= (1 << 7);
                 ram[word0_first_half] = word;

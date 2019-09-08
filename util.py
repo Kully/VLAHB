@@ -49,6 +49,24 @@ def rgba_tuple_to_int(r,g,b,a):
     return hex_to_int(rgba_hex)
 
 
+def rgba_tuple_to_hex(r,g,b,a):
+    if r > 255:
+        r = 255
+    if g > 255:
+        g = 255
+    if b > 255:
+        b = 255
+    if a > 255:
+        a = 255
+
+    r_hex = int_to_hex(r).zfill(2)
+    g_hex = int_to_hex(g).zfill(2)
+    b_hex = int_to_hex(b).zfill(2)
+    a_hex = int_to_hex(a).zfill(2)
+
+    return r_hex + g_hex + b_hex + a_hex
+
+
 def slow_print(msg, sleep_between_lines=0.02, sleep_after_msg=0.1,
                print_empty_line=False):
     '''only works for one line eg. strings with no \n'''

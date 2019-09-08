@@ -1,6 +1,6 @@
 #!/bin/bash
 
-filename="game_loop"
+filename="tetris"
 
 # remove -fsanitize=address to run much faster
 python3 asm.py $filename.asm
