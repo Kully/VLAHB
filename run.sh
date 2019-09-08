@@ -1,6 +1,7 @@
 #!/bin/bash
 
-filename="game_loop"
+# filename="game_loop"
+filename="madlib_clears"
 
 # remove -fsanitize=address to run much faster
 python3 asm.py $filename.asm

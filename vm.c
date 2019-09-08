@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
     }
 
     const int xres = 160;
-    const int yres = 120;
+    const int yres = 144;
     const int resize = 3;
 
     SDL_Window* window = SDL_CreateWindow("vlahb vm", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, xres, yres, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );

@@ -10,34 +10,38 @@ GAME_LOOP_1:
     INPUT R[0]  // INPUT
 
     // put bits into seperate slots
-    SHT R[0] R[24000] 0  // UP
-    SHT R[0] R[24001] 1  // RIGHT
-    SHT R[0] R[24002] 2  // DOWN
-    SHT R[0] R[24003] 3  // RIGHT
-    SHT R[0] R[24004] 4  // H
-    SHT R[0] R[24005] 5  // J
-    SHT R[0] R[24006] 6  // K
-    SHT R[0] R[24007] 7  // ESC
+    SHT R[0] R[28000] 0  // UP
+    SHT R[0] R[28001] 1  // RIGHT
+    SHT R[0] R[28002] 2  // DOWN
+    SHT R[0] R[28003] 3  // RIGHT
+    SHT R[0] R[28004] 4  // H
+    SHT R[0] R[28005] 5  // J
+    SHT R[0] R[28006] 6  // K
+    SHT R[0] R[28007] 7  // ESC
 
-    CMP R[24000] 0
+    CMP R[28000] 0
     CALL STD_SCREEN_FILL_GREEN
-    CMP R[24001] 0
+    CMP R[28001] 0
     CALL STD_SCREEN_FILL_BLUE
-    CMP R[24007] 0  // ESC exits the VM
+    CMP R[28002] 0
+    CALL STD_SCREEN_FILL_RED
+    CMP R[28003] 0
+    CALL STD_SCREEN_FILL_ORANGE
+    CMP R[28004] 0
+    CALL STD_SCREEN_FILL_GREY
+    CMP R[28007] 0  // ESC exits the VM
     EXIT
-    CMP R[24006] 0  // END exits the VM
+    CMP R[28006] 0  // END exits the VM
     EXIT
 
     // CLEAR
     BLIT
 
     // clock tick
-    // CALL WAIT_N_SECONDS
+    // WAIT
 
     // go to start of loop
     GOTO GAME_LOOP_1
-
-
 
 
 WAIT_N_SECONDS:
