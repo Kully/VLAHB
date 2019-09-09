@@ -14,8 +14,8 @@
 #define STACK_FRAME_SIZE 128
 #define STACK_MAX_SIZE 32
 #define VRAM_FIRST_INDEX 4101
-#define MAX_RAM_VALUE UINT_MAX
-#define DEBUG 1
+#define MAX_RAMVALUE UINT_MAX
+#define DEBUG 0
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
@@ -124,12 +124,16 @@ int main(int argc, char* argv[])
         printf("word1: 0x%08X\n", word1);
         printf("pc: %i\n", pc);
         printf("sp: %i\n", sp);
-        printf("stack[0,1,2]: [%i,%i,%i]\n", stack[0],stack[1],stack[2]);
+        printf("stack\n");
+        for(int w = 0; w<6; w++)
+        {
+            printf("    %u: %u\n", w, stack[w]);
+        }
         printf("ram\n");
-        printf("    0: %u\n", ram[0]);
-        printf("    1: %u\n", ram[1]);
-        printf("    2: %u\n", ram[2]);
-        printf("    3: %u\n", ram[3]);
+        for(int rrr = 0; rrr<6; rrr++)
+        {
+            printf("    %u: %u\n", rrr, ram[rrr]);
+        }
         printf("    240: %u\n", ram[240]);
         printf("    4100: %u\n", ram[4100]);
         printf("\n\n");

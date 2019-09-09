@@ -19,9 +19,10 @@ PATH_TO_IMAGES_DIR = 'imgs_and_gifs/'
 
 
 list_of_images_and_gifs = [
-    'SPRITE_TETRIS_TETROMINO_S_ROT0.jpg',
-    'SPRITE_TETRIS_TETROMINO_Z_ROT0.jpg',
-    'SPRITE_TETRIS_TETROMINO_Z_ROT1.jpg',
+    # 'SPRITE_TETRIS_TETROMINO_S_ROT0.jpg',
+    # 'SPRITE_TETRIS_TETROMINO_Z_ROT0.jpg',
+    # 'SPRITE_TETRIS_TETROMINO_Z_ROT1.jpg',
+    "SPRITE_TETRIS_TETROMINO_O.jpg",
     # 'tetris_layout.jpg',
 ]
 
@@ -94,4 +95,4 @@ def convert_list_of_images_and_gifs_to_sprites_in_output_asm(imgScale):
     file.close()
 
 if __name__ == "__main__":
-    convert_list_of_images_and_gifs_to_sprites_in_output_asm(imgScale=8)
+    convert_list_of_images_and_gifs_to_sprites_in_output_asm(imgScale=1)

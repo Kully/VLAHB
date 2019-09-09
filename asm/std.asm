@@ -255,7 +255,7 @@ STD_MATH_FLOOR_DIV:
     SUB R[0] R[1]
     GOTO STD_MATH_FLOOR_DIV
 
-// Python: R[0] mod R[1]
+// Python: R[0] % R[1]
 STD_MATH_DIV_REMAINDER:
     CALL STD_MATH_FLOOR_DIV
     LD R[3] R[1]
