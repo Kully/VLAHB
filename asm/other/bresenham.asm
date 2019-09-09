@@ -17,7 +17,7 @@ EXIT
 // R[4] color
 DRAW_LINE:
 	// store (X0,Y0) in VRAM
-	CALL VRAM_INDEX_FROM_X_Y
+	CALL STD_VRAM_INDEX_FROM_X_Y
 	LD R[4096] R[4100]
 	LD R[U] R[4]
 	BLIT
@@ -25,14 +25,14 @@ DRAW_LINE:
 	// store abs(X0-X1) in R[5]
 	POP
 	LD R[1] R[2]
-	CALL MATH_ABS_DIFF
+	CALL STD_MATH_ABS_DIFF
 	LD R[5] R[4100]
 
 	POP
 
 	// store abs(Y0-Y1) in R[6]
 	LD R[0] R[3]
-	CALL MATH_ABS_DIFF
+	CALL STD_MATH_ABS_DIFF
 	LD R[6] R[4100]
 
 	POP

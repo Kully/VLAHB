@@ -1,12 +1,8 @@
-
-// clear screen
-CALL SCREEN_FILL_RED
-
 // Y points to color
 LD R[4098] 65000
 
 // init variables
-LD R[65000] 0X00FF00FF  // ball color
+LD R[65000] 0X30FA00FF  // ball color
 LD R[65001] 1  // ball X coord
 LD R[65002] 1  // ball Y coord
 
@@ -55,18 +51,21 @@ BALL_BOUNCING_OFF_WALLS_MAIN:
 	// ****************
 	LD R[0] R[65001]
 	LD R[1] R[65002]
-	CALL VRAM_INDEX_FROM_X_Y
+	CALL STD_VRAM_INDEX_FROM_X_Y
 
 	LD R[4099] R[4100] // Z -> vram_index
 
 	// ****
 	// draw
 	// ****
-	CLEAR
-	// ADD R[65000] 255
-	LD R[Z] R[Y] // load color in display
-	BLIT
 
+	LD R[4096] 4100
+	LD R[4097] 23300
+	LD R[U:V] 0X000000FF
+
+	LD R[Z] R[Y] // load color in display
+
+	BLIT
 
 	GOTO BALL_BOUNCING_OFF_WALLS_MAIN
 

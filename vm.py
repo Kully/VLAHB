@@ -116,25 +116,25 @@ def ensure_stacksize_under_max():
 
 
 def validate_hex_file(file_hex, remove_empty_lines=True, sleeptime=0.1):
-    util.slow_print('Validating hex file...\n')
-    time.sleep(0.4)
+    # util.slow_print('Validating hex file...\n')
+    # time.sleep(0.4)
     lines = util.return_lines_from_file(file_hex)
 
-    sys.stdout.write('\r    (  )  all lines in file.hex are 8 chars long')
+    # sys.stdout.write('\r    (  )  all lines in file.hex are 8 chars long')
     assert all(len(line) == 8 for line in lines), util.CHARS_PER_LINE_ERROR_MSG
-    sys.stdout.flush()
-    time.sleep(sleeptime)
-    sys.stdout.write('\r    (ok) \n')
-    time.sleep(sleeptime*2)
+    # sys.stdout.flush()
+    # time.sleep(sleeptime)
+    # sys.stdout.write('\r    (ok) \n')
+    # time.sleep(sleeptime*2)
 
-    sys.stdout.write('\r    (  )  all chars are valid hexadecimal')
+    # sys.stdout.write('\r    (  )  all chars are valid hexadecimal')
     assert all(char in string.hexdigits + 'x' for char in "".join(lines)), util.VALID_HEX_VALUES_ERROR_MSG
-    sys.stdout.flush()
-    time.sleep(sleeptime)
-    sys.stdout.write('\r    (ok) \n')
-    time.sleep(sleeptime*2)
+    # sys.stdout.flush()
+    # time.sleep(sleeptime)
+    # sys.stdout.write('\r    (ok) \n')
+    # time.sleep(sleeptime*2)
 
-    util.slow_print('Validation: PASS!', print_empty_line=True)
+    # util.slow_print('Validation: PASS!', print_empty_line=True)
     time.sleep(0.4)
 
 
@@ -166,15 +166,15 @@ def exec(lines_from_file_hex):
             # restore stdout function
             sys.stdout = sys.__stdout__
 
-            util.slow_print('PC out of range...exiting vm',
-                            0.1, print_empty_line=True)
+            # util.slow_print('PC out of range...exiting vm',
+            #                0.1, print_empty_line=True)
             break
 
-        print('PC: %r'%PC)
-        print('')
-        print('    %s'%ROM[PC])
-        print('    %s'%ROM[PC+1])
-        print('')
+        # print('PC: %r'%PC)
+        print("pc: %s" %PC)
+        print("sp: %s" %len(STACK))
+        print('word0: 0x%s'%ROM[PC].upper())
+        print('word1: 0x%s\n'%ROM[PC+1].upper())
 
         # convert all hex to int
         # TODO - lots of special cases for reading word0 and word1
@@ -198,7 +198,7 @@ def exec(lines_from_file_hex):
             PC = word1
             b = time.time()
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    GOTO: PC -> %s' %word1)
+            # print('    GOTO: PC -> %s' %word1)
 
 
         # DIRECT LOAD == 0002
@@ -208,7 +208,7 @@ def exec(lines_from_file_hex):
             RAM[word0_first_half] = word1
             b = time.time()
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LD R[%s] %s' %(word0_first_half, word1))
+            # print('    LD R[%s] %s' %(word0_first_half, word1))
 
         # DIRECT ADD == 0003
         elif word0_second_half == 3:
@@ -218,7 +218,7 @@ def exec(lines_from_file_hex):
             manage_overflow_underflow(word0_first_half)
             b = time.time()
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    ADD R[%s] %s' %(word0_first_half, word1))
+            # print('    ADD R[%s] %s' %(word0_first_half, word1))
 
         # DIRECT SUBTRACT == 0004
         elif word0_second_half == 4:
@@ -228,7 +228,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    SUB R[%s] %s' %(word0_first_half, word1))            
+            # print('    SUB R[%s] %s' %(word0_first_half, word1))            
 
         # DIRECT MULTIPLY == 0005
         elif word0_second_half == 5:
@@ -238,7 +238,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    MUL R[%s] %s' %(word0_first_half, word1))
+            # print('    MUL R[%s] %s' %(word0_first_half, word1))
 
         # DIRECT DIVIDE == 0006
         elif word0_second_half == 6:
@@ -248,7 +248,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    DIV R[%s] %s' %(word0_first_half, word1))
+            # print('    DIV R[%s] %s' %(word0_first_half, word1))
             
 
         # REGISTER TO REGISTER LOAD == 0007
@@ -258,7 +258,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LD R[%s] R[%s]' %(word0_first_half, word1))
+            # print('    LD R[%s] R[%s]' %(word0_first_half, word1))
 
         # REGISTER TO REGISTER ADD == 0008
         elif word0_second_half == 8:
@@ -268,7 +268,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    ADD R[%s] R[%s]' %(word0_first_half, word1))
+            # print('    ADD R[%s] R[%s]' %(word0_first_half, word1))
             
 
         # REGISTER TO REGISTER SUBTRACT == 0009
@@ -279,7 +279,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    SUB R[%s] R[%s]' %(word0_first_half, word1))
+            # print('    SUB R[%s] R[%s]' %(word0_first_half, word1))
             
 
         # REGISTER TO REGISTER MULTIPLY == 000a
@@ -290,7 +290,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    MUL R[%s] R[%s]' %(word0_first_half, word1))
+            # print('    MUL R[%s] R[%s]' %(word0_first_half, word1))
 
         # REGISTER TO REGISTER DIVIDE == 000b
         elif word0_second_half == 11:
@@ -300,8 +300,8 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    DIV R[%s] R[%s]' %(word0_first_half, word1))
-            
+            # print('    DIV R[%s] R[%s]' %(word0_first_half, word1))
+
 
         # COMPARE REGISTER TO DIRECT  == 000c
         elif word0_second_half == 12:
@@ -313,7 +313,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    CMP R[%s] %s -> %s' %(word0_first_half, word1, cmp_true))
+            # print('    CMP R[%s] %s -> %s' %(word0_first_half, word1, cmp_true))
 
         # COMPARE REGISTER TO REGISTER == 000d
         elif word0_second_half == 13:
@@ -325,7 +325,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    CMP R[%s] R[%s] -> %s' %(word0_first_half, word1, cmp_true))
+            # print('    CMP R[%s] R[%s] -> %s' %(word0_first_half, word1, cmp_true))
 
         # CALL == 000e
         elif word0_second_half == 14:
@@ -341,7 +341,7 @@ def exec(lines_from_file_hex):
             fff = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, fff-eee)
-            print('    CALL: Push %s to the Stack: PC -> %s' %(word1, word1))
+            # print('    CALL: Push %s to the Stack: PC -> %s' %(word1, word1))
 
         # RETURN == 000f
         elif word0_second_half == 15:
@@ -357,7 +357,7 @@ def exec(lines_from_file_hex):
             hhh = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, hhh-ggg)
-            print('    RETURN: Pop %s from the Stack: PC -> %s' %(PC, PC))
+            # print('    RETURN: Pop %s from the Stack: PC -> %s' %(PC, PC))
 
         # POP == fff0
         elif word0_second_half == 65520:
@@ -373,7 +373,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    POP: Pop %s from the Stack' %(PC))
+            # print('    POP: Pop %s from the Stack' %(PC))
 
         # PUSH == fff1
         elif word0_second_half == 65521:
@@ -388,7 +388,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    PUSH: Push %s to the Stack' %(word1))
+            # print('    PUSH: Push %s to the Stack' %(word1))
 
         # CLEAR == fff2
         elif word0_second_half == 65522:
@@ -398,7 +398,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    CLEAR %s' %util.int_to_hex(word1))
+            # print('    CLEAR %s' %util.int_to_hex(word1))
 
 
         # STRICT LESS THAN REGISTER TO DIRECT == 0010
@@ -411,7 +411,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
+            # print('    LT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # STRICT LESS THAN REGISTER TO REGISTER == 0011
         elif word0_second_half == 17:
@@ -423,7 +423,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
+            # print('    LT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
         # LESS THAN OR EQUAL REGISTER TO DIRECT == 0012
         elif word0_second_half == 18:
@@ -435,7 +435,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
+            # print('    LTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # LESS THAN OR EQUAL REGISTER TO REGISTER == 0013
         elif word0_second_half == 19:
@@ -447,7 +447,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
+            # print('    LTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
         # STRICT GREATER THAN REGISTER TO DIRECT == 0014
         elif word0_second_half == 20:
@@ -459,7 +459,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    GT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
+            # print('    GT R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # STRICT GREATER THAN REGISTER TO REGISTER == 0015
         elif word0_second_half == 21:
@@ -471,7 +471,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    GT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
+            # print('    GT R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
         # GREATER THAN OR EQUAL REGISTER TO DIRECT == 0016
         elif word0_second_half == 22:
@@ -483,7 +483,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    GTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
+            # print('    GTE R[%s] %s -> %s' %(word0_first_half, word1, is_this_true))
 
         # GREATER THAN OR EQUAL REGISTER TO REGISTER == 0017
         elif word0_second_half == 23:
@@ -495,21 +495,21 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
+            # print('    GTE R[%s] R[%s] -> %s' %(word0_first_half, word1, is_this_true))
 
 
         # BLIT == 0018
         elif word0_second_half == 24:
             a = time.time()
             surf = pygame.Surface(
-                (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS), pygame.SRCALPHA
+                (WIDTH_DISPLAY_PIXELS, HEIGHT_DISPLAY_PIXELS)
                 )
             surf.lock()
             for i in range(WIDTH_DISPLAY_PIXELS * HEIGHT_DISPLAY_PIXELS):
                 color = RAM[VRAM_FIRST_INDEX + i]
 
                 # check if color is blank
-                if (color >> 0 & 0xFF) != 0:
+                if (color & 0xFF) == 0xFF:
                     rgba_tuple = (
                         (color >> 24) & 0xFF,
                         (color >> 16) & 0xFF,
@@ -517,7 +517,8 @@ def exec(lines_from_file_hex):
                         (color >>  0) & 0xFF
                     )
                 else:
-                    rgba_tuple = (0,255,255,0)
+                    rgba_tuple = (0,0,0,255)  # replace with alpha pixels
+
                 x = int(i % WIDTH_DISPLAY_PIXELS)
                 y = int(i / WIDTH_DISPLAY_PIXELS)
                 surf.set_at((x, y), rgba_tuple)
@@ -535,7 +536,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    BLIT')
+            # print('    BLIT')
 
         # DIRECT SQRT == 0019
         elif word0_second_half == 25:
@@ -544,7 +545,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    SQRT R[%s] %s' %(word0_first_half, word1))
+            # print('    SQRT R[%s] %s' %(word0_first_half, word1))
 
         # REGISTER TO REGISTER SQRT == 001a
         elif word0_second_half == 26:
@@ -553,7 +554,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    SQRT R[%s] R[%s]' %(word0_first_half, word1))
+            # print('    SQRT R[%s] R[%s]' %(word0_first_half, word1))
 
         # DIRECT SIN == 001b
         elif word0_second_half == 27:
@@ -562,7 +563,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    SIN R[%s] %s' %(word0_first_half, word1))
+            # print('    SIN R[%s] %s' %(word0_first_half, word1))
 
         # REGISTER TO REGISTER SIN == 001c
         elif word0_second_half == 28:
@@ -571,7 +572,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    SIN R[%s] R[%s]' %(word0_first_half, word1))
+            # print('    SIN R[%s] R[%s]' %(word0_first_half, word1))
 
         # DIRECT COS == 001d
         elif word0_second_half == 29:
@@ -580,7 +581,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    COS R[%s] %s' %(word0_first_half, word1))
+            # print('    COS R[%s] %s' %(word0_first_half, word1))
 
         # REGISTER TO REGISTER COS == 001e
         elif word0_second_half == 30:
@@ -589,7 +590,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    COS R[%s] R[%s]' %(word0_first_half, word1))
+            # print('    COS R[%s] R[%s]' %(word0_first_half, word1))
 
         # LD R[i:j] k == 001f
         elif word0_second_half == 31:
@@ -605,7 +606,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LD R[%s:%s] %s' %(i, j, k))
+            # print('    LD R[%s:%s] %s' %(i, j, k))
 
         # LD R[i:j] R[k] == 0020
         elif word0_second_half == 32:
@@ -621,7 +622,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LD R[%s:%s] R[%s]' %(i, j, k))
+            # print('    LD R[%s:%s] R[%s]' %(i, j, k))
 
         # LD R[i:j] R[k:l] == 0021
         elif word0_second_half == 33:
@@ -636,7 +637,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LD R[%s:%s] R[%s:%s]' %(i, i+ram_span, k, k+ram_span))
+            # print('    LD R[%s:%s] R[%s:%s]' %(i, i+ram_span, k, k+ram_span))
 
         # FLOOR == 0022
         elif word0_second_half == 34:
@@ -645,7 +646,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    FLOOR R[%s]' %word1)
+            # print('    FLOOR R[%s]' %word1)
 
         # CEIL == 0023
         elif word0_second_half == 35:
@@ -654,7 +655,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    CEIL R[%s]' %word1)
+            # print('    CEIL R[%s]' %word1)
 
         # RAND == 0024
         elif word0_second_half == 36:
@@ -663,7 +664,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    RAND R[%s]' %word1)
+            # print('    RAND R[%s]' %word1)
 
         #  ARRAY == 0025
         elif word0_second_half == 37:
@@ -688,9 +689,9 @@ def exec(lines_from_file_hex):
 
             b = time.time()
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LD SPRITE %s %s %s %s' %(
-                x_sprite, y_sprite, width_sprite, height_sprite)
-            )
+            # print('    LD SPRITE %s %s %s %s' %(
+            #     x_sprite, y_sprite, width_sprite, height_sprite)
+            # )
 
 
         # LD R[V] R[Z] == 0100
@@ -713,10 +714,10 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LD R[%s] R[%s]' %(
-                RAM[ram_index_i],
-                RAM[ram_index_j],
-            ))
+            # print('    LD R[%s] R[%s]' %(
+            #     RAM[ram_index_i],
+            #     RAM[ram_index_j],
+            # ))
 
         # LD R[V:U] R[Z] == 0101
         # 
@@ -742,11 +743,11 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LD R[%s:%s] R[%s]' %(
-                RAM[ram_index_i],
-                RAM[ram_index_j],
-                RAM[ram_index_k],
-            ))
+            # print('    LD R[%s:%s] R[%s]' %(
+            #     RAM[ram_index_i],
+            #     RAM[ram_index_j],
+            #     RAM[ram_index_k],
+            # ))
 
         # LD R[U:V] R[Y:Z] == 0102
         # 
@@ -774,12 +775,12 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LD R[%s:%s] R[%s:%s]' %(
-                RAM[ram_index_i],
-                RAM[ram_index_j],
-                RAM[ram_index_k],
-                RAM[ram_index_l],
-            ))
+            # print('    LD R[%s:%s] R[%s:%s]' %(
+            #     RAM[ram_index_i],
+            #     RAM[ram_index_j],
+            #     RAM[ram_index_k],
+            #     RAM[ram_index_l],
+            # ))
 
         # LD R[U:V] R[k] == 0103
         # 
@@ -802,11 +803,11 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LD R[%s:%s] R[%s]' %(
-                RAM[ram_index_i],
-                RAM[ram_index_j],
-                word1,
-            ))
+            # print('    LD R[%s:%s] R[%s]' %(
+            #     RAM[ram_index_i],
+            #     RAM[ram_index_j],
+            #     word1,
+            # ))
 
         # LD R[U] R[i] == 0104
         elif word0_second_half == 260:
@@ -822,10 +823,10 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LD R[%s] R[%s]' %(
-                RAM[ram_index_i],
-                word1,
-            ))
+            # print('    LD R[%s] R[%s]' %(
+            #     RAM[ram_index_i],
+            #     word1,
+            # ))
 
         # LD R[U] i == 0105
         elif word0_second_half == 261:
@@ -841,10 +842,10 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LD R[%s] %s' %(
-                RAM[ram_index_i],
-                word1,
-            ))
+            # print('    LD R[%s] %s' %(
+            #     RAM[ram_index_i],
+            #     word1,
+            # ))
 
         #  LD R[U:V] i == 0106
         elif word0_second_half == 262:
@@ -865,11 +866,11 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    LD R[%s:%s] %s' %(
-                RAM[ram_index_u],
-                RAM[ram_index_v],
-                word1,
-            ))
+            # print('    LD R[%s:%s] %s' %(
+            #     RAM[ram_index_u],
+            #     RAM[ram_index_v],
+            #     word1,
+            # ))
 
         #  COMPARE UV TO DIRECT == 0107
         elif word0_second_half == 263:
@@ -885,7 +886,7 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    CMP R[%s] %s -> %s' %(RAM[ram_index_u], word1, cmp_true))
+            # print('    CMP R[%s] %s -> %s' %(RAM[ram_index_u], word1, cmp_true))
 
 
         # EXIT == ffff
@@ -895,33 +896,33 @@ def exec(lines_from_file_hex):
             b = time.time()
 
             opcodes_speed_data_str += '%s,%s\n' %(word0_second_half, b-a)
-            print('    EXIT')
+            # print('    EXIT')
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 EXIT_LOOP = True
 
-        print('RAM:')
-        print('    RAM[0:6]    : %r'  %RAM[0 : 6])
-        print('    RAM[128:134]: %r'  %RAM[128 : 134])
-        print('    RAM[256:262]: %r'  %RAM[128*2 : 128*2 + 6])
-        print('    RAM[384:390]: %r'  %RAM[128*3 : 128*3 + 6])
-        print('')
-        print('    STACK:        %r' %STACK)
-        print('    RAM[4100]:    %r  # return value' %RAM[4100])
-        print('    RAM[U,V,Y,Z]: [%s, %s, %s, %s]  # stack pointers' %(
-            RAM[4096], RAM[4097], RAM[4098], RAM[4099])
-        )
-        print('    VRAM -  R[4101 : 4103]: %r' %RAM[4101: 4101+3])
-        print('    VRAM2 - R[23301:23303]: %r' %RAM[23301: 23301+3])
-        print('\n\n')
+        # print('RAM:')
+        # print('    RAM[0:6]    : %r'  %RAM[0 : 6])
+        # print('    RAM[128:134]: %r'  %RAM[128 : 134])
+        # print('    RAM[256:262]: %r'  %RAM[128*2 : 128*2 + 6])
+        # print('    RAM[384:390]: %r'  %RAM[128*3 : 128*3 + 6])
+        # print('')
+        # print('    STACK:        %r' %STACK)
+        # print('    RAM[4100]:    %r  # return value' %RAM[4100])
+        # print('    RAM[U,V,Y,Z]: [%s, %s, %s, %s]  # stack pointers' %(
+        #     RAM[4096], RAM[4097], RAM[4098], RAM[4099])
+        # )
+        # print('    VRAM -  R[4101 : 4103]: %r' %RAM[4101: 4101+3])
+        # print('    VRAM2 - R[23301:23303]: %r' %RAM[23301: 23301+3])
+        # print('\n\n')
 
         if EXIT_LOOP:
             # restore stdout function
             sys.stdout = sys.__stdout__
 
             pygame.quit()
-            util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
+            # util.slow_print('Exiting VM...', 0.11, print_empty_line=True)
 
             # write opcode timings to file
             a_file = open('data/opcodes_speed_data.csv', 'w')

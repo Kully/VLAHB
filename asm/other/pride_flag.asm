@@ -14,6 +14,7 @@
 // SCREEN WIDTH := 160
 // ***********
 
+CLEAR
 LD R[0] 69
 CALL LOAD_VALUES
 CALL DRAW_ROWS
@@ -38,8 +39,6 @@ LOAD_VALUES:
 	RETURN
 
 DRAW_ROWS:
-	ADD R[9999] 1
-
 	CALL DECIDE_COLOR
 
 	LD R[U:V] R[Y]  // color current row
@@ -53,6 +52,8 @@ DRAW_ROWS:
 
 
 DECIDE_COLOR:
+	ADD R[9999] 1  // increment counter for color decider
+
 	LT R[9999] 10
 	LD R[4098] 65001
 
@@ -69,6 +70,5 @@ DECIDE_COLOR:
 	LD R[4098] 65005
 
 	RETURN
-
 
 EXIT

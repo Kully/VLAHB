@@ -49,6 +49,24 @@ def rgba_tuple_to_int(r,g,b,a):
     return hex_to_int(rgba_hex)
 
 
+def rgba_tuple_to_hex(r,g,b,a):
+    if r > 255:
+        r = 255
+    if g > 255:
+        g = 255
+    if b > 255:
+        b = 255
+    if a > 255:
+        a = 255
+
+    r_hex = int_to_hex(r).zfill(2)
+    g_hex = int_to_hex(g).zfill(2)
+    b_hex = int_to_hex(b).zfill(2)
+    a_hex = int_to_hex(a).zfill(2)
+
+    return r_hex + g_hex + b_hex + a_hex
+
+
 def slow_print(msg, sleep_between_lines=0.02, sleep_after_msg=0.1,
                print_empty_line=False):
     '''only works for one line eg. strings with no \n'''
@@ -132,13 +150,14 @@ op_codes_dict = {
     'REGISTER TO REGISTER SIN': '1c',
     'DIRECT COS': '1d',
     'REGISTER TO REGISTER COS ': '1e',
-    # 'D R[i:j] k': '1f', # does not work - not enough room
+    # 'LD R[i:j] k': '1f', # does not work - not enough room
     'LD R[i:j] R[k]': '20',
     'LD R[i:j] R[k:l]': '21',
     'FLOOR': '22',
     'CEIL': '23',
     'RAND': '24',
     'ARRAY': '25',
+    'LABEL_PC': '26',
     # U,V,Y,Z
     'LD R[U] R[V]': '100',
     'LD R[U:V] R[Y]': '101',
@@ -151,6 +170,9 @@ op_codes_dict = {
     'POP': 'fff0',
     'PUSH': 'fff1',
     'CLEAR': 'fff2',
+    'INPUT': 'fff3',
+    'SHT': 'fff4',
+    'WAIT': 'fff5',
     'EXIT': 'ffff',
 }
 
@@ -255,8 +277,14 @@ ILLEGAL_LD_INT_EXCEPTION_MSG = (
     '\n    Not enough space. Use pointers instead.'
 )
 
-# regex
-REGEX_LABEL_PATTERN = r'[\t ]*[A-z|\d|_]+:'
+#########
+# REGEX #
+#########
+
+# REGEX_LABEL copied into REGEX_ARRAY_LD and REGEX_LD_LABEL_PC
+REGEX_LABEL_AND_COLON = r'[\t ]*[A-Za-z_]{1}[A-Za-z_\d]{1,}:'
+REGEX_LABEL = r'([A-Za-z_]{1}[A-Za-z_\d]{1,})'
+
 REGEX_RGBA_PATTERN = r'\d{1,3},\d{1,3},\d{1,3},\d{1,3}'
 REGEX_LD_R_ONE = r'R\[\d+]'
 REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
@@ -268,4 +296,6 @@ REGEX_UV_ONE_AND_ONE = r'R\[([UVYZ])] R\[([UVYZ])]'
 REGEX_UV_ONE = r'R\[([UVYZ])]'
 REGEX_UV_TWO = r'R\[([UVYZ]):([UVYZ])]'
 
-REGEX_ARRAY_LD = r'([A-z|\d|_]+) (\d+) (\d+) (\d+) (\d+)'
+# for arrays
+REGEX_ARRAY_LD = r'([A-Za-z_]{1}[A-Za-z_\d]{1,}) R\[(\d+)\] R\[(\d+)\] (\d+) (\d+)'
+REGEX_LD_LABEL_PC = r'R\[(\d+)\] ([A-Za-z_]{1}[A-Za-z_\d]{1,})'
