@@ -1,7 +1,5 @@
 '''
 Util Functions for VLAHB
-
-GOTO,CALL,RETURN,PUSH,POP,LD,ADD,SUB,MUL,DIV,BLIT,CLEAR,CMP,LT,LTE,GT,GTE,SIN,COS,SQRT,EXIT
 '''
 import re
 import sys
@@ -146,8 +144,6 @@ op_codes_dict = {
     'BLIT': '18',
     'DIRECT SQRT': '19',
     'REGISTER TO REGISTER SQRT': '1a',
-    'DIRECT SIN': '1b',
-    'REGISTER TO REGISTER SIN': '1c',
     'DIRECT COS': '1d',
     'REGISTER TO REGISTER COS ': '1e',
     # 'LD R[i:j] k': '1f', # does not work - not enough room

@@ -296,16 +296,6 @@ int main(int argc, char* argv[])
                 ram[word0_first_half] = sqrt(ram[word1]);
                 break;
             }
-            case 0x001b:  // DIRECT SIN ???
-            {
-                ram[word0_first_half] = sin(word1);
-                break;
-            }
-            case 0x001c:  // REGISTER TO REGISTER SIN ???
-            {
-                ram[word0_first_half] = sin(ram[word1]);
-                break;
-            }
             case 0x001d:  // DIRECT COS ???
             {
                 ram[word0_first_half] = cos(word1);

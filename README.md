@@ -126,8 +126,6 @@ These variables only work with respect to the `LD` opcode and some of the uses a
 | 0018   | update display  | BLIT     |       
 | 0019   | load square root of 16 into R[5]  | SQRT R[5] 16         |       
 | 001a   | load square root of R[16] into R[5]  | SQRT R[5] R[16]          |       
-| 001b   | load sine(16) into R[5]  | SIN R[5] 16         |       
-| 001c   | load sine(R[16]) into R[5]  | SIN R[5] R[16]          |       
 | 001d   | load cos(16) into R[5]  | COS R[5] 16         |       
 | 001e   | load cos(R[16]) into R[5]   |   COS R[5] R[16]        |       
 | 001f   | load RAM[0] to R[4] with 6                           | LD R[0:4] 6       |       
