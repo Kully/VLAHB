@@ -76,7 +76,7 @@ def compute_label_indices_from_file(file_asm, cumsum_hex_lines):
             code = line
 
         # match label regex
-        if re.match(util.REGEX_LABEL_PATTERN, code):
+        if re.match(util.REGEX_LABEL_AND_COLON, code):
             label = re.findall(r'[\t ]*([A-z|\d|_]+):', code)[0]
 
             if label in LABELS_TO_PC.keys():
@@ -166,8 +166,7 @@ def validate_and_make_hexfile(lines):
                 if len(args) < 2:
                     raise Exception(util.LD_EXCEPTION_MSG)
 
-                # LD MARIO R[X] R[Y] W H
-                # X,Y must be <= 255
+                # LD MARIO R[X] R[Y] W H (X,Y must be <= 255)
                 if re.match(util.REGEX_ARRAY_LD, ' '.join(args)):
                     opcode_val = util.op_codes_dict['ARRAY']
 
@@ -196,6 +195,32 @@ def validate_and_make_hexfile(lines):
                         word0_first_half, word0_second_half,
                         word1, hex_file_str
                     )
+
+                # LD R[i] MARIO  (load PC of MARIO array to R[i])
+                elif re.match(util.REGEX_LD_LABEL_PC, ' '.join(args)):
+                    opcode_val = util.op_codes_dict['LABEL_PC']
+                    word0_second_half = opcode_val.zfill(4)
+
+                    # parse out args
+                    all_args = re.findall(util.REGEX_LD_LABEL_PC, ' '.join(args))
+                    ram_index = all_args[0][0]
+                    label = all_args[0][1]
+
+                    if label not in LABELS_TO_PC.keys():
+                        raise Exception('\nUnknown Label %s' %label)
+
+                    label_idx = util.int_to_hex(LABELS_TO_PC[label]).zfill(4)
+
+                    word0_first_half = label_idx
+                    word1 = '0000' + util.int_to_hex(ram_index).zfill(4)
+
+                    hex_file_str = write_two_lines_to_hexfile(
+                        word0_first_half, word0_second_half,
+                        word1, hex_file_str
+                    )
+
+                # LD R[U] R[j] R[k] W H  <- for arrays
+                # LD R[i] R[j] R[k] W H  <- for arrays
 
                 elif re.match(util.REGEX_LD_R_ONE, args[0]):
                     if re.match(util.REGEX_LD_R_ONE, args[1]):

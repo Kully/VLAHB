@@ -365,6 +365,11 @@ int main(int argc, char* argv[])
 
                 break;
             }
+            case 0x0026:
+            {
+                ram[word1_second_half] = word0_first_half;
+                break;
+            }
             case 0x0100:  // LD R[U] R[V] //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000

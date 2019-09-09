@@ -7,6 +7,9 @@
 //  INIT 
 // ======
 
+LD R[0] ROTATE_ACTIVE_PIECE:
+EXIT
+
 
 // set active piece variables and define constants for it
 LD R[30000] 100  // init X pos
@@ -30,7 +33,6 @@ LD R[40005] 0  // X     held
 // R[50000:] - boundary information
 
 GOTO TETRIS_MAIN_LOOP
-
 
 
 TETRIS_MAIN_LOOP:
@@ -65,7 +67,6 @@ TETRIS_MAIN_LOOP:
 
     
     CALL STD_SCREEN_FILL_BLACK  // clear screen
-    EXIT
 
     // *********************
     // PLACE SPRITES IN VRAM

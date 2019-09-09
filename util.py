@@ -157,6 +157,7 @@ op_codes_dict = {
     'CEIL': '23',
     'RAND': '24',
     'ARRAY': '25',
+    'LABEL_PC': '26',
     # U,V,Y,Z
     'LD R[U] R[V]': '100',
     'LD R[U:V] R[Y]': '101',
@@ -276,8 +277,14 @@ ILLEGAL_LD_INT_EXCEPTION_MSG = (
     '\n    Not enough space. Use pointers instead.'
 )
 
-# regex
-REGEX_LABEL_PATTERN = r'[\t ]*[A-z|\d|_]+:'
+#########
+# REGEX #
+#########
+
+# REGEX_LABEL copied into REGEX_ARRAY_LD and REGEX_LD_LABEL_PC
+REGEX_LABEL_AND_COLON = r'[\t ]*[A-Za-z_]{1}[A-Za-z_\d]{1,}:'
+REGEX_LABEL = r'([A-Za-z_]{1}[A-Za-z_\d]{1,})'
+
 REGEX_RGBA_PATTERN = r'\d{1,3},\d{1,3},\d{1,3},\d{1,3}'
 REGEX_LD_R_ONE = r'R\[\d+]'
 REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
@@ -289,4 +296,6 @@ REGEX_UV_ONE_AND_ONE = r'R\[([UVYZ])] R\[([UVYZ])]'
 REGEX_UV_ONE = r'R\[([UVYZ])]'
 REGEX_UV_TWO = r'R\[([UVYZ]):([UVYZ])]'
 
-REGEX_ARRAY_LD = r'([A-z|\d|_]+) R\[(\d+)\] R\[(\d+)\] (\d+) (\d+)'
+# for arrays
+REGEX_ARRAY_LD = r'([A-Za-z_]{1}[A-Za-z_\d]{1,}) R\[(\d+)\] R\[(\d+)\] (\d+) (\d+)'
+REGEX_LD_LABEL_PC = r'R\[(\d+)\] ([A-Za-z_]{1}[A-Za-z_\d]{1,})'
