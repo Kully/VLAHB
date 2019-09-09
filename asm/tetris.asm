@@ -7,10 +7,6 @@
 //  INIT 
 // ======
 
-LD R[0] ROTATE_ACTIVE_PIECE:
-EXIT
-
-
 // set active piece variables and define constants for it
 LD R[30000] 100  // init X pos
 LD R[30001] 0  // init Y pos
