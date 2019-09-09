@@ -2,7 +2,6 @@
 // * TETRIS *
 // **********
 
-
 // ======
 //  INIT 
 // ======
@@ -30,11 +29,22 @@ LD R[40003] 0  // RIGHT held
 LD R[40004] 0  // Z     held
 LD R[40005] 0  // X     held
 
+// store pointers to tetromino sprites
+LD R[51200] SPRITE_TETRIS_TETROMINO_O_X8       // U (16,16)
+LD R[51201] SPRITE_TETRIS_TETROMINO_S_ROT0_X8  // V (24,16)
 
-// R[U]: pointer to active piece function, say
+// load new random sprite - WIP
+// RAND R[0]
+
+// CMP R[0] 1
+//     LD R[51200]  // O
+// CMP R[0] 1
+//     LD R[51201]  // S
+
+
+
 
 GOTO TETRIS_MAIN_LOOP
-
 
 TETRIS_MAIN_LOOP:
 
@@ -52,23 +62,23 @@ TETRIS_MAIN_LOOP:
 
     // exit vm if ESC/END is pressed
     CMP R[28006] 0
-    EXIT
+        EXIT
     CMP R[28007] 0
-    EXIT
+        EXIT
 
     // move piece in X direction
     CMP R[28001] 0 // check if holding LEFT
-    CALL HANDLE_X_POS_OF_TETRIS_PIECE
+        CALL HANDLE_X_POS_OF_TETRIS_PIECE
     CMP R[28003] 0  // check if holding RIGHT
-    CALL HANDLE_X_POS_OF_TETRIS_PIECE
+        CALL HANDLE_X_POS_OF_TETRIS_PIECE
 
     // move active piece faster is DOWN
     CMP R[28002] 0
-    ADD R[30001] 3
+        ADD R[30001] 3
 
     // rotate piece - Z
     CMP R[28004] 0
-    CALL ROTATE_ACTIVE_PIECE
+        CALL ROTATE_ACTIVE_PIECE
 
     CALL STD_SCREEN_FILL_BLACK  // clear screen
 
@@ -92,7 +102,7 @@ TETRIS_MAIN_LOOP:
     // increment counter
     ADD R[65535] 1
     LTE R[65535] 1
-    CALL FIRE_LOGIC_EVERY_N_FRAMES
+        CALL FIRE_LOGIC_EVERY_N_FRAMES
 
     GOTO TETRIS_MAIN_LOOP
 
@@ -120,7 +130,7 @@ FIRE_LOGIC_EVERY_N_FRAMES:
 
     // check if bottom of piece is lower than bottom of screen
     LT R[45678] 144
-    LD R[30001] 0 // if >= 160, place piece on top
+        LD R[30001] 0 // if >= 160, place piece on top
     ADD R[30001] 1  // move active tetromino down 1 pixel
 
     RETURN
@@ -135,26 +145,24 @@ ROTATE_ACTIVE_PIECE:
 
     RETURN
 
-
 // called if you LEFT or RIGHT is down
 HANDLE_X_POS_OF_TETRIS_PIECE:
     CMP R[28001] 0
-    SUB R[30000] 8  // move piece LEFT
+        SUB R[30000] 8  // move piece LEFT
     CMP R[28003] 0
-    ADD R[30000] 8  // move piece RIGHT
+        ADD R[30000] 8  // move piece RIGHT
 
 
     // if piece is placed left of playfield, push back in
     GTE R[30000] R[50000]
-    CALL PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_LEFT
+        CALL PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_LEFT
 
     // if piece is placed right of playfield, push back in
     LD R[0] R[30004]
     ADD R[0] R[30000]  // R[0] contains Xpos + width
     LTE R[0] R[50001]
-    CALL PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_RIGHT        
+        CALL PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_RIGHT        
     RETURN  // exit function
-
 
     PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_LEFT:
         LD R[30000] R[50000]
