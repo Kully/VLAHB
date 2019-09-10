@@ -220,7 +220,6 @@ def validate_and_make_hexfile(lines):
                     )
 
                 # LD R[U] R[j] R[k] W H  <- for arrays
-                # LD R[i] R[j] R[k] W H  <- for arrays
 
                 elif re.match(util.REGEX_LD_R_ONE, args[0]):
                     if re.match(util.REGEX_LD_R_ONE, args[1]):
@@ -319,7 +318,6 @@ def validate_and_make_hexfile(lines):
                     elif re.match(r'R\[\d+]', args[1]):
                         # LD R[U] R[i]
                         opcode_val = '104'
-
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                     elif re.match(r'\d+', args[1]):

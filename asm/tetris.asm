@@ -1,6 +1,6 @@
-// **********************************************************************
-// * TETRIS - original concept, design, and program by Alexey Pazhitnov *
-// **********************************************************************
+// **********
+// * TETRIS *
+// **********
 
 //  0000 - 4095: functions + misc
 //  4096 - 4099: pointers U,V,Y,Z
@@ -139,7 +139,10 @@ LD R[30102] 16
 // 30156: H
 
 
+// COUNTERS
 
+// 65534: value to help keep piece moving only once per keypress
+// 65535: counter for gravity <- MAX VALUE
 
 
 
@@ -189,15 +192,18 @@ TETRIS_MAIN_LOOP:
     CMP R[28007] 0
         EXIT
 
-    // move piece in X direction
-    CMP R[28001] 0 // check if holding LEFT
-        CALL HANDLE_X_POS_OF_TETRIS_PIECE
-    CMP R[28003] 0  // check if holding RIGHT
-        CALL HANDLE_X_POS_OF_TETRIS_PIECE
+    // (holding left)OR(holding right)
+    LD R[0] R[28001]
+    LD R[1] R[28003]
+    CALL STD_LOGIC_OR
+
+    // enter left/right logic
+    CMP R[4100] 0
+    CALL HANDLE_X_POS_OF_TETRIS_PIECE
 
     // move active piece faster is DOWN
-    CMP R[28002] 0
-        ADD R[30001] 3
+    // CMP R[28002] 0
+    //     ADD R[30001] 3
 
     // rotate piece - Z
     CMP R[28004] 0
@@ -211,11 +217,6 @@ TETRIS_MAIN_LOOP:
     // transfer X and Y values of sprites to slots R[:255]
     // opcodes work. Need to fit in 8 bits
 
-    // background
-    LD R[0] 0
-    LD R[1] 0
-    LD TETRIS_GAMEBOY_BACKGROUND R[0] R[1] 160 144
-
     // sprite
     LD R[240] R[30000]
     LD R[241] R[30001]
@@ -226,7 +227,7 @@ TETRIS_MAIN_LOOP:
 
     // increment counter
     ADD R[65535] 1
-    LTE R[65535] 1
+    LTE R[65535] 20
         CALL FIRE_LOGIC_EVERY_N_FRAMES
 
     GOTO TETRIS_MAIN_LOOP
@@ -239,9 +240,6 @@ EXIT
 // ======
 //  UTIL
 // ======
-
-
-
 
 // -----------------------------------------------
 // this function resets a counter that goes up by
@@ -259,7 +257,7 @@ FIRE_LOGIC_EVERY_N_FRAMES:
     // check if bottom of piece is lower than bottom of screen
     LT R[45678] 144
         LD R[30001] 0
-    ADD R[30001] 1  // move active tetromino down 1 pixel
+    ADD R[30001] 8  // move active tetromino down 8 pixels
 
     RETURN
 
@@ -269,11 +267,19 @@ FIRE_LOGIC_EVERY_N_FRAMES:
 // called if LEFT or RIGHT is down
 // -----------------------------------------------
 HANDLE_X_POS_OF_TETRIS_PIECE:
+    // counter
+    // LD R[65534] 0XFFFFFFFF
+
+    // LD R[0] 0XFFFFFFFF
+    // LT R[0] 0XFFFFFFFF
+    // LD R[2] 1
+
+    // 28001
+
     CMP R[28001] 0
         SUB R[30000] 8  // move piece LEFT
     CMP R[28003] 0
         ADD R[30000] 8  // move piece RIGHT
-
 
     // if piece is placed left of playfield, push back in
     GTE R[30000] R[50000]
@@ -296,8 +302,6 @@ HANDLE_X_POS_OF_TETRIS_PIECE:
         SUB R[30000] R[30004]
         RETURN
 
-    
-
 
 ROTATE_ACTIVE_PIECE:
     RETURN
@@ -307,20 +311,13 @@ ROTATE_ACTIVE_PIECE:
 LOAD_NEW_TETRIS_PIECE_AT_TOP_OF_PLAYFIELD:
 
     CALL DECIDE_RANDOM_PIECE_AND_RETURN_INDEX_TO_PC
-
-    // store R[0-3] with indices to the
-    // [active_slots] ...[new_piece_slots]
-    LD R[0] 30003
-    LD R[1] 30005
-
-    LD R[2] R[4100]
-    LD R[3] R[4100]
-    ADD R[3] 2
     
-    LD R[4096] 0  // U
-    LD R[4097] 1  // V
-    LD R[4098] 2  // Y
-    LD R[4099] 3  // Z
+    LD R[4096] 30003  // U
+    LD R[4097] 30006  // V
+
+    LD R[4098] R[4100]  // Y
+    LD R[4099] R[4100]  // Z
+    ADD R[4099] 3
 
     LD R[U:V] R[Y:Z]
 
