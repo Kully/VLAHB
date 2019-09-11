@@ -16,12 +16,17 @@
 // 30005: height of active piece in (pixels)
 
 
+// what rotation index active piece is on
+LD R[30006] 0
+// total number of rotation sprites
+LD R[30006] 4
+
 // O
 // ---------
 // 30100: pc
 // 30101: W
 // 30102: H
-LD R[30100] SPRITE_TETRIS_TETROMINO_O
+LD R[30100] SPRITE_TETRIS_TETROMINO_O_ROT0
 LD R[30101] 16
 LD R[30102] 16
 
@@ -32,12 +37,17 @@ LD R[30102] 16
 // 30103: pc
 // 30104: W
 // 30105: H
+LD R[30103] SPRITE_TETRIS_TETROMINO_S_ROT0
+LD R[30104] 24
+LD R[30105] 16
 
 // rot1
 // 30106: pc
 // 30107: W
 // 30108: H
-
+LD R[30106] SPRITE_TETRIS_TETROMINO_S_ROT1
+LD R[30107] 16
+LD R[30108] 24
 
 
 // Z
@@ -46,12 +56,17 @@ LD R[30102] 16
 // 30109: pc
 // 30110: W
 // 30111: H
+LD R[30109] SPRITE_TETRIS_TETROMINO_Z_ROT0
+LD R[30110] 24
+LD R[30111] 16
 
 // rot1
 // 30112: pc
 // 30113: W
 // 30114: H
-
+LD R[30112] SPRITE_TETRIS_TETROMINO_Z_ROT1
+LD R[30113] 16
+LD R[30114] 24
 
 
 // T
@@ -60,22 +75,33 @@ LD R[30102] 16
 // 30115: pc
 // 30116: W
 // 30117: H
+LD R[30115] SPRITE_TETRIS_TETROMINO_T_ROT0
+LD R[30116] 24
+LD R[30117] 16
 
 // rot1
 // 30118: pc
 // 30119: W
 // 30120: H
+LD R[30118] SPRITE_TETRIS_TETROMINO_T_ROT1
+LD R[30119] 16
+LD R[30120] 24
 
 // rot2
 // 30121: pc
 // 30122: W
 // 30123: H
+LD R[30121] SPRITE_TETRIS_TETROMINO_T_ROT2
+LD R[30122] 24
+LD R[30123] 16
 
 // rot3
 // 30124: pc
 // 30125: W
 // 30126: H
-
+LD R[30124] SPRITE_TETRIS_TETROMINO_T_ROT3
+LD R[30125] 16
+LD R[30126] 24
 
 
 // I
@@ -84,12 +110,17 @@ LD R[30102] 16
 // 30127: pc
 // 30128: W
 // 30129: H
+LD R[30127] SPRITE_TETRIS_TETROMINO_I_ROT0
+LD R[30128] 32
+LD R[30129] 8
 
 // rot1
 // 30130: pc
 // 30131: W
 // 30132: H
-
+LD R[30130] SPRITE_TETRIS_TETROMINO_I_ROT1
+LD R[30131] 8
+LD R[30132] 32
 
 
 // L
@@ -98,21 +129,33 @@ LD R[30102] 16
 // 30133: pc
 // 30134: W
 // 30135: H
+LD R[30133] SPRITE_TETRIS_TETROMINO_L_ROT0
+LD R[30134] 24
+LD R[30135] 16
 
 // rot1
 // 30136: pc
 // 30137: W
 // 30138: H
+LD R[30136] SPRITE_TETRIS_TETROMINO_L_ROT1
+LD R[30137] 16
+LD R[30138] 24
 
 // rot2
 // 30139: pc
 // 30140: W
 // 30141: H
+LD R[30139] SPRITE_TETRIS_TETROMINO_L_ROT2
+LD R[30140] 24
+LD R[30141] 16
 
 // rot3
 // 30142: pc
 // 30143: W
 // 30144: H
+LD R[30142] SPRITE_TETRIS_TETROMINO_L_ROT3
+LD R[30143] 16
+LD R[30144] 24
 
 
 
@@ -122,21 +165,35 @@ LD R[30102] 16
 // 30145: pc
 // 30146: W
 // 30147: H
+LD R[30145] SPRITE_TETRIS_TETROMINO_J_ROT0
+LD R[30146] 24
+LD R[30147] 16
 
 // rot1
 // 30148: pc
 // 30149: W
 // 30150: H
+LD R[30148] SPRITE_TETRIS_TETROMINO_J_ROT1
+LD R[30149] 16
+LD R[30150] 24
 
 // rot2
 // 30151: pc
 // 30152: W
 // 30153: H
+LD R[30151] SPRITE_TETRIS_TETROMINO_J_ROT2
+LD R[30152] 24
+LD R[30153] 16
 
 // rot3
 // 30154: pc
 // 30155: W
 // 30156: H
+LD R[30154] SPRITE_TETRIS_TETROMINO_J_ROT3
+LD R[30155] 16
+LD R[30156] 24
+
+
 
 
 // COUNTERS
@@ -202,8 +259,8 @@ TETRIS_MAIN_LOOP:
     CALL HANDLE_X_POS_OF_TETRIS_PIECE
 
     // move active piece faster is DOWN
-    // CMP R[28002] 0
-    //     ADD R[30001] 3
+    CMP R[28002] 0
+        ADD R[30001] 8
 
     // rotate piece - Z
     CMP R[28004] 0
@@ -217,10 +274,25 @@ TETRIS_MAIN_LOOP:
     // transfer X and Y values of sprites to slots R[:255]
     // opcodes work. Need to fit in 8 bits
 
-    // sprite
+    // load background sprites in VRAM
+    LD R[0] 0
+    LD R[1] 0
+    LD SPRITE_TETRIS_BKGD_STRIP_16_144 R[0] R[1] 16 144
+    LD R[0] 96
+    LD SPRITE_TETRIS_BKGD_STRIP_16_144 R[0] R[1] 16 144
+    ADD R[0] 16
+    LD SPRITE_TETRIS_BKGD_STRIP_16_144 R[0] R[1] 16 144
+    ADD R[0] 16
+    LD SPRITE_TETRIS_BKGD_STRIP_16_144 R[0] R[1] 16 144
+    ADD R[0] 16
+    LD SPRITE_TETRIS_BKGD_STRIP_16_144 R[0] R[1] 16 144
+
+
+
+    // load active sprite in VRAM
     LD R[240] R[30000]
     LD R[241] R[30001]
-    LD SPRITE_TETRIS_TETROMINO_O R[240] R[241] 16 16
+    LD SPRITE_TETRIS_TETROMINO_O_ROT0 R[240] R[241] 16 16
 
     BLIT  // draw to screen
     WAIT  // wait 17 ms
@@ -264,17 +336,16 @@ FIRE_LOGIC_EVERY_N_FRAMES:
 
 
 // -----------------------------------------------
-// called if LEFT or RIGHT is down
+// called if LEFT/RIGHT key is held down
 // -----------------------------------------------
 HANDLE_X_POS_OF_TETRIS_PIECE:
     // counter
     // LD R[65534] 0XFFFFFFFF
-
     // LD R[0] 0XFFFFFFFF
     // LT R[0] 0XFFFFFFFF
     // LD R[2] 1
-
     // 28001
+
 
     CMP R[28001] 0
         SUB R[30000] 8  // move piece LEFT
@@ -338,7 +409,7 @@ DECIDE_RANDOM_PIECE_AND_RETURN_INDEX_TO_PC:
     // CMP R[0] 6
 
 
-    LD R[4100] 30100  // replace later
+    LD R[4100] 30100  // - now its for S
 
     RETURN
 
