@@ -15,7 +15,7 @@
 #define STACK_MAX_SIZE 32
 #define VRAM_FIRST_INDEX 4101
 #define MAX_RAMVALUE UINT_MAX
-#define DEBUG 0
+#define DEBUG 1
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
@@ -61,7 +61,7 @@ void loadPixelsToVram(uint32_t array0[ ],
                       uint32_t width)
 {
     // i: array0 start index
-    // j: array1 end index
+    // j: array1 start index
     //
     // equivalent to `array0[i:i+width] = array1[j:j+width]` in Python
     for(uint32_t x = 0; x < width; x++)
@@ -124,16 +124,17 @@ int main(int argc, char* argv[])
         printf("word1: 0x%08X\n", word1);
         printf("pc: %i\n", pc);
         printf("sp: %i\n", sp);
-        printf("stack\n");
-        for(int sss = 0; sss<3; sss++)
-        {
-            printf("    %u: %u\n", sss, stack[sss]);
-        }
-        printf("ram\n");
+        printf("ram:\n");
         for(int rrr = 0; rrr<6; rrr++)
+        {
+            printf("       %u: %u\n", rrr, ram[rrr]);
+        }
+        printf("    ...\n");
+        for(int rrr = 4096; rrr<4100; rrr++)
         {
             printf("    %u: %u\n", rrr, ram[rrr]);
         }
+        printf("    ...\n");
         printf("    4100: %u\n", ram[4100]);
         printf("\n\n");
 #endif
@@ -358,9 +359,30 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0026:
+            case 0x0026:  // LD R[i] MARIO // (load PC of MARIO array to R[i])
             {
                 ram[word1_second_half] = word0_first_half;
+                break;
+            }
+            case 0x0027: // LD R[U] R[i] R[j] R[k] R[l] //
+            {
+                const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
+                const uint16_t ram_index_i = letter_code_to_ram_index(i);
+
+                const uint16_t x_sprite = (rom[pc - 1] >> 24) & 0xFF;
+                const uint16_t y_sprite = (rom[pc - 1] >> 16) & 0XFF;
+                const uint16_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
+                const uint16_t height_sprite = (rom[pc - 1]) & 0xFF;
+
+                const uint16_t vram_idx = 4101 + ram[x_sprite] + 160*ram[y_sprite];
+
+                for(uint16_t h = 0; h < ram[height_sprite]; h++)
+                {
+
+                    loadPixelsToVram(ram, rom, vram_idx + (h*160),
+                                     ram[ram_index_i] + h*ram[width_sprite],
+                                     ram[width_sprite]);
+                }
                 break;
             }
             case 0x0100:  // LD R[U] R[V] //

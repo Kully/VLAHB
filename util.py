@@ -154,6 +154,7 @@ op_codes_dict = {
     'RAND': '24',
     'ARRAY': '25',
     'LABEL_PC': '26',
+    'ARRAY_REGISTER_ONLY': '27',
     # U,V,Y,Z
     'LD R[U] R[V]': '100',
     'LD R[U:V] R[Y]': '101',
@@ -294,4 +295,5 @@ REGEX_UV_TWO = r'R\[([UVYZ]):([UVYZ])]'
 
 # for arrays
 REGEX_ARRAY_LD = r'([A-Za-z_]{1}[A-Za-z_\d]{1,}) R\[(\d+)\] R\[(\d+)\] (\d+) (\d+)'
+REGEX_REGISTER_ONLY_ARRAY_LD = r'R\[([UVYZ])] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\]'
 REGEX_LD_LABEL_PC = r'R\[(\d+)\] ([A-Za-z_]{1}[A-Za-z_\d]{1,})'

@@ -32,7 +32,6 @@ def write_two_lines_to_hexfile(word0_first_half,
     hex_file_str += word0_second_half
     hex_file_str += '\n'
     hex_file_str += word1
-    ### hex_file_str += '\n\n'
     hex_file_str += '\n'
 
     return hex_file_str
@@ -219,7 +218,32 @@ def validate_and_make_hexfile(lines):
                         word1, hex_file_str
                     )
 
-                # LD R[U] R[j] R[k] W H  <- for arrays
+                # LD R[U] R[i] R[j] R[k] R[k] (i,j,k,l must be <= 255)
+                elif re.match(util.REGEX_REGISTER_ONLY_ARRAY_LD, ' '.join(args)):
+                    opcode_val = util.op_codes_dict['ARRAY_REGISTER_ONLY']
+
+                    all_args = re.findall(util.REGEX_REGISTER_ONLY_ARRAY_LD, ' '.join(args))
+
+                    UVYZ           = all_args[0][0]
+                    x_sprite       = all_args[0][1]
+                    y_sprite       = all_args[0][2]
+                    width_sprite   = all_args[0][3]
+                    height_sprite  = all_args[0][4]
+
+                    UVYZ_digit = util.UVYZ_to_hex_digit[str(UVYZ)]
+                    x_sprite = util.int_to_hex(x_sprite).zfill(2)
+                    y_sprite = util.int_to_hex(y_sprite).zfill(2)
+                    width_sprite = util.int_to_hex(width_sprite).zfill(2)
+                    height_sprite = util.int_to_hex(height_sprite).zfill(2)
+
+                    word0_first_half = UVYZ_digit + '000'
+                    word0_second_half = opcode_val.zfill(4)
+                    word1 = x_sprite + y_sprite + width_sprite + height_sprite
+
+                    hex_file_str = write_two_lines_to_hexfile(
+                        word0_first_half, word0_second_half,
+                        word1, hex_file_str
+                    )
 
                 elif re.match(util.REGEX_LD_R_ONE, args[0]):
                     if re.match(util.REGEX_LD_R_ONE, args[1]):
@@ -305,7 +329,7 @@ def validate_and_make_hexfile(lines):
                             word1, hex_file_str
                         )
 
-                elif re.match(util.REGEX_UV_ONE, args[0]):
+                elif re.match(util.REGEX_UV_ONE, args[0]) and len(args) == 2:
                     letters_arg0 = re.findall(util.REGEX_UV_ONE, args[0])
                     i = util.UVYZ_to_hex_digit[str(letters_arg0[0])]
                     j = '0'

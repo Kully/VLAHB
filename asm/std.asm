@@ -247,6 +247,21 @@ STD_MATH_LONG_WINDED:
 
 // TODO: what should happen if you divide by 0?
 
+// R[0] / R[1]
+STD_MATH_CEIL_DIV:
+	PUSH
+	CALL STD_MATH_DIV_REMAINDER
+	POP
+	LD R[5] R[4100]  // remainder in R[5]
+
+	LD R[4100] R[0]
+	DIV R[4100] R[1]
+
+	CMP R[5] 0
+	ADD R[4100] 1
+	RETURN
+
+
 // Python: R[0] // R[1]
 STD_MATH_FLOOR_DIV:
     GTE R[0] R[1]
@@ -260,7 +275,7 @@ STD_MATH_DIV_REMAINDER:
     CALL STD_MATH_FLOOR_DIV
     LD R[3] R[1]
     MUL R[3] R[4100]
-    
+
     LD R[4] R[0]
     SUB R[4] R[3]  // stack underflow
     

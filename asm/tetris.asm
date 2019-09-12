@@ -1,3 +1,11 @@
+// LD R[0] 7
+// DIV R[0] 2
+
+LD R[0] 7
+LD R[1] 2
+CALL STD_MATH_CEIL_DIV
+EXIT
+
 // **********
 // * TETRIS *
 // **********
@@ -195,7 +203,6 @@ LD R[30156] 24
 
 
 
-
 // COUNTERS
 
 // 65534: value to help keep piece moving only once per keypress
@@ -226,7 +233,7 @@ LD R[30000] 48  // X pos of piece when spawning at top
 LD R[30001]  0  // Y pos of new piece when spawning at top
 
 
-CALL LOAD_NEW_TETRIS_PIECE_AT_TOP_OF_PLAYFIELD
+CALL UPDATE_ACTIVE_PIECE_SLOTS
 
 GOTO TETRIS_MAIN_LOOP
 TETRIS_MAIN_LOOP:
@@ -264,15 +271,14 @@ TETRIS_MAIN_LOOP:
 
     // rotate piece - Z
     CMP R[28004] 0
-        CALL ROTATE_ACTIVE_PIECE
+        CALL TETRIS_ROTATE_ACTIVE_PIECE
+
+
+    // ********************
+    // MOVE BYTES TO VRAM *
+    // ********************
 
     CALL STD_SCREEN_FILL_BLACK  // clear screen
-
-    // *********************
-    // LOAD SPRITES IN VRAM
-    // *********************
-    // transfer X and Y values of sprites to slots R[:255]
-    // opcodes work. Need to fit in 8 bits
 
     // load background sprites in VRAM
     LD R[0] 0
@@ -287,12 +293,13 @@ TETRIS_MAIN_LOOP:
     ADD R[0] 16
     LD SPRITE_TETRIS_BKGD_STRIP_16_144 R[0] R[1] 16 144
 
-
-
     // load active sprite in VRAM
-    LD R[240] R[30000]
-    LD R[241] R[30001]
-    LD SPRITE_TETRIS_TETROMINO_O_ROT0 R[240] R[241] 16 16
+    LD R[4099] R[30003]
+    LD R[0] R[30000]
+    LD R[1] R[30001]
+    LD R[2] R[30004]
+    LD R[3] R[30005]
+    LD R[Z] R[0] R[1] R[2] R[3]
 
     BLIT  // draw to screen
     WAIT  // wait 17 ms
@@ -339,14 +346,6 @@ FIRE_LOGIC_EVERY_N_FRAMES:
 // called if LEFT/RIGHT key is held down
 // -----------------------------------------------
 HANDLE_X_POS_OF_TETRIS_PIECE:
-    // counter
-    // LD R[65534] 0XFFFFFFFF
-    // LD R[0] 0XFFFFFFFF
-    // LT R[0] 0XFFFFFFFF
-    // LD R[2] 1
-    // 28001
-
-
     CMP R[28001] 0
         SUB R[30000] 8  // move piece LEFT
     CMP R[28003] 0
@@ -374,15 +373,16 @@ HANDLE_X_POS_OF_TETRIS_PIECE:
         RETURN
 
 
-ROTATE_ACTIVE_PIECE:
+
+
+TETRIS_ROTATE_ACTIVE_PIECE:
     RETURN
 
-
-
-LOAD_NEW_TETRIS_PIECE_AT_TOP_OF_PLAYFIELD:
+UPDATE_ACTIVE_PIECE_SLOTS:
 
     CALL DECIDE_RANDOM_PIECE_AND_RETURN_INDEX_TO_PC
     
+    // update the active piece stats (index to pc, width, height)
     LD R[4096] 30003  // U
     LD R[4097] 30006  // V
 
@@ -409,7 +409,16 @@ DECIDE_RANDOM_PIECE_AND_RETURN_INDEX_TO_PC:
     // CMP R[0] 6
 
 
-    LD R[4100] 30100  // - now its for S
+    // *** NEW ***
+    // LD R[4096] 30100
+    // LD R[1] 15
+    // LD R[2] 40
+    // LD R[3] R[30101]
+    // LD R[4] R[30102] 
+    // LD R[U] R[1] R[2] R[3] R[4]
+
+
+    LD R[4100] 30106
 
     RETURN
 
