@@ -1,6 +1,3 @@
-// Display: 160 X 120
-// Slots for Display: R[4101:43201]
-
 // ******
 // Colors
 // ******
@@ -247,7 +244,6 @@ STD_MATH_LONG_WINDED:
 
 // TODO: what should happen if you divide by 0?
 
-// R[0] / R[1]
 STD_MATH_CEIL_DIV:
 	PUSH
 	CALL STD_MATH_DIV_REMAINDER

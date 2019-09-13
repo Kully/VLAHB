@@ -1,11 +1,3 @@
-// LD R[0] 7
-// DIV R[0] 2
-
-LD R[0] 7
-LD R[1] 2
-CALL STD_MATH_CEIL_DIV
-EXIT
-
 // **********
 // * TETRIS *
 // **********
@@ -396,29 +388,64 @@ UPDATE_ACTIVE_PIECE_SLOTS:
 
 
 DECIDE_RANDOM_PIECE_AND_RETURN_INDEX_TO_PC:
-    // decide random piece
+    LD R[4096] 20  // Left   (l)
+    LD R[4097] 26  // Right  (r)
 
-    // from random number between 0-6,
-    // return the index to pc of piece
-    // CMP R[0] 0
-    // CMP R[0] 1
-    // CMP R[0] 2
-    // CMP R[0] 3
-    // CMP R[0] 4
-    // CMP R[0] 5
-    // CMP R[0] 6
-
-
-    // *** NEW ***
-    // LD R[4096] 30100
-    // LD R[1] 15
-    // LD R[2] 40
-    // LD R[3] R[30101]
-    // LD R[4] R[30102] 
-    // LD R[U] R[1] R[2] R[3] R[4]
+    LD R[20] 30100 // O
+    LD R[21] 30103 // S
+    LD R[22] 30109 // Z
+    LD R[23] 30115 // T
+    LD R[24] 30127 // I
+    LD R[25] 30133 // L
+    LD R[26] 30145 // J
 
 
-    LD R[4100] 30106
+    // imagine a list of integers
+    //
+    //  0 1 2 3 4 5 6 7             
+    //
+    // In this algo, we continue "flipping a coin"
+    // ie producing a 0 or 1 randomly, and then
+    // cut our interval of numbers in half. We do
+    // this until there is only one number left, and
+    // this is close to a uniform distribution with
+    // slight weight to the middle numbers
+    //
+    // For example step 1 could look like
+    //
+    // 0 1 2 3
+    //
+    //   then...
+    //
+    // 2 3
+    // 
+    //   then...
+    //
+    // 3
+    //
+    RAND R[9]  // load 0 or 1
+    
+    // calc CEIL( (R[4097] - R[4096]) / 2)
+    LD R[4] R[4097]
+    SUB R[4] R[4096]
+    PUSH
+    LD R[0] R[4]
+    LD R[1] 2
+    CALL STD_MATH_CEIL_DIV
+    POP
+    LD R[4] R[4100]  // gets stored here in R[4]
 
-    RETURN
+    // chop off half of the ints
+    CMP R[9] 0
+    SUB R[4097] R[4]
+    CMP R[9] 1
+    ADD R[4096] R[4]
+
+    LTE R[4] 1
+    GOTO MAIN
+
+    // load return address with the pc of selected piece
+    LD R[4098] 4100
+    LD R[Y] R[V]
+    RETURN  // LD R[4100] 30106
 

@@ -134,6 +134,7 @@ int main(int argc, char* argv[])
         {
             printf("    %u: %u\n", rrr, ram[rrr]);
         }
+        printf("    9999: %u\n", ram[9999]);
         printf("    ...\n");
         printf("    4100: %u\n", ram[4100]);
         printf("\n\n");
