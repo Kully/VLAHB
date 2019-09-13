@@ -10,16 +10,16 @@
 // 30000: X pos of piece when spawning at top
 // 30001: Y pos of piece when spawning at top
 
-// *** active piece
+// *** active piece info
 // 30003: pc of active piece
 // 30004: width of active piece (pixels)
 // 30005: height of active piece in (pixels)
-
-
-// what rotation index active piece is on
-LD R[30006] 0
-// total number of rotation sprites
-LD R[30006] 4
+// 30006: what rotation index active piece is on
+// 30007: total number of rotation sprite
+// 30008:
+// 30009: pc of active rotation piece sprite
+// 30010: width of active rotation piece sprite
+// 30011: height of active rotation piece sprite
 
 // O
 // ---------
@@ -226,8 +226,8 @@ LD R[30001]  0  // Y pos of new piece when spawning at top
 
 
 CALL UPDATE_ACTIVE_PIECE_SLOTS
+CALL TETRIS_MAIN_LOOP
 
-GOTO TETRIS_MAIN_LOOP
 TETRIS_MAIN_LOOP:
 
 	// load inputs
@@ -248,23 +248,19 @@ TETRIS_MAIN_LOOP:
     CMP R[28007] 0
         EXIT
 
-    // (holding left)OR(holding right)
+    // move horizontally (LEFT or RIGHT)
     LD R[0] R[28001]
     LD R[1] R[28003]
     CALL STD_LOGIC_OR
-
-    // enter left/right logic
     CMP R[4100] 0
-    CALL HANDLE_X_POS_OF_TETRIS_PIECE
+        CALL HANDLE_X_POS_OF_TETRIS_PIECE
 
-    // move active piece faster is DOWN
-    CMP R[28002] 0
-        ADD R[30001] 8
-
-    // rotate piece - Z
-    CMP R[28004] 0
+    // rotate piece - (UP or Z)
+    LD R[0] R[28000]
+    LD R[1] R[28004]
+    CALL STD_LOGIC_OR
+    CMP R[4100] 0
         CALL TETRIS_ROTATE_ACTIVE_PIECE
-
 
     // ********************
     // MOVE BYTES TO VRAM *
@@ -286,11 +282,17 @@ TETRIS_MAIN_LOOP:
     LD SPRITE_TETRIS_BKGD_STRIP_16_144 R[0] R[1] 16 144
 
     // load active sprite in VRAM
-    LD R[4099] R[30003]
+    // LD R[4099] R[30003]
+    // LD R[0] R[30000]
+    // LD R[1] R[30001]
+    // LD R[2] R[30004]
+    // LD R[3] R[30005]
+
+    LD R[4099] R[30009]
     LD R[0] R[30000]
     LD R[1] R[30001]
-    LD R[2] R[30004]
-    LD R[3] R[30005]
+    LD R[2] R[30010]
+    LD R[3] R[30011]
     LD R[Z] R[0] R[1] R[2] R[3]
 
     BLIT  // draw to screen
@@ -298,7 +300,7 @@ TETRIS_MAIN_LOOP:
 
     // increment counter
     ADD R[65535] 1
-    LTE R[65535] 20
+    LTE R[65535] 4
         CALL FIRE_LOGIC_EVERY_N_FRAMES
 
     GOTO TETRIS_MAIN_LOOP
@@ -323,14 +325,23 @@ FIRE_LOGIC_EVERY_N_FRAMES:
 
     // store (pieceHeight + pieceYpos) in R[45678]
     LD R[45678] R[30001] // load piece Y pos
-    ADD R[45678] R[30005] // add piece height in px
+    ADD R[45678] R[30011] // add piece height in px
 
     // check if bottom of piece is lower than bottom of screen
     LT R[45678] 144
-        LD R[30001] 0
+    CALL _PIECE_TOUCHING_OR_PAST_FLOOR
     ADD R[30001] 8  // move active tetromino down 8 pixels
 
     RETURN
+
+
+
+    _PIECE_TOUCHING_OR_PAST_FLOOR:
+        LD R[30001] 0
+        LD R[64666] 1
+        CALL UPDATE_ACTIVE_PIECE_SLOTS
+        LD R[30000] 48 // reset X-value for new piece
+        RETURN
 
 
 
@@ -348,32 +359,72 @@ HANDLE_X_POS_OF_TETRIS_PIECE:
         CALL _PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_LEFT
 
     // if piece is placed right of playfield, push back in
-    LD R[0] R[30004]
+    LD R[0] R[30010]
     ADD R[0] R[30000]  // R[0] contains Xpos + width
     LTE R[0] R[50001]
         CALL _PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_RIGHT
 
-    RETURN  // exit function
+    RETURN  // leave
 
+    // contained helper functions
     _PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_LEFT:
         LD R[30000] R[50000]
         RETURN
 
     _PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_RIGHT:
         LD R[30000] R[50001]
-        SUB R[30000] R[30004]
+        SUB R[30000] R[30010]
         RETURN
 
 
 
-
 TETRIS_ROTATE_ACTIVE_PIECE:
+    // R[30003]: pc of sprite (rot0)
+    // R[30006]: index of rotation
+    // R[30007]: total number of rotation sprite
+    // R[30009-30011]: pc,w,h of current sprite rotation
+
+    // increment rotation index
+    LT R[30006] R[30007]
+    LD R[30006] 1
+    ADD R[30006] 1
+
+
+    // calculate pc,w,h for rotation sprite
+    LD R[0] R[4098]
+
+    // R[30009] -> R[30003] + (3* (R[30006]-1) )
+    LD R[1] R[30006]
+    SUB R[1] 1
+    MUL R[1] 3
+    ADD R[1] R[0]
+
+    // R[1] contains i where ram[ram[i]] = pc of new sprite
+
+    // new pc -> R[30009]
+    LD R[4099] R[1]
+    LD R[4096] 30009
+    LD R[U] R[Z]
+
+
+    // width -> R[30010]
+    ADD R[4096] 1
+    ADD R[4099] 1
+    LD R[U] R[Z]
+
+    ADD R[4096] 1
+    ADD R[4099] 1
+    LD R[U] R[Z]
+    
     RETURN
 
+
 UPDATE_ACTIVE_PIECE_SLOTS:
+    LD R[4096] 20  // Left   (l)
+    LD R[4097] 26  // Right  (r)
 
     CALL DECIDE_RANDOM_PIECE_AND_RETURN_INDEX_TO_PC
-    
+
     // update the active piece stats (index to pc, width, height)
     LD R[4096] 30003  // U
     LD R[4097] 30006  // V
@@ -381,50 +432,48 @@ UPDATE_ACTIVE_PIECE_SLOTS:
     LD R[4098] R[4100]  // Y
     LD R[4099] R[4100]  // Z
     ADD R[4099] 3
-
     LD R[U:V] R[Y:Z]
+
+    // copy current pc,w,h info to r[30009-30011]
+    // will use for rotation values 
+    ADD R[4096] 6
+    ADD R[4097] 6
+    LD R[U:V] R[Y:Z]
+
+    // update number of rotations for active piece 
+    LT R[4100] 30100  // O
+        LD R[30007] 1
+    LT R[4100] 30103  // S
+        LD R[30007] 2
+    LT R[4100] 30109  // Z
+        LD R[30007] 2
+    LT R[4100] 30115  // T
+        LD R[30007] 4
+    LT R[4100] 30127  // I
+        LD R[30007] 2
+    LT R[4100] 30133  // L
+        LD R[30007] 4
+    LT R[4100] 30145  // J
+        LD R[30007] 4
+
+    LD R[30006] 1  // start at rotation 1
 
     RETURN
 
 
+
 DECIDE_RANDOM_PIECE_AND_RETURN_INDEX_TO_PC:
-    LD R[4096] 20  // Left   (l)
-    LD R[4097] 26  // Right  (r)
-
-    LD R[20] 30100 // O
-    LD R[21] 30103 // S
-    LD R[22] 30109 // Z
-    LD R[23] 30115 // T
-    LD R[24] 30127 // I
-    LD R[25] 30133 // L
-    LD R[26] 30145 // J
-
-
-    // imagine a list of integers
-    //
-    //  0 1 2 3 4 5 6 7             
-    //
-    // In this algo, we continue "flipping a coin"
-    // ie producing a 0 or 1 randomly, and then
-    // cut our interval of numbers in half. We do
-    // this until there is only one number left, and
-    // this is close to a uniform distribution with
-    // slight weight to the middle numbers
-    //
-    // For example step 1 could look like
-    //
-    // 0 1 2 3
-    //
-    //   then...
-    //
-    // 2 3
-    // 
-    //   then...
-    //
-    // 3
-    //
-    RAND R[9]  // load 0 or 1
     
+    // reset first few slots
+    LD R[0] 0
+    LD R[1] 0
+    LD R[2] 0
+    LD R[3] 0
+    LD R[4] 0
+    LD R[5] 0
+    LD R[6] 0
+    LD R[7] 0
+
     // calc CEIL( (R[4097] - R[4096]) / 2)
     LD R[4] R[4097]
     SUB R[4] R[4096]
@@ -435,17 +484,30 @@ DECIDE_RANDOM_PIECE_AND_RETURN_INDEX_TO_PC:
     POP
     LD R[4] R[4100]  // gets stored here in R[4]
 
+    RAND R[5]  // load 0 or 1
+
     // chop off half of the ints
-    CMP R[9] 0
+    CMP R[5] 0
     SUB R[4097] R[4]
-    CMP R[9] 1
+    CMP R[5] 1
     ADD R[4096] R[4]
 
-    LTE R[4] 1
-    GOTO MAIN
+    LD R[7] R[4]
+    ADD R[7] 1
+
+    LTE R[7] 1
+    GOTO DECIDE_RANDOM_PIECE_AND_RETURN_INDEX_TO_PC
 
     // load return address with the pc of selected piece
-    LD R[4098] 4100
-    LD R[Y] R[V]
-    RETURN  // LD R[4100] 30106
+    LD R[4099] 4100
 
+    LD R[20] 30100 // O
+    LD R[21] 30103 // S
+    LD R[22] 30109 // Z
+    LD R[23] 30115 // T
+    LD R[24] 30127 // I
+    LD R[25] 30133 // L
+    LD R[26] 30145 // J
+
+    LD R[Z] R[V]
+    RETURN

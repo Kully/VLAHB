@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
         printf("pc: %i\n", pc);
         printf("sp: %i\n", sp);
         printf("ram:\n");
-        for(int rrr = 0; rrr<6; rrr++)
+        for(int rrr = 0; rrr<9; rrr++)
         {
             printf("       %u: %u\n", rrr, ram[rrr]);
         }
@@ -134,9 +134,14 @@ int main(int argc, char* argv[])
         {
             printf("    %u: %u\n", rrr, ram[rrr]);
         }
-        printf("    9999: %u\n", ram[9999]);
+        printf("    9: %u\n", ram[9]);
         printf("    ...\n");
         printf("    4100: %u\n", ram[4100]);
+        printf("    ...\n");
+        for(int rrr = 30003; rrr<30012; rrr++)
+        {
+            printf("       %u: %u\n", rrr, ram[rrr]);
+        }
         printf("\n\n");
 #endif
         pc += 2;
