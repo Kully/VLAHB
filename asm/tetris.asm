@@ -228,12 +228,7 @@ LD R[30002]  0  // Y pos of new piece when spawning at top
 // 40000 - 63040 -> vram copied
 
 
-// playfield well
-// LD R[U:V] R[Y:Z]
-// LD R[4096] 
-// LD R[4097]
-// LD R[4098] 40000
-// LD R[4099] 40000
+
 // (X,Y,W,H) = (16,0,80,144)
 
 LD R[65000] 10  // gravity speed - number of frames to move piece down 8px
@@ -324,6 +319,36 @@ TETRIS_MAIN_LOOP:
     ADD R[0] 16
     LD SPRITE_TETRIS_BKGD_STRIP_16_144 R[0] R[1] 16 144
 
+
+    // load saved playfield into vram
+    LD R[0] R[4096]
+    LD R[1] R[4097]
+    LD R[2] R[4098]
+    LD R[3] R[4099]
+
+    LD R[4096] 40000 
+    LD R[4097] 40080
+    LD R[4098] 4117
+    LD R[4099] 4197
+    LOAD_SAVED_PLAYFIELD_TO_VRAM:
+        LD R[Y:Z] R[U:V]
+        ADD R[4096] 160
+        ADD R[4097] 160
+        ADD R[4098] 160
+        ADD R[4099] 160
+        ADD R[39999] 1
+
+        GTE R[39999] 144  // counts up
+        GOTO LOAD_SAVED_PLAYFIELD_TO_VRAM
+    LD R[39999] 0 // reset timer
+    LD R[4096] R[0]
+    LD R[4097] R[1]
+    LD R[4098] R[2]
+    LD R[4099] R[3]
+
+
+
+
     // load active tetris sprite
     LD R[4099] R[30009]
     LD R[0] R[30001]
@@ -373,7 +398,7 @@ FIRE_LOGIC_EVERY_N_FRAMES:
     RETURN
 
     _PIECE_TOUCHING_OR_PAST_FLOOR:
-        LD R[30002] 0
+        LD R[30002] 0  // Y -> 0
         LD R[64666] 1
         CALL UPDATE_ACTIVE_PIECE_SLOTS
         LD R[30001] 48 // reset X-value for new piece
@@ -493,6 +518,33 @@ UPDATE_ACTIVE_PIECE_SLOTS:
         LD R[30007] 4
 
     LD R[30006] 1  // start at rotation 1
+
+    // load playfield to slots R[40000-...]
+    LD R[150] R[4096]
+    LD R[151] R[4097]
+    LD R[152] R[4098]
+    LD R[153] R[4099]
+
+    LD R[4096] 40000 
+    LD R[4097] 40080
+    LD R[4098] 4117
+    LD R[4099] 4197
+    LOAD_VRAM_PLAYFIELD_TO_HEAP:
+        LD R[U:V] R[Y:Z]
+        ADD R[4096] 160
+        ADD R[4097] 160
+        ADD R[4098] 160
+        ADD R[4099] 160
+        ADD R[39999] 1
+
+        GTE R[39999] 144  // counts up
+        GOTO LOAD_VRAM_PLAYFIELD_TO_HEAP
+    LD R[39999] 0  // reset loop counter
+    LD R[4096] R[150]
+    LD R[4097] R[151]
+    LD R[4098] R[152]
+    LD R[4099] R[153]
+
 
     RETURN
 

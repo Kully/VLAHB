@@ -148,7 +148,7 @@ op_codes_dict = {
     'REGISTER TO REGISTER COS ': '1e',
     # 'LD R[i:j] k': '1f', # does not work - not enough room
     'LD R[i:j] R[k]': '20',
-    'LD R[i:j] R[k:l]': '21',
+    'LD R[i:j] R[k:l]': '21',  # remove as not being used
     'FLOOR': '22',
     'CEIL': '23',
     'RAND': '24',
