@@ -134,14 +134,10 @@ int main(int argc, char* argv[])
         {
             printf("    %u: %u\n", rrr, ram[rrr]);
         }
-        printf("    9: %u\n", ram[9]);
         printf("    ...\n");
         printf("    4100: %u\n", ram[4100]);
         printf("    ...\n");
-        for(int rrr = 30003; rrr<30012; rrr++)
-        {
-            printf("       %u: %u\n", rrr, ram[rrr]);
-        }
+        printf("    28024: %u\n", ram[28024]);
         printf("\n\n");
 #endif
         pc += 2;

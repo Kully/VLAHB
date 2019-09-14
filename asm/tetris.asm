@@ -2,13 +2,15 @@
 // * TETRIS *
 // **********
 
-//  0000 - 4095: functions + misc
-//  4096 - 4099: pointers U,V,Y,Z
-//  4100 -27140: VRAM
+//  0000 -  4095: functions + misc
+//  4096 -  4099: pointers U,V,Y,Z
+//  4100 - 27140: VRAM
+// 27140 - 65535: Heap
 
-// CONSTANTS
-// 30000: X pos of piece when spawning at top
-// 30001: Y pos of piece when spawning at top
+// What are in the slots?
+// ======================
+// 30001: X pos of piece when spawning at top
+// 30002: Y pos of piece when spawning at top
 
 // *** active piece info
 // 30003: pc of active piece
@@ -16,10 +18,20 @@
 // 30005: height of active piece in (pixels)
 // 30006: what rotation index active piece is on
 // 30007: total number of rotation sprite
-// 30008:
+// 30008: --
 // 30009: pc of active rotation piece sprite
 // 30010: width of active rotation piece sprite
 // 30011: height of active rotation piece sprite
+// 30012: --
+// 30013: --
+// 30014: --
+// 30015: playfield: left X pos
+// 30016: playfield: right X pos
+
+
+// 65000: holds gravity speed
+// 65535: counter for gravity <- MAX VALUE
+
 
 // O
 // ---------
@@ -193,36 +205,38 @@ LD R[30154] SPRITE_TETRIS_TETROMINO_J_ROT3
 LD R[30155] 16
 LD R[30156] 24
 
+// =========
+// CONSTANTS
+// =========
 
-
-// COUNTERS
-
-// 65534: value to help keep piece moving only once per keypress
-// 65535: counter for gravity <- MAX VALUE
-
-
-
-// ======
-//  INIT 
-// ======
-
-// constants
-
-// playfield dimensions - 10 tetris cells wide 80px wide
-LD R[50000] 16 // playfield: left X pos
-LD R[50001] 96 // playfield: right X pos
+// playfield dimensions - (a tetris cell (4 per pixel) is 8X8px)
+LD R[30015] 16 // playfield: left X pos
+LD R[30016] 96 // playfield: right X pos
 
 // slots that store if key is held
-LD R[40000] 0  // UP    held
-LD R[40001] 0  // LEFT  held
-LD R[40002] 0  // DOWN  held
-LD R[40003] 0  // RIGHT held
-LD R[40004] 0  // Z     held
-LD R[40005] 0  // X     held
+LD R[28020] 0  // UP    Pushed
+LD R[28021] 0  // LEFT  Pushed
+LD R[28022] 0  // DOWN  Pushed
+LD R[28023] 0  // RIGHT Pushed
+LD R[28024] 0  // Z     Pushed
+LD R[28025] 0  // X     Pushed
 
-// pos of piece when spawning
-LD R[30000] 48  // X pos of piece when spawning at top
-LD R[30001]  0  // Y pos of new piece when spawning at top
+// pos of piece for spawn
+LD R[30001] 48  // X pos of piece when spawning at top
+LD R[30002]  0  // Y pos of new piece when spawning at top
+
+// 40000 - 63040 -> vram copied
+
+
+// playfield well
+// LD R[U:V] R[Y:Z]
+// LD R[4096] 
+// LD R[4097]
+// LD R[4098] 40000
+// LD R[4099] 40000
+// (X,Y,W,H) = (16,0,80,144)
+
+LD R[65000] 10  // gravity speed - number of frames to move piece down 8px
 
 
 CALL UPDATE_ACTIVE_PIECE_SLOTS
@@ -230,7 +244,9 @@ CALL TETRIS_MAIN_LOOP
 
 TETRIS_MAIN_LOOP:
 
-	// load inputs
+    // *************
+	// Load Inputs *
+    // *************
 
     INPUT R[0]
     SHT R[0] R[28000] 0  // UP
@@ -248,27 +264,54 @@ TETRIS_MAIN_LOOP:
     CMP R[28007] 0
         EXIT
 
-    // move horizontally (LEFT or RIGHT)
-    LD R[0] R[28001]
-    LD R[1] R[28003]
-    CALL STD_LOGIC_OR
-    CMP R[4100] 0
-        CALL HANDLE_X_POS_OF_TETRIS_PIECE
+    // ***********************
+    // Update Buttons Pushed *
+    // ***********************
 
-    // rotate piece - (UP or Z)
-    LD R[0] R[28000]
-    LD R[1] R[28004]
-    CALL STD_LOGIC_OR
-    CMP R[4100] 0
-        CALL TETRIS_ROTATE_ACTIVE_PIECE
+    // ZPushed
+    CMP R[28004] 0  // if R[28004] = 1, R[28024] += 1
+    ADD R[28024] 1
+    CMP R[28004] 1  // if R[28004] = 0, R[28024] = 0
+    LD R[28024] 0
+
+    // LEFTPushed
+    CMP R[28001] 0
+    ADD R[28021] 1
+    CMP R[28001] 1
+    LD R[28021] 0
+
+    // RIGHTPushed
+    CMP R[28003] 0
+    ADD R[28023] 1
+    CMP R[28003] 1
+    LD R[28023] 0
+
+
+    // LEFT Down
+    CMP R[28021] 1
+    GOTO __SKIP_LEFT_DOWN__
+    CALL HANDLE_X_POS_OF_TETRIS_PIECE
+    __SKIP_LEFT_DOWN__:
+    // RIGHT Down
+    CMP R[28023] 1
+    GOTO __SKIP_RIGHT_DOWN__
+    CALL HANDLE_X_POS_OF_TETRIS_PIECE
+    __SKIP_RIGHT_DOWN__:
+
+
+    // rotate piece - Z
+    CMP R[28024] 1  // if ZPushed
+    GOTO __SKIP_ROTATE__
+    CALL TETRIS_ROTATE_ACTIVE_PIECE
+    __SKIP_ROTATE__:
 
     // ********************
-    // MOVE BYTES TO VRAM *
+    // Move Bytes to VRAM *
     // ********************
 
     CALL STD_SCREEN_FILL_BLACK  // clear screen
 
-    // load background sprites in VRAM
+    // load background
     LD R[0] 0
     LD R[1] 0
     LD SPRITE_TETRIS_BKGD_STRIP_16_144 R[0] R[1] 16 144
@@ -281,26 +324,21 @@ TETRIS_MAIN_LOOP:
     ADD R[0] 16
     LD SPRITE_TETRIS_BKGD_STRIP_16_144 R[0] R[1] 16 144
 
-    // load active sprite in VRAM
-    // LD R[4099] R[30003]
-    // LD R[0] R[30000]
-    // LD R[1] R[30001]
-    // LD R[2] R[30004]
-    // LD R[3] R[30005]
-
+    // load active tetris sprite
     LD R[4099] R[30009]
-    LD R[0] R[30000]
-    LD R[1] R[30001]
+    LD R[0] R[30001]
+    LD R[1] R[30002]
     LD R[2] R[30010]
     LD R[3] R[30011]
     LD R[Z] R[0] R[1] R[2] R[3]
+
 
     BLIT  // draw to screen
     WAIT  // wait 17 ms
 
     // increment counter
     ADD R[65535] 1
-    LTE R[65535] 4
+    LTE R[65535] R[65000]
         CALL FIRE_LOGIC_EVERY_N_FRAMES
 
     GOTO TETRIS_MAIN_LOOP
@@ -324,23 +362,21 @@ FIRE_LOGIC_EVERY_N_FRAMES:
     LD R[65535] 0  // reset counter at R[65535] to 0
 
     // store (pieceHeight + pieceYpos) in R[45678]
-    LD R[45678] R[30001] // load piece Y pos
+    LD R[45678] R[30002] // load piece Y pos
     ADD R[45678] R[30011] // add piece height in px
 
     // check if bottom of piece is lower than bottom of screen
     LT R[45678] 144
     CALL _PIECE_TOUCHING_OR_PAST_FLOOR
-    ADD R[30001] 8  // move active tetromino down 8 pixels
+    ADD R[30002] 8  // move active tetromino down 8 pixels
 
     RETURN
 
-
-
     _PIECE_TOUCHING_OR_PAST_FLOOR:
-        LD R[30001] 0
+        LD R[30002] 0
         LD R[64666] 1
         CALL UPDATE_ACTIVE_PIECE_SLOTS
-        LD R[30000] 48 // reset X-value for new piece
+        LD R[30001] 48 // reset X-value for new piece
         RETURN
 
 
@@ -350,30 +386,30 @@ FIRE_LOGIC_EVERY_N_FRAMES:
 // -----------------------------------------------
 HANDLE_X_POS_OF_TETRIS_PIECE:
     CMP R[28001] 0
-        SUB R[30000] 8  // move piece LEFT
+        SUB R[30001] 8  // move piece LEFT
     CMP R[28003] 0
-        ADD R[30000] 8  // move piece RIGHT
+        ADD R[30001] 8  // move piece RIGHT
 
     // if piece is placed left of playfield, push back in
-    GTE R[30000] R[50000]
+    GTE R[30001] R[30015]
         CALL _PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_LEFT
 
     // if piece is placed right of playfield, push back in
     LD R[0] R[30010]
-    ADD R[0] R[30000]  // R[0] contains Xpos + width
-    LTE R[0] R[50001]
+    ADD R[0] R[30001]  // R[0] contains Xpos + width
+    LTE R[0] R[30016]
         CALL _PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_RIGHT
 
     RETURN  // leave
 
     // contained helper functions
     _PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_LEFT:
-        LD R[30000] R[50000]
+        LD R[30001] R[30015]
         RETURN
 
     _PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_RIGHT:
-        LD R[30000] R[50001]
-        SUB R[30000] R[30010]
+        LD R[30001] R[30016]
+        SUB R[30001] R[30010]
         RETURN
 
 
@@ -386,7 +422,7 @@ TETRIS_ROTATE_ACTIVE_PIECE:
 
     // increment rotation index
     LT R[30006] R[30007]
-    LD R[30006] 1
+    LD R[30006] 0
     ADD R[30006] 1
 
 
