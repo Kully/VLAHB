@@ -225,13 +225,7 @@ LD R[28025] 0  // X     Pushed
 LD R[30001] 48  // X pos of piece when spawning at top
 LD R[30002]  0  // Y pos of new piece when spawning at top
 
-// 40000 - 63040 -> vram copied
-
-
-
-// (X,Y,W,H) = (16,0,80,144)
-
-LD R[65000] 10  // gravity speed - number of frames to move piece down 8px
+LD R[65000] 12  // gravity speed - number of frames to move piece down 8px
 
 
 CALL UPDATE_ACTIVE_PIECE_SLOTS
@@ -347,8 +341,6 @@ TETRIS_MAIN_LOOP:
     LD R[4099] R[3]
 
 
-
-
     // load active tetris sprite
     LD R[4099] R[30009]
     LD R[0] R[30001]
@@ -356,6 +348,13 @@ TETRIS_MAIN_LOOP:
     LD R[2] R[30010]
     LD R[3] R[30011]
     LD R[Z] R[0] R[1] R[2] R[3]
+
+    // load score
+    LD R[0] 125 // X
+    LD R[1] 22  // Y
+    LD SPRITE_FONT_3 R[0] R[1] 5 5
+    ADD R[0] 6
+    LD SPRITE_FONT_3 R[0] R[1] 5 5
 
 
     BLIT  // draw to screen
