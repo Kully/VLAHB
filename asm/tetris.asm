@@ -350,11 +350,11 @@ TETRIS_MAIN_LOOP:
     LD R[Z] R[0] R[1] R[2] R[3]
 
     // load score
-    LD R[0] 125 // X
-    LD R[1] 22  // Y
-    LD SPRITE_FONT_3 R[0] R[1] 5 5
-    ADD R[0] 6
-    LD SPRITE_FONT_3 R[0] R[1] 5 5
+    // LD R[0] 125 // X
+    // LD R[1] 22  // Y
+    // LD SPRITE_FONT_3 R[0] R[1] 5 5
+    // ADD R[0] 6
+    // LD SPRITE_FONT_3 R[0] R[1] 5 5
 
 
     BLIT  // draw to screen
