@@ -65,18 +65,6 @@ def rgba_tuple_to_hex(r,g,b,a):
     return r_hex + g_hex + b_hex + a_hex
 
 
-def slow_print(msg, sleep_between_lines=0.02, sleep_after_msg=0.1,
-               print_empty_line=False):
-    '''only works for one line eg. strings with no \n'''
-    for idx in range(1, len(msg) + 1):
-        sys.stdout.write('\r%s' %msg[:idx])
-        sys.stdout.flush()
-        time.sleep(sleep_between_lines)
-    if print_empty_line:
-        time.sleep(sleep_after_msg)
-        print('\n')
-
-
 def return_lines_from_file(file_hex, remove_empty_lines=True):
     f = open(file_hex, 'r')
     lines = f.read().split('\n')
@@ -112,11 +100,6 @@ UVYZ_to_ram_index = {
 }
 
 
-# TODO - match the terminology across op_codes_dict,
-# comments above opcodes in vm.py, and the README.md
-# 
-# eg. REGISTER TO VALUE -> REGISTER TO DIRECT
-# 
 op_codes_dict = {
     'GOTO': '1',
     'DIRECT LOAD': '2',
