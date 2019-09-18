@@ -1,3 +1,6 @@
+// debounce() - the whole holding down key thing
+
+
 // **********
 // * TETRIS *
 // **********
@@ -11,8 +14,6 @@
 // ======================
 // 30001: X pos of piece when spawning at top
 // 30002: Y pos of piece when spawning at top
-
-// *** active piece info
 // 30003: pc of active piece
 // 30004: width of active piece (pixels)
 // 30005: height of active piece in (pixels)
@@ -41,7 +42,6 @@
 LD R[30100] SPRITE_TETRIS_TETROMINO_O_ROT0
 LD R[30101] 16
 LD R[30102] 16
-
 
 // S
 // ---------
@@ -225,7 +225,7 @@ LD R[28025] 0  // X     Pushed
 LD R[30001] 48  // X pos of piece when spawning at top
 LD R[30002]  0  // Y pos of new piece when spawning at top
 
-LD R[65000] 12  // gravity speed - number of frames to move piece down 8px
+LD R[65000] 4  // gravity speed - number of frames to move piece down 8px
 
 
 CALL UPDATE_ACTIVE_PIECE_SLOTS
