@@ -50,7 +50,7 @@ uint16_t letter_code_to_ram_index(uint16_t letter_code)
             return 4099;  // Z
         }
     }
-    return 0;  // should never happen
+    return 0;  // <- should never happen
 }
 
 

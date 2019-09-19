@@ -37,8 +37,6 @@ def write_two_lines_to_hexfile(word0_first_half,
     return hex_file_str
 
 
-
-# WIP for DRY
 def return_hex_instruction_lines(opcode, args, word0_first_half,
                                  word0_second_half, word1,
                                  to_register_key, to_direct_key):
@@ -304,26 +302,22 @@ def validate_and_make_hexfile(lines):
 
                     # LD R[U:V] R[i]
                     if re.match(r'R\[\d+]', args[1]):
-                        # opcode_val = '103'
                         opcode_val = util.op_codes_dict['LD R[U:V] R[i]']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                     # LD R[U:V] i
                     if re.match(r'\d+', args[1]):
-                        # opcode_val = '106'
                         opcode_val = util.op_codes_dict['LD R[U:V] i']
                         word1 = util.int_to_hex(args[1]).zfill(8)
 
                     # LD R[U:V] R[Y]
                     elif re.match(util.REGEX_UV_ONE, args[1]):
-                        # opcode_val = '101'
                         opcode_val = util.op_codes_dict['LD R[U:V] R[Y]']
                         k = re.findall(util.REGEX_UV_ONE, args[1])[0]
                         k = util.UVYZ_to_hex_digit[k]
                         
                     # LD R[U:V] R[Y:Z]
                     elif re.match(util.REGEX_UV_TWO, args[1]):
-                        # opcode_val = '102'
                         opcode_val = util.op_codes_dict['LD R[U:V] R[Y:Z]']
 
                         k_and_l = re.findall(util.REGEX_UV_TWO, args[1]) 
