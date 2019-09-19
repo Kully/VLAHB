@@ -1,6 +1,3 @@
-// debounce() - the whole holding down key thing
-
-
 // **********
 // * TETRIS *
 // **********
