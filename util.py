@@ -126,10 +126,9 @@ op_codes_dict = {
     'GREATER THAN OR EQUAL REGISTER TO REGISTER': '17',
     'BLIT': '18',
     'RAND': '24',
-    'ARRAY': '25',
-    'LABEL_PC': '26',
+    'ARRAY': '25',  # rename
+    'LABEL_PC': '26',  # rename
     'ARRAY_REGISTER_ONLY': '27',
-    # U,V,Y,Z
     'LD R[U] R[V]': '100',
     'LD R[U:V] R[Y]': '101',
     'LD R[U:V] R[Y:Z]': '102',
@@ -140,7 +139,6 @@ op_codes_dict = {
     'COMPARE UV TO DIRECT': '107',
     'POP': 'fff0',
     'PUSH': 'fff1',
-    'CLEAR': 'fff2',
     'INPUT': 'fff3',
     'SHT': 'fff4',
     'WAIT': 'fff5',

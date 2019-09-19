@@ -452,7 +452,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0xfff0:  // POP ???
+            case 0xfff0:  // POP //
             {
                 int a = STACK_FRAME_SIZE * (0 + sp);
                 int b = STACK_FRAME_SIZE * (1 + sp);
@@ -462,7 +462,7 @@ int main(int argc, char* argv[])
                 sp -= 1;
                 break;
             }
-            case 0xfff1:  // PUSH ???
+            case 0xfff1:  // PUSH //
             {
                 stack[sp] = pc;
                 int a = STACK_FRAME_SIZE * (0 + sp);
@@ -470,28 +470,6 @@ int main(int argc, char* argv[])
                 for(int x = 0; x < b; x++) ram[a + x] = ram[0 + x];
 
                 sp += 1;  // increment stack pointer
-                break;
-            }
-            case 0xfff2:  // CLEAR //
-            {
-                void* raw;
-                int32_t pitch;
-                SDL_LockTexture(texture, NULL, &raw, &pitch);
-                uint32_t* pixels = (uint32_t*) raw;
-
-                for(int y = 0; y < yres; y++)
-                {
-                    for(int x = 0; x < xres; x++)
-                    {
-                        ram[VRAM_FIRST_INDEX + x + y * xres] = word1;
-                        pixels[x + y * xres] = ram[VRAM_FIRST_INDEX + x + y * xres];
-                    }
-                }
-
-                SDL_UnlockTexture(texture);
-                SDL_RenderCopy(renderer, texture, NULL, NULL);
-                SDL_RenderPresent(renderer);
-
                 break;
             }
             case 0Xfff3:  // INPUT //
