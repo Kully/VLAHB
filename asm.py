@@ -635,26 +635,6 @@ def validate_and_make_hexfile(lines):
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                 word0_second_half = opcode_val.zfill(4)
 
-            elif opcode == 'COS':
-                valid_opcode = True
-                if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
-                    raise Exception(
-                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
-                    )
-
-                if re.match(util.REGEX_LD_R_ONE, args[1]):
-                    # COS R[i] R[j]
-                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER COS']
-                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
-
-                elif re.match(r'\d+', args[1]):
-                    # COS R[i] j
-                    opcode_val = util.op_codes_dict['DIRECT COS']
-                    word1 = util.int_to_hex(args[1]).zfill(8)
-
-                word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
-                word0_second_half = opcode_val.zfill(4)             
-
             elif opcode in ('FLOOR', 'CEIL', 'RAND'):
                 valid_opcode = True
                 opcode_val = util.op_codes_dict[opcode]

@@ -114,8 +114,8 @@ op_codes_dict = {
     'REGISTER TO REGISTER DIVIDE': 'b',
     'COMPARE REGISTER TO DIRECT': 'c',
     'COMPARE REGISTER TO REGISTER': 'd',
-    'CALL': 'e',  # PUSH + GOTO
-    'RETURN': 'f', # POP + GOTO
+    'CALL': 'e',
+    'RETURN': 'f',
     'LESS THAN REGISTER TO DIRECT': '10',
     'LESS THAN REGISTER TO REGISTER': '11',
     'LESS THAN OR EQUAL REGISTER TO DIRECT': '12',
@@ -127,8 +127,6 @@ op_codes_dict = {
     'BLIT': '18',
     'DIRECT SQRT': '19',
     'REGISTER TO REGISTER SQRT': '1a',
-    'DIRECT COS': '1d',
-    'REGISTER TO REGISTER COS ': '1e',
     # 'LD R[i:j] k': '1f', # does not work - not enough room
     'LD R[i:j] R[k]': '20',
     'LD R[i:j] R[k:l]': '21',  # remove as not being used

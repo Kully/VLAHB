@@ -298,16 +298,6 @@ int main(int argc, char* argv[])
                 ram[word0_first_half] = sqrt(ram[word1]);
                 break;
             }
-            case 0x001d:  // DIRECT COS ???
-            {
-                ram[word0_first_half] = cos(word1);
-                break;
-            }
-            case 0x001e:  // REGISTER TO REGISTER COS ???
-            {
-                ram[word0_first_half] = cos(ram[word1]);
-                break;
-            }
             case 0x0020:  // LD R[i:j] R[k] ???
             {
                 uint16_t i = (rom[ pc - 2] >> 16) & 0XFFFF;
