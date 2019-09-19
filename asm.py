@@ -269,12 +269,7 @@ def validate_and_make_hexfile(lines):
 
 
                 elif re.match(util.REGEX_LD_R_RANGE, args[0]):
-                    if re.match(r'\d+', args[1]):
-                        raise Exception(
-                            util.ILLEGAL_LD_INT_EXCEPTION_MSG.format(code=code)
-                        )
-
-                    elif re.match(util.REGEX_LD_R_ONE, args[1]):
+                    if re.match(util.REGEX_LD_R_ONE, args[1]):
                         # LD R[i:j] R[k]
                         opcode_val = util.op_codes_dict['LD R[i:j] R[k]']
 

@@ -125,7 +125,6 @@ op_codes_dict = {
     'GREATER THAN OR EQUAL REGISTER TO DIRECT': '16',
     'GREATER THAN OR EQUAL REGISTER TO REGISTER': '17',
     'BLIT': '18',
-    # 'LD R[i:j] k': '1f', # does not work - not enough room
     'LD R[i:j] R[k]': '20',
     'LD R[i:j] R[k:l]': '21',  # remove as not being used
     'FLOOR': '22',
