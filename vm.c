@@ -288,14 +288,15 @@ int main(int argc, char* argv[])
                 SDL_RenderPresent(renderer);
                 break;
             }
-            case 0x0024:  // RAND //
+            case 0x0019:  // RAND //
             {   
                 int random_bit = rand() % 2;
                 ram[word1] = random_bit;
                 break;
             }
-            case 0x0025:  // LD ARRAY TO VRAM //
+            case 0x001a:  // LD ARRAY TO VRAM //
             {
+                // syntax: LD MARIO R[X] R[Y] W H
                 const uint16_t label_idx = word0_first_half;
 
                 const uint16_t x_sprite = (rom[pc - 1] >> 24) & 0xFF;
@@ -305,7 +306,6 @@ int main(int argc, char* argv[])
 
                 const uint16_t vram_idx = 4101 + ram[x_sprite] + 160*ram[y_sprite];
 
-                // syntax: `LD MARIO R[X] R[Y] W H`
                 for(int h = 0; h < height_sprite; h++)
                 {
                     loadPixelsToVram(ram, rom, vram_idx + (h*160),
@@ -315,14 +315,15 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0026:  // LD ARRAY PC TO REGISTER //
+            case 0x001b:  // LD ARRAY PC TO REGISTER //
             {
-                // syntax: `LD R[i] MARIO`
+                // syntax: LD R[i] MARIO
                 ram[word1_second_half] = word0_first_half;
                 break;
             }
-            case 0x0027: // LD R[U] R[i] R[j] R[k] R[l] //
+            case 0x001c: // LD REGISTERS TO VRAM //
             {
+                // syntax: LD R[U] R[i] R[j] R[k] R[l] //
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t ram_index_i = letter_code_to_ram_index(i);
 
@@ -342,7 +343,7 @@ int main(int argc, char* argv[])
                 }
                 break;
             }
-            case 0x0100:  // LD R[U] R[V] //
+            case 0x001d:  // LD R[U] R[V] //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
@@ -354,7 +355,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0101:  // LD R[U:V] R[Y] //
+            case 0x001e:  // LD R[U:V] R[Y] //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
@@ -373,7 +374,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0102:  // LD R[U:V] R[Y:Z] //
+            case 0x001f:  // LD R[U:V] R[Y:Z] //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
@@ -392,7 +393,7 @@ int main(int argc, char* argv[])
                 }
                 break;
             }
-            case 0x0103:  // LD R[U:V] R[k] //
+            case 0x0020:  // LD R[U:V] R[i] //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
@@ -409,7 +410,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0104:  // LD R[U] R[i] //
+            case 0x0021:  // LD R[U] R[i] //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t ram_index_i = letter_code_to_ram_index(i);
@@ -418,7 +419,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0105:  // LD R[U] i //
+            case 0x0022:  // LD R[U] i //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t ram_index_i = letter_code_to_ram_index(i);
@@ -427,7 +428,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0106:  // LD R[U:V] i //
+            case 0x0023:  // LD R[U:V] i //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
@@ -442,10 +443,9 @@ int main(int argc, char* argv[])
                     ram[ram[ram_index_i] + idx] = word1;
                 }
 
-
                 break;
             }
-            case 0x0107:  // COMPARE UV TO DIRECT //
+            case 0x0024:  // COMPARE UV TO DIRECT //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t ram_index_i = letter_code_to_ram_index(i);
@@ -454,7 +454,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0xfff0:  // POP //
+            case 0x0025:  // POP //
             {
                 int a = STACK_FRAME_SIZE * (0 + sp);
                 int b = STACK_FRAME_SIZE * (1 + sp);
@@ -464,7 +464,7 @@ int main(int argc, char* argv[])
                 sp -= 1;
                 break;
             }
-            case 0xfff1:  // PUSH //
+            case 0x0026:  // PUSH //
             {
                 stack[sp] = pc;
                 int a = STACK_FRAME_SIZE * (0 + sp);
@@ -474,7 +474,7 @@ int main(int argc, char* argv[])
                 sp += 1;  // increment stack pointer
                 break;
             }
-            case 0Xfff3:  // INPUT //
+            case 0X0027:  // INPUT //
             {
                 SDL_PumpEvents();
                 const uint8_t* key = SDL_GetKeyboardState(NULL);
@@ -490,29 +490,20 @@ int main(int argc, char* argv[])
                 ram[word0_first_half] = word;
                 break;
             }
-            case 0Xfff4:  // SHT - SHIFT RIGHT, AND //
+            case 0X0028:  // SHT //
             {
-                // Assembly is SHT R[X] R[Y] Z
-                //
-                // What it Does:
-                //   right shift R[X] by Z then
-                //   & 0XF and store in R[Y]
-                //
-                // word1_first_half:  X
-                // word0_first_half:  Y
-                // word1_second_half: Z
-
+                // syntax: SHT R[X] R[Y] k (shift right, and)
                 const uint32_t button = (ram[word1_first_half] >> word1_second_half) & 0x1;
                 ram[word0_first_half] = button;
                 break;
             }
-            case 0xfff5:  // WAIT //
+            case 0x0029:  // WAIT //
             {
-                const uint32_t wait = 17;  // true 60fps is 16.666
+                const uint32_t wait = 17;
                 SDL_Delay(wait);
                 break;
             }
-            case 0xffff:
+            case 0x002a:
             {
                 done = true;
                 break;

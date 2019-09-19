@@ -99,7 +99,7 @@ UVYZ_to_ram_index = {
     'Z': 4099,
 }
 
-
+# 42 opcodes
 op_codes_dict = {
     'GOTO': '1',
     'DIRECT LOAD': '2',
@@ -125,24 +125,24 @@ op_codes_dict = {
     'GREATER THAN OR EQUAL REGISTER TO DIRECT': '16',
     'GREATER THAN OR EQUAL REGISTER TO REGISTER': '17',
     'BLIT': '18',
-    'RAND': '24',
-    'LD ARRAY TO VRAM': '25',
-    'LD ARRAY PC TO REGISTER': '26',
-    'LD REGISTERS TO VRAM': '27',
-    'LD R[U] R[V]': '100',
-    'LD R[U:V] R[Y]': '101',
-    'LD R[U:V] R[Y:Z]': '102',
-    'LD R[U:V] R[i]': '103',
-    'LD R[U] R[i]': '104',
-    'LD R[U] i': '105',
-    'LD R[U:V] i': '106',
-    'COMPARE UV TO DIRECT': '107',
-    'POP': 'fff0',
-    'PUSH': 'fff1',
-    'INPUT': 'fff3',
-    'SHT': 'fff4',
-    'WAIT': 'fff5',
-    'EXIT': 'ffff',
+    'RAND': '19',
+    'LD ARRAY TO VRAM': '1a',
+    'LD ARRAY PC TO REGISTER': '1b',
+    'LD REGISTERS TO VRAM': '1c',
+    'LD R[U] R[V]': '1d',
+    'LD R[U:V] R[Y]': '1e',
+    'LD R[U:V] R[Y:Z]': '1f',
+    'LD R[U:V] R[i]': '20',
+    'LD R[U] R[i]': '21',
+    'LD R[U] i': '22',
+    'LD R[U:V] i': '23',
+    'COMPARE UV TO DIRECT': '24',
+    'POP': '25',
+    'PUSH': '26',
+    'INPUT': '27',
+    'SHT': '28',
+    'WAIT': '29',
+    'EXIT': '2a',
 }
 
 pointer_label_to_slot_index = {

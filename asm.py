@@ -246,13 +246,13 @@ def validate_and_make_hexfile(lines):
                     )
 
                 elif re.match(util.REGEX_LD_R_ONE, args[0]):
+                    # LD R[i] R[j]
                     if re.match(util.REGEX_LD_R_ONE, args[1]):
-                        # LD R[i] R[j]
                         opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
+                    # LD R[i] j
                     elif re.match(r'\d+', args[1]) or re.match(util.REGEX_HEX, args[1]):
-                        # LD R[i] j
                         opcode_val = util.op_codes_dict['DIRECT LOAD']
                         word1 = util.int_to_hex(args[1]).zfill(8)
 
@@ -272,19 +272,19 @@ def validate_and_make_hexfile(lines):
                     i = util.UVYZ_to_hex_digit[str(letters_arg0[0])]
                     j = '0'
 
+                    # LD R[U] R[V]
                     if re.match(util.REGEX_UV_ONE, args[1]):
-                        # LD R[U] R[V]
+                        opcode_val = util.op_codes_dict['LD R[U] R[V]']
                         j = util.UVYZ_to_hex_digit[args[1][2:-1]]
-                        opcode_val = '100'
 
+                    # LD R[U] R[i]
                     elif re.match(r'R\[\d+]', args[1]):
-                        # LD R[U] R[i]
-                        opcode_val = '104'
+                        opcode_val = util.op_codes_dict['LD R[U] R[i]']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
+                    # LD R[U] i
                     elif re.match(r'\d+', args[1]):
-                        # LD R[U] i
-                        opcode_val = '105'
+                        opcode_val = util.op_codes_dict['LD R[U] i']
                         word1 = util.int_to_hex(args[1]).zfill(8)
 
                     word0_first_half = i+j+'00'
@@ -304,25 +304,27 @@ def validate_and_make_hexfile(lines):
 
                     # LD R[U:V] R[i]
                     if re.match(r'R\[\d+]', args[1]):
-                        opcode_val = '103'
-
+                        # opcode_val = '103'
+                        opcode_val = util.op_codes_dict['LD R[U:V] R[i]']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                     # LD R[U:V] i
                     if re.match(r'\d+', args[1]):
-                        opcode_val = '106'
-
+                        # opcode_val = '106'
+                        opcode_val = util.op_codes_dict['LD R[U:V] i']
                         word1 = util.int_to_hex(args[1]).zfill(8)
 
                     # LD R[U:V] R[Y]
                     elif re.match(util.REGEX_UV_ONE, args[1]):
-                        opcode_val = '101'
+                        # opcode_val = '101'
+                        opcode_val = util.op_codes_dict['LD R[U:V] R[Y]']
                         k = re.findall(util.REGEX_UV_ONE, args[1])[0]
                         k = util.UVYZ_to_hex_digit[k]
                         
                     # LD R[U:V] R[Y:Z]
                     elif re.match(util.REGEX_UV_TWO, args[1]):
-                        opcode_val = '102'
+                        # opcode_val = '102'
+                        opcode_val = util.op_codes_dict['LD R[U:V] R[Y:Z]']
 
                         k_and_l = re.findall(util.REGEX_UV_TWO, args[1]) 
                         k = util.UVYZ_to_hex_digit[str(k_and_l[0][0])]
