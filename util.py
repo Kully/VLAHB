@@ -128,7 +128,7 @@ op_codes_dict = {
     'RAND': '24',
     'LD ARRAY TO VRAM': '25',
     'LD ARRAY PC TO REGISTER': '26',
-    'ARRAY_REGISTER_ONLY': '27',
+    'LD REGISTERS TO VRAM': '27',
     'LD R[U] R[V]': '100',
     'LD R[U:V] R[Y]': '101',
     'LD R[U:V] R[Y:Z]': '102',

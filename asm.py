@@ -220,7 +220,7 @@ def validate_and_make_hexfile(lines):
 
                 # LD R[U] R[i] R[j] R[k] R[k] (i,j,k,l must be <= 255)
                 elif re.match(util.REGEX_REGISTER_ONLY_ARRAY_LD, ' '.join(args)):
-                    opcode_val = util.op_codes_dict['ARRAY_REGISTER_ONLY']
+                    opcode_val = util.op_codes_dict['LD REGISTERS TO VRAM']
 
                     all_args = re.findall(util.REGEX_REGISTER_ONLY_ARRAY_LD, ' '.join(args))
 
