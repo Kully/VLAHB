@@ -288,16 +288,6 @@ int main(int argc, char* argv[])
                 SDL_RenderPresent(renderer);
                 break;
             }
-            case 0x0019:  // DIRECT SQRT ???
-            {
-                ram[word0_first_half] = sqrt(word1);
-                break;
-            }
-            case 0x001a:  // REGISTER TO REGISTER SQRT ???
-            {
-                ram[word0_first_half] = sqrt(ram[word1]);
-                break;
-            }
             case 0x0020:  // LD R[i:j] R[k] ???
             {
                 uint16_t i = (rom[ pc - 2] >> 16) & 0XFFFF;
