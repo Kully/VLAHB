@@ -24,9 +24,9 @@
 // 30006: what rotation index active piece is on
 // 30007: total number of rotation sprite
 // 30008: --
-// 30009: pc of active rotation piece sprite
-// 30010: width of active rotation piece sprite
-// 30011: height of active rotation piece sprite
+// 30009: pc for current rotation sprite of piece (eg. ROT2)
+// 30010: width for current rotation sprite of piece
+// 30011: height for current rotation sprite of piece
 // 30012: --
 // 30013: --
 // 30014: --
@@ -35,8 +35,8 @@
 
 // 40000-63040: playfield pixels (last)
 
-// 50000-50180: tetris cells (current)
-// 50200-50380: tetris cells (saved)
+// 50000-50180: tetris grid (current)
+// 50200-50380: tetris grid (saved)
 
 // 65000: holds gravity speed
 // 65535: counter for gravity <- MAX VALUE
@@ -49,13 +49,19 @@
 // &&&&&&&&&&&
 // &&&&&&&&&&&
 
-// load tetris cells current with 0's
+// load tetris grid (current) with 0's
 LD R[0] 50000
 LD R[1] 50180
 LD R[4096] 0
 LD R[4097] 1
 LD R[U:V] 0X000000FF
 
+
+// add saved grid onto current grid
+
+
+
+// if any
 
 // &&&&&&&&&&&
 // &&&&&&&&&&&
@@ -240,6 +246,19 @@ LD R[30154] SPRITE_TETRIS_TETROMINO_J_ROT3
 LD R[30155] 16
 LD R[30156] 24
 
+
+// load numbers + letters
+LD R[30160] SPRITE_FONT_0
+LD R[30161] SPRITE_FONT_1
+LD R[30162] SPRITE_FONT_2
+LD R[30163] SPRITE_FONT_3
+LD R[30164] SPRITE_FONT_4
+LD R[30165] SPRITE_FONT_5
+LD R[30166] SPRITE_FONT_6
+LD R[30167] SPRITE_FONT_7
+LD R[30168] SPRITE_FONT_8
+LD R[30169] SPRITE_FONT_9
+
 // =========
 // CONSTANTS
 // =========
@@ -260,11 +279,12 @@ LD R[28025] 0  // X     Pushed
 LD R[30001] 48  // X pos of piece when spawning at top
 LD R[30002]  0  // Y pos of new piece when spawning at top
 
-LD R[65000] 4  // gravity speed - number of frames to move piece down 8px
+LD R[65000] 60  // gravity speed - number of frames to move piece down 8px
 
 
 CALL UPDATE_ACTIVE_PIECE_SLOTS
 CALL TETRIS_MAIN_LOOP
+
 
 TETRIS_MAIN_LOOP:
 
@@ -314,14 +334,15 @@ TETRIS_MAIN_LOOP:
     // LEFT Down
     CMP R[28021] 1
     GOTO __SKIP_LEFT_DOWN__
-    CALL HANDLE_X_POS_OF_TETRIS_PIECE
+    CALL TETRIS_MOVE_PIECE_LEFT_OR_RIGHT
     __SKIP_LEFT_DOWN__:
     // RIGHT Down
     CMP R[28023] 1
     GOTO __SKIP_RIGHT_DOWN__
-    CALL HANDLE_X_POS_OF_TETRIS_PIECE
+    CALL TETRIS_MOVE_PIECE_LEFT_OR_RIGHT
     __SKIP_RIGHT_DOWN__:
 
+    CALL TETRIS_PUSH_PIECE_INTO_BOUNDS
 
     // rotate piece - Z
     CMP R[28024] 1  // if ZPushed
@@ -329,8 +350,9 @@ TETRIS_MAIN_LOOP:
     CALL TETRIS_ROTATE_ACTIVE_PIECE
     __SKIP_ROTATE__:
 
+
     // ********************
-    // Move Bytes to VRAM *
+    // Draw on the Screen *
     // ********************
 
     CALL STD_SCREEN_FILL_BLACK  // clear screen
@@ -349,7 +371,9 @@ TETRIS_MAIN_LOOP:
     LD SPRITE_TETRIS_BKGD_STRIP_16_144 R[0] R[1] 16 144
 
 
-    // load saved playfield into vram
+    // ********************************
+    // VRAM <--load-- SAVED_PLAYFIELD
+    // ********************************
     LD R[0] R[4096]
     LD R[1] R[4097]
     LD R[2] R[4098]
@@ -374,6 +398,8 @@ TETRIS_MAIN_LOOP:
     LD R[4097] R[1]
     LD R[4098] R[2]
     LD R[4099] R[3]
+    // ********************************
+    // ********************************
 
 
     // load active tetris sprite
@@ -383,14 +409,6 @@ TETRIS_MAIN_LOOP:
     LD R[2] R[30010]
     LD R[3] R[30011]
     LD R[Z] R[0] R[1] R[2] R[3]
-
-    // load score
-    // LD R[0] 125 // X
-    // LD R[1] 22  // Y
-    // LD SPRITE_FONT_3 R[0] R[1] 5 5
-    // ADD R[0] 6
-    // LD SPRITE_FONT_3 R[0] R[1] 5 5
-
 
     BLIT  // draw to screen
     WAIT  // wait 17 ms
@@ -440,15 +458,21 @@ FIRE_LOGIC_EVERY_N_FRAMES:
 
 
 
+
+
 // -----------------------------------------------
 // called if LEFT/RIGHT key is held down
 // -----------------------------------------------
-HANDLE_X_POS_OF_TETRIS_PIECE:
+TETRIS_MOVE_PIECE_LEFT_OR_RIGHT:
     CMP R[28001] 0
         SUB R[30001] 8  // move piece LEFT
     CMP R[28003] 0
         ADD R[30001] 8  // move piece RIGHT
 
+    RETURN
+
+
+TETRIS_PUSH_PIECE_INTO_BOUNDS:
     // if piece is placed left of playfield, push back in
     GTE R[30001] R[30015]
         CALL _PUSH_TETRIS_PIECE_INTO_BOUNDS_FROM_LEFT
@@ -484,7 +508,6 @@ TETRIS_ROTATE_ACTIVE_PIECE:
     LD R[30006] 0
     ADD R[30006] 1
 
-
     // calculate pc,w,h for rotation sprite
     LD R[0] R[4098]
 
@@ -501,12 +524,12 @@ TETRIS_ROTATE_ACTIVE_PIECE:
     LD R[4096] 30009
     LD R[U] R[Z]
 
-
     // width -> R[30010]
     ADD R[4096] 1
     ADD R[4099] 1
     LD R[U] R[Z]
 
+    // height -> R[30011]
     ADD R[4096] 1
     ADD R[4099] 1
     LD R[U] R[Z]
@@ -555,7 +578,7 @@ UPDATE_ACTIVE_PIECE_SLOTS:
 
 
     // ********************************
-    // VRAM <-load- SAVED_PLAYFIELD
+    // VRAM --save--> SAVED_PLAYFIELD
     // ********************************
     LD R[150] R[4096]
     LD R[151] R[4097]
