@@ -2,13 +2,20 @@
 // * TETRIS *
 // **********
 
-//  0000 -  4095: functions + misc
-//  4096 -  4099: pointers U,V,Y,Z
-//  4100 - 27140: VRAM
-// 27140 - 65535: Heap
-
+// ======================
 // What are in the slots?
 // ======================
+
+//  ~~~ basic stuff ~~~
+
+//  0000 - 4095: functions + misc
+//  4096 - 4099: pointers U,V,Y,Z
+//  4100 - 27140: VRAM
+
+// playfield is 10X18 cells
+
+//  ~~~ heap ~~~
+
 // 30001: X pos of piece when spawning at top
 // 30002: Y pos of piece when spawning at top
 // 30003: pc of active piece
@@ -26,10 +33,41 @@
 // 30015: playfield: left X pos
 // 30016: playfield: right X pos
 
+// 40000-63040: playfield pixels (last)
+
+// 50000-50180: tetris cells (current)
+// 50200-50380: tetris cells (saved)
 
 // 65000: holds gravity speed
 // 65535: counter for gravity <- MAX VALUE
 
+
+
+
+
+
+// &&&&&&&&&&&
+// &&&&&&&&&&&
+
+// load tetris cells current with 0's
+LD R[0] 50000
+LD R[1] 50180
+LD R[4096] 0
+LD R[4097] 1
+LD R[U:V] 0X000000FF
+
+
+// &&&&&&&&&&&
+// &&&&&&&&&&&
+
+
+
+
+
+
+// ====================
+// Load Sprites in Heap
+// ====================
 
 // O
 // ---------
@@ -515,7 +553,10 @@ UPDATE_ACTIVE_PIECE_SLOTS:
 
     LD R[30006] 1  // start at rotation 1
 
-    // load playfield to slots R[40000-...]
+
+    // ********************************
+    // VRAM <-load- SAVED_PLAYFIELD
+    // ********************************
     LD R[150] R[4096]
     LD R[151] R[4097]
     LD R[152] R[4098]
@@ -540,7 +581,8 @@ UPDATE_ACTIVE_PIECE_SLOTS:
     LD R[4097] R[151]
     LD R[4098] R[152]
     LD R[4099] R[153]
-
+    // ********************************
+    // ********************************
 
     RETURN
 
