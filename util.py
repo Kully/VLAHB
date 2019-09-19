@@ -127,8 +127,6 @@ op_codes_dict = {
     'BLIT': '18',
     'LD R[i:j] R[k]': '20',
     'LD R[i:j] R[k:l]': '21',  # remove as not being used
-    'FLOOR': '22',
-    'CEIL': '23',
     'RAND': '24',
     'ARRAY': '25',
     'LABEL_PC': '26',

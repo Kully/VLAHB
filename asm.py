@@ -610,7 +610,7 @@ def validate_and_make_hexfile(lines):
                 opcode_val = util.op_codes_dict['BLIT']
                 word0_second_half = opcode_val.zfill(4)
 
-            elif opcode in ('FLOOR', 'CEIL', 'RAND'):
+            elif opcode == 'RAND':
                 valid_opcode = True
                 opcode_val = util.op_codes_dict[opcode]
                 word0_second_half = opcode_val.zfill(4)

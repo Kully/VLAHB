@@ -305,16 +305,6 @@ int main(int argc, char* argv[])
                 // Code goes here - WIP
                 break;
             }
-            case 0x0022:  // FLOOR ???
-            {
-                ram[word1] = floor(ram[word1]);
-                break;
-            }
-            case 0x0023:  // CEIL ???
-            {
-                ram[word1] = ceil(ram[word1]);
-                break;
-            }
             case 0x0024:  // RAND ???
             {   
                 int random_bit = rand() % 2;
