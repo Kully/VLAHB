@@ -125,7 +125,6 @@ op_codes_dict = {
     'GREATER THAN OR EQUAL REGISTER TO DIRECT': '16',
     'GREATER THAN OR EQUAL REGISTER TO REGISTER': '17',
     'BLIT': '18',
-    'LD R[i:j] R[k]': '20',
     'RAND': '24',
     'ARRAY': '25',
     'LABEL_PC': '26',

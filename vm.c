@@ -288,19 +288,7 @@ int main(int argc, char* argv[])
                 SDL_RenderPresent(renderer);
                 break;
             }
-            case 0x0020:  // LD R[i:j] R[k] ???
-            {
-                uint16_t i = (rom[ pc - 2] >> 16) & 0XFFFF;
-                uint16_t j = (rom[ pc - 1] >> 16) & 0XFFFF;
-                uint16_t k = (rom[ pc - 1] >> 0) & 0XFFFF;
-
-                for(int x=0; x<(j+1-i); x++) {
-                    ram[i + x] = ram[k];
-                }
-
-                break;
-            }
-            case 0x0024:  // RAND ???
+            case 0x0024:  // RAND //
             {   
                 int random_bit = rand() % 2;
                 ram[word1] = random_bit;
