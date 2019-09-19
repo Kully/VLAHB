@@ -167,7 +167,7 @@ def validate_and_make_hexfile(lines):
 
                 # LD MARIO R[X] R[Y] W H (X,Y must be <= 255)
                 if re.match(util.REGEX_ARRAY_LD, ' '.join(args)):
-                    opcode_val = util.op_codes_dict['ARRAY']
+                    opcode_val = util.op_codes_dict['LD ARRAY TO VRAM']
 
                     all_args = re.findall(util.REGEX_ARRAY_LD, ' '.join(args))
 
@@ -197,7 +197,7 @@ def validate_and_make_hexfile(lines):
 
                 # LD R[i] MARIO  (load PC of MARIO array to R[i])
                 elif re.match(util.REGEX_LD_LABEL_PC, ' '.join(args)):
-                    opcode_val = util.op_codes_dict['LABEL_PC']
+                    opcode_val = util.op_codes_dict['LD ARRAY PC TO REGISTER']
                     word0_second_half = opcode_val.zfill(4)
 
                     # parse out args

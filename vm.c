@@ -294,7 +294,7 @@ int main(int argc, char* argv[])
                 ram[word1] = random_bit;
                 break;
             }
-            case 0x0025:  // LD MARIO R[X] R[Y] W H //
+            case 0x0025:  // LD ARRAY TO VRAM //
             {
                 const uint16_t label_idx = word0_first_half;
 
@@ -305,6 +305,7 @@ int main(int argc, char* argv[])
 
                 const uint16_t vram_idx = 4101 + ram[x_sprite] + 160*ram[y_sprite];
 
+                // syntax: `LD MARIO R[X] R[Y] W H`
                 for(int h = 0; h < height_sprite; h++)
                 {
                     loadPixelsToVram(ram, rom, vram_idx + (h*160),
@@ -314,8 +315,9 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0026:  // LD R[i] MARIO // (load PC of MARIO array to R[i])
+            case 0x0026:  // LD ARRAY PC TO REGISTER //
             {
+                // syntax: `LD R[i] MARIO`
                 ram[word1_second_half] = word0_first_half;
                 break;
             }

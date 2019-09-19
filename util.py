@@ -126,8 +126,8 @@ op_codes_dict = {
     'GREATER THAN OR EQUAL REGISTER TO REGISTER': '17',
     'BLIT': '18',
     'RAND': '24',
-    'ARRAY': '25',  # rename
-    'LABEL_PC': '26',  # rename
+    'LD ARRAY TO VRAM': '25',
+    'LD ARRAY PC TO REGISTER': '26',
     'ARRAY_REGISTER_ONLY': '27',
     'LD R[U] R[V]': '100',
     'LD R[U:V] R[Y]': '101',
