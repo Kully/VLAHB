@@ -37,8 +37,6 @@ def write_two_lines_to_hexfile(word0_first_half,
     return hex_file_str
 
 
-
-# WIP for DRY
 def return_hex_instruction_lines(opcode, args, word0_first_half,
                                  word0_second_half, word1,
                                  to_register_key, to_direct_key):
@@ -167,7 +165,7 @@ def validate_and_make_hexfile(lines):
 
                 # LD MARIO R[X] R[Y] W H (X,Y must be <= 255)
                 if re.match(util.REGEX_ARRAY_LD, ' '.join(args)):
-                    opcode_val = util.op_codes_dict['ARRAY']
+                    opcode_val = util.op_codes_dict['LD ARRAY TO VRAM']
 
                     all_args = re.findall(util.REGEX_ARRAY_LD, ' '.join(args))
 
@@ -197,7 +195,7 @@ def validate_and_make_hexfile(lines):
 
                 # LD R[i] MARIO  (load PC of MARIO array to R[i])
                 elif re.match(util.REGEX_LD_LABEL_PC, ' '.join(args)):
-                    opcode_val = util.op_codes_dict['LABEL_PC']
+                    opcode_val = util.op_codes_dict['LD ARRAY PC TO REGISTER']
                     word0_second_half = opcode_val.zfill(4)
 
                     # parse out args
@@ -220,7 +218,7 @@ def validate_and_make_hexfile(lines):
 
                 # LD R[U] R[i] R[j] R[k] R[k] (i,j,k,l must be <= 255)
                 elif re.match(util.REGEX_REGISTER_ONLY_ARRAY_LD, ' '.join(args)):
-                    opcode_val = util.op_codes_dict['ARRAY_REGISTER_ONLY']
+                    opcode_val = util.op_codes_dict['LD REGISTERS TO VRAM']
 
                     all_args = re.findall(util.REGEX_REGISTER_ONLY_ARRAY_LD, ' '.join(args))
 
@@ -246,13 +244,13 @@ def validate_and_make_hexfile(lines):
                     )
 
                 elif re.match(util.REGEX_LD_R_ONE, args[0]):
+                    # LD R[i] R[j]
                     if re.match(util.REGEX_LD_R_ONE, args[1]):
-                        # LD R[i] R[j]
                         opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
+                    # LD R[i] j
                     elif re.match(r'\d+', args[1]) or re.match(util.REGEX_HEX, args[1]):
-                        # LD R[i] j
                         opcode_val = util.op_codes_dict['DIRECT LOAD']
                         word1 = util.int_to_hex(args[1]).zfill(8)
 
@@ -267,86 +265,24 @@ def validate_and_make_hexfile(lines):
                         word1, hex_file_str
                     )
 
-
-                elif re.match(util.REGEX_LD_R_RANGE, args[0]):
-                    if re.match(r'\d+', args[1]):
-                        raise Exception(
-                            util.ILLEGAL_LD_INT_EXCEPTION_MSG.format(code=code)
-                        )
-
-                    elif re.match(util.REGEX_LD_R_ONE, args[1]):
-                        # LD R[i:j] R[k]
-                        opcode_val = util.op_codes_dict['LD R[i:j] R[k]']
-
-                        i_and_j = re.findall(r'\d+', args[0])
-
-                        i = i_and_j[0]
-                        j = i_and_j[1]
-                        k = args[1][2:-1]
-
-                        if int(i) > int(j):
-                            raise Exception(' LD R[i:j] R[k]\ni > j')
-
-                        word0_first_half = util.int_to_hex(i).zfill(4)
-                        word0_second_half = opcode_val.zfill(4)
-                        word1 = util.int_to_hex(j).zfill(4) + util.int_to_hex(k).zfill(4)
-
-                        hex_file_str = write_two_lines_to_hexfile(
-                            word0_first_half, word0_second_half,
-                            word1, hex_file_str
-                        )
-
-                    elif re.match(util.REGEX_LD_R_RANGE, args[1]):
-                        # LD R[i:j] R[k:l]
-                        opcode_val = util.op_codes_dict['LD R[i:j] R[k:l]']
-
-                        i_and_j = re.findall(r'\d+', args[0])
-                        i = i_and_j[0]
-                        j = i_and_j[1]
-
-                        k_and_l = re.findall(r'\d+', args[1])
-                        k = k_and_l[0]
-                        l = k_and_l[1]
-
-                        ram_span = int(j) - int(i)
-
-                        if int(i) > int(j):
-                            raise Exception('  LD R[i:j] R[k:l]\ni > j')
-
-                        if int(i) > int(j):
-                            raise Exception('  LD R[i:j] R[k:l]\ni > j')
-
-                        if int(i) - int(j) != int(k) - int(l):
-                            raise Exception('  LD R[i:j] R[k:l]\ni-j != k-l')
-
-
-                        word0_first_half = util.int_to_hex(ram_span).zfill(4)
-                        word0_second_half = opcode_val.zfill(4)
-                        word1 = util.int_to_hex(i).zfill(4) + util.int_to_hex(k).zfill(4)
-
-                        hex_file_str = write_two_lines_to_hexfile(
-                            word0_first_half, word0_second_half,
-                            word1, hex_file_str
-                        )
-
                 elif re.match(util.REGEX_UV_ONE, args[0]) and len(args) == 2:
                     letters_arg0 = re.findall(util.REGEX_UV_ONE, args[0])
                     i = util.UVYZ_to_hex_digit[str(letters_arg0[0])]
                     j = '0'
 
+                    # LD R[U] R[V]
                     if re.match(util.REGEX_UV_ONE, args[1]):
-                        # LD R[U] R[V]
+                        opcode_val = util.op_codes_dict['LD R[U] R[V]']
                         j = util.UVYZ_to_hex_digit[args[1][2:-1]]
-                        opcode_val = '100'
 
+                    # LD R[U] R[i]
                     elif re.match(r'R\[\d+]', args[1]):
-                        # LD R[U] R[i]
-                        opcode_val = '104'
+                        opcode_val = util.op_codes_dict['LD R[U] R[i]']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
+                    # LD R[U] i
                     elif re.match(r'\d+', args[1]):
-                        # LD R[U] i
-                        opcode_val = '105'
+                        opcode_val = util.op_codes_dict['LD R[U] i']
                         word1 = util.int_to_hex(args[1]).zfill(8)
 
                     word0_first_half = i+j+'00'
@@ -366,25 +302,23 @@ def validate_and_make_hexfile(lines):
 
                     # LD R[U:V] R[i]
                     if re.match(r'R\[\d+]', args[1]):
-                        opcode_val = '103'
-
+                        opcode_val = util.op_codes_dict['LD R[U:V] R[i]']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                     # LD R[U:V] i
                     if re.match(r'\d+', args[1]):
-                        opcode_val = '106'
-
+                        opcode_val = util.op_codes_dict['LD R[U:V] i']
                         word1 = util.int_to_hex(args[1]).zfill(8)
 
                     # LD R[U:V] R[Y]
                     elif re.match(util.REGEX_UV_ONE, args[1]):
-                        opcode_val = '101'
+                        opcode_val = util.op_codes_dict['LD R[U:V] R[Y]']
                         k = re.findall(util.REGEX_UV_ONE, args[1])[0]
                         k = util.UVYZ_to_hex_digit[k]
                         
                     # LD R[U:V] R[Y:Z]
                     elif re.match(util.REGEX_UV_TWO, args[1]):
-                        opcode_val = '102'
+                        opcode_val = util.op_codes_dict['LD R[U:V] R[Y:Z]']
 
                         k_and_l = re.findall(util.REGEX_UV_TWO, args[1]) 
                         k = util.UVYZ_to_hex_digit[str(k_and_l[0][0])]
@@ -615,47 +549,7 @@ def validate_and_make_hexfile(lines):
                 opcode_val = util.op_codes_dict['BLIT']
                 word0_second_half = opcode_val.zfill(4)
 
-            elif opcode == 'SQRT':
-                valid_opcode = True
-                if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
-                    raise Exception(
-                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
-                    )
-
-                if re.match(util.REGEX_LD_R_ONE, args[1]):
-                    # SQRT R[i] R[j]
-                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER SQRT']
-                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
-
-                elif re.match(r'\d+', args[1]):
-                    # SQRT R[i] j
-                    opcode_val = util.op_codes_dict['DIRECT SQRT']
-                    word1 = util.int_to_hex(args[1]).zfill(8)
-
-                word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
-                word0_second_half = opcode_val.zfill(4)
-
-            elif opcode == 'COS':
-                valid_opcode = True
-                if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
-                    raise Exception(
-                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
-                    )
-
-                if re.match(util.REGEX_LD_R_ONE, args[1]):
-                    # COS R[i] R[j]
-                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER COS']
-                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
-
-                elif re.match(r'\d+', args[1]):
-                    # COS R[i] j
-                    opcode_val = util.op_codes_dict['DIRECT COS']
-                    word1 = util.int_to_hex(args[1]).zfill(8)
-
-                word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
-                word0_second_half = opcode_val.zfill(4)             
-
-            elif opcode in ('FLOOR', 'CEIL', 'RAND'):
+            elif opcode == 'RAND':
                 valid_opcode = True
                 opcode_val = util.op_codes_dict[opcode]
                 word0_second_half = opcode_val.zfill(4)
@@ -667,19 +561,6 @@ def validate_and_make_hexfile(lines):
 
                 if re.match(r'R\[\d+]', args[0]):
                     word1 = util.int_to_hex(args[0][2:-1]).zfill(8)
-
-            elif opcode == 'CLEAR':
-                valid_opcode = True
-                opcode_val = util.op_codes_dict[opcode]
-                word0_second_half = opcode_val.zfill(4)
-
-                # set fill color to black by default
-                word1 = '000000FF'
-
-                # only look at first arg
-                if len(args) > 0 and (re.match(r'\d+', args[0]) or
-                                      re.match(util.REGEX_HEX, args[0])):
-                    word1 = util.int_to_hex(args[0]).zfill(8)
 
             elif opcode == 'INPUT':
                 valid_opcode = True

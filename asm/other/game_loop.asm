@@ -35,7 +35,6 @@ GAME_LOOP_1:
     CMP R[28007] 0  // ESC exits the VM
     EXIT
 
-    // CLEAR 0XFF0000FF
     CALL STD_SCREEN_FILL_RED
     BLIT
 
