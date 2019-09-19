@@ -300,11 +300,6 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0021:  // LD R[i:j] R[k:l] ???
-            {
-                // Code goes here - WIP
-                break;
-            }
             case 0x0024:  // RAND ???
             {   
                 int random_bit = rand() % 2;

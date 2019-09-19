@@ -291,39 +291,6 @@ def validate_and_make_hexfile(lines):
                             word1, hex_file_str
                         )
 
-                    elif re.match(util.REGEX_LD_R_RANGE, args[1]):
-                        # LD R[i:j] R[k:l]
-                        opcode_val = util.op_codes_dict['LD R[i:j] R[k:l]']
-
-                        i_and_j = re.findall(r'\d+', args[0])
-                        i = i_and_j[0]
-                        j = i_and_j[1]
-
-                        k_and_l = re.findall(r'\d+', args[1])
-                        k = k_and_l[0]
-                        l = k_and_l[1]
-
-                        ram_span = int(j) - int(i)
-
-                        if int(i) > int(j):
-                            raise Exception('  LD R[i:j] R[k:l]\ni > j')
-
-                        if int(i) > int(j):
-                            raise Exception('  LD R[i:j] R[k:l]\ni > j')
-
-                        if int(i) - int(j) != int(k) - int(l):
-                            raise Exception('  LD R[i:j] R[k:l]\ni-j != k-l')
-
-
-                        word0_first_half = util.int_to_hex(ram_span).zfill(4)
-                        word0_second_half = opcode_val.zfill(4)
-                        word1 = util.int_to_hex(i).zfill(4) + util.int_to_hex(k).zfill(4)
-
-                        hex_file_str = write_two_lines_to_hexfile(
-                            word0_first_half, word0_second_half,
-                            word1, hex_file_str
-                        )
-
                 elif re.match(util.REGEX_UV_ONE, args[0]) and len(args) == 2:
                     letters_arg0 = re.findall(util.REGEX_UV_ONE, args[0])
                     i = util.UVYZ_to_hex_digit[str(letters_arg0[0])]
