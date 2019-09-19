@@ -35,19 +35,24 @@
 
 // 40000-63040: playfield pixels (last)
 
-// 50000-50180: tetris grid (current)
-// 50200-50380: tetris grid (saved)
+// 50000-50180: tetris grid-A
+
+// 50200-50380: tetris grid-B
+
+// 50400-50403: active cell indices
 
 // 65000: loaded with gravity speed
 // 65001: gravity speed (ie 16)
 // 65535: counter for gravity <- MAX VALUE
 
-LD R[65001] 10
+
+
+
 
 // &&&&&&&&&&&
 // &&&&&&&&&&&
 
-// load tetris grid (current) with 0's
+// load tetris grid-A with 0's
 LD R[0] 50000
 LD R[1] 50180
 LD R[4096] 0
@@ -55,12 +60,13 @@ LD R[4097] 1
 LD R[U:V] 0X000000FF
 
 
-// COPY_SAVED_PLAYFIELD_TO_CURRENT_GRID
-// 50000-50180
 
+// for piece-moves-down in grid
+ADD R[50400] 10
+ADD R[50401] 10
+ADD R[50402] 10
+ADD R[50403] 10
 
-
-// if any
 
 // &&&&&&&&&&&
 // &&&&&&&&&&&
@@ -278,7 +284,8 @@ LD R[28025] 0  // X     Pushed
 LD R[30001] 48  // X pos of piece when spawning at top
 LD R[30002]  0  // Y pos of new piece when spawning at top
 
-LD R[65000] R[65001]  // load gravity speed - number of frames after piece moves down
+LD R[65001] 10  // gravity: number of frames after piece moves down
+LD R[65000] R[65001]  // load gravity speed
 
 
 CALL UPDATE_ACTIVE_PIECE_SLOTS
