@@ -38,13 +38,11 @@
 // 50000-50180: tetris grid (current)
 // 50200-50380: tetris grid (saved)
 
-// 65000: holds gravity speed
+// 65000: loaded with gravity speed
+// 65001: gravity speed (ie 16)
 // 65535: counter for gravity <- MAX VALUE
 
-
-
-
-
+LD R[65001] 10
 
 // &&&&&&&&&&&
 // &&&&&&&&&&&
@@ -57,7 +55,8 @@ LD R[4097] 1
 LD R[U:V] 0X000000FF
 
 
-// add saved grid onto current grid
+// COPY_SAVED_PLAYFIELD_TO_CURRENT_GRID
+// 50000-50180
 
 
 
@@ -279,7 +278,7 @@ LD R[28025] 0  // X     Pushed
 LD R[30001] 48  // X pos of piece when spawning at top
 LD R[30002]  0  // Y pos of new piece when spawning at top
 
-LD R[65000] 60  // gravity speed - number of frames to move piece down 8px
+LD R[65000] R[65001]  // load gravity speed - number of frames after piece moves down
 
 
 CALL UPDATE_ACTIVE_PIECE_SLOTS
@@ -312,6 +311,12 @@ TETRIS_MAIN_LOOP:
     // Update Buttons Pushed *
     // ***********************
 
+    // UPPushed
+    CMP R[28000] 0
+    ADD R[28020] 1
+    CMP R[28000] 1
+    LD R[28020] 0
+
     // ZPushed
     CMP R[28004] 0  // if R[28004] = 1, R[28024] += 1
     ADD R[28024] 1
@@ -330,12 +335,12 @@ TETRIS_MAIN_LOOP:
     CMP R[28003] 1
     LD R[28023] 0
 
-
     // LEFT Down
     CMP R[28021] 1
     GOTO __SKIP_LEFT_DOWN__
     CALL TETRIS_MOVE_PIECE_LEFT_OR_RIGHT
     __SKIP_LEFT_DOWN__:
+    
     // RIGHT Down
     CMP R[28023] 1
     GOTO __SKIP_RIGHT_DOWN__
@@ -350,6 +355,8 @@ TETRIS_MAIN_LOOP:
     CALL TETRIS_ROTATE_ACTIVE_PIECE
     __SKIP_ROTATE__:
 
+    // UP - insta drop
+    // >>> program later
 
     // ********************
     // Draw on the Screen *
