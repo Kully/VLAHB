@@ -15,7 +15,7 @@
 #define STACK_MAX_SIZE 32
 #define VRAM_FIRST_INDEX 4101
 #define MAX_RAMVALUE UINT_MAX
-#define DEBUG 0
+#define DEBUG 1
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
@@ -137,7 +137,8 @@ int main(int argc, char* argv[])
         printf("    ...\n");
         printf("    4100: %u\n", ram[4100]);
         printf("    ...\n");
-        printf("    28024: %u\n", ram[28024]);
+        printf("    30001: %u\n", ram[30001]);
+        printf("    30002: %u\n", ram[30002]);
         printf("\n\n");
 #endif
         pc += 2;

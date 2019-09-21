@@ -1,3 +1,54 @@
+// 0 == don't move
+// 1 == subtract
+// 3 == add
+
+
+// LD R[65000] 3  // X
+// LD R[65001] 3  // Y
+
+// LD R[30001] 10
+// LD R[30002] 10
+
+// CALL X_DECIDE_IF_SPRITE_ROTATION_MOVES
+// CALL Y_DECIDE_IF_SPRITE_ROTATION_MOVES
+// EXIT
+
+
+// X_DECIDE_IF_SPRITE_ROTATION_MOVES:
+//     // X
+//     GT R[65000] 0
+//     RETURN
+//     LT R[65000] 2
+//     GOTO _MOVE_SPRITE_RIGHT_ONE_CELL
+//     GOTO _MOVE_SPRITE_LEFT_ONE_CELL
+
+//     _MOVE_SPRITE_RIGHT_ONE_CELL:
+//         ADD R[30001] 8
+//         RETURN
+
+//     _MOVE_SPRITE_LEFT_ONE_CELL:
+//         SUB R[30001] 8
+//         RETURN
+
+
+// Y_DECIDE_IF_SPRITE_ROTATION_MOVES:
+//     // Y
+//     GT R[65001] 0
+//     RETURN
+//     LT R[65001] 2
+//     GOTO _MOVE_SPRITE_DOWN_ONE_CELL
+//     GOTO _MOVE_SPRITE_UP_ONE_CELL
+
+//     _MOVE_SPRITE_DOWN_ONE_CELL:
+//         ADD R[30002] 8
+//         RETURN
+
+//     _MOVE_SPRITE_UP_ONE_CELL:
+//         SUB R[30002] 8
+//         RETURN
+
+
+
 // **********
 // * TETRIS *
 // **********
@@ -16,8 +67,8 @@
 
 //  ~~~ heap ~~~
 
-// 30001: X pos of piece when spawning at top
-// 30002: Y pos of piece when spawning at top
+// 30001: X pos of piece (starts @ spawning value)
+// 30002: Y pos of piece (starts @ spawning value)
 // 30003: pc of active piece
 // 30004: width of active piece (pixels)
 // 30005: height of active piece in (pixels)
@@ -43,8 +94,7 @@
 
 // 65000: loaded with gravity speed
 // 65001: gravity speed (ie 16)
-// 65535: counter for gravity <- MAX VALUE
-
+// 65535: counter for gravity <- MAX VALUEa
 
 
 
@@ -70,7 +120,6 @@ ADD R[50403] 10
 
 // &&&&&&&&&&&
 // &&&&&&&&&&&
-
 
 
 
@@ -263,6 +312,7 @@ LD R[30166] SPRITE_FONT_6
 LD R[30167] SPRITE_FONT_7
 LD R[30168] SPRITE_FONT_8
 LD R[30169] SPRITE_FONT_9
+
 
 // =========
 // CONSTANTS
