@@ -1,31 +1,3 @@
-LD R[4096] SPRITE_FONT_2
-
-LD R[7] 4700  // vram
-LD R[1] 5 // w
-LD R[2] 5 // h
-LD R[U] R[7] R[1] R[2]
-
-BLIT
-
-YYYIRUWYRROWUI:
-    INPUT R[0]
-    SHT R[0] R[28000] 0  // UP
-    SHT R[0] R[28001] 1  // LEFT
-    SHT R[0] R[28002] 2  // DOWN
-    SHT R[0] R[28003] 3  // RIGHT
-    SHT R[0] R[28004] 4  // Z
-    SHT R[0] R[28005] 5  // X
-    SHT R[0] R[28006] 6  // END
-    SHT R[0] R[28007] 7  // ESC
-
-    // exit vm if ESC/END is pressed
-    CMP R[28006] 0
-        EXIT
-    CMP R[28007] 0
-        EXIT
-
-    GOTO YYYIRUWYRROWUI
-
 // **********
 // * TETRIS *
 // **********
