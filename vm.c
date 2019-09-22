@@ -343,27 +343,6 @@ int main(int argc, char* argv[])
                 }
                 break;
             }
-            case 0X00ff:  // LD REGISTERS TO VRAM W VRAM INDEX //
-            {
-                // syntax: LD R[U] R[i] R[j] R[k] R[l] //
-                const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
-                const uint16_t ram_index_i = letter_code_to_ram_index(i);
-
-                const uint16_t idx_to_vram_idx = (rom[pc - 1] >> 16) & 0xFFFF;
-
-                const uint16_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
-                const uint16_t height_sprite = (rom[pc - 1]) & 0xFF;
-
-                const uint16_t vram_idx = ram[idx_to_vram_idx];
-
-                for(uint16_t h = 0; h < ram[height_sprite]; h++)
-                {
-                    loadPixelsToVram(ram, rom, vram_idx + (h*160),
-                                     ram[ram_index_i] + h*ram[width_sprite],
-                                     ram[width_sprite]);
-                }
-                break;
-            }
             case 0x001d:  // LD R[U] R[V] //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
@@ -524,7 +503,28 @@ int main(int argc, char* argv[])
                 SDL_Delay(wait);
                 break;
             }
-            case 0x002a:
+            case 0X002a:  // LD REGISTERS TO VRAM W VRAM INDEX //
+            {
+                // syntax: LD R[U] R[i] R[j] R[k] R[l] //
+                const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
+                const uint16_t ram_index_i = letter_code_to_ram_index(i);
+
+                const uint16_t idx_to_vram_idx = (rom[pc - 1] >> 16) & 0xFFFF;
+
+                const uint16_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
+                const uint16_t height_sprite = (rom[pc - 1]) & 0xFF;
+
+                const uint16_t vram_idx = ram[idx_to_vram_idx];
+
+                for(uint16_t h = 0; h < ram[height_sprite]; h++)
+                {
+                    loadPixelsToVram(ram, rom, vram_idx + (h*160),
+                                     ram[ram_index_i] + h*ram[width_sprite],
+                                     ram[width_sprite]);
+                }
+                break;
+            }
+            case 0x00ff:
             {
                 done = true;
                 break;

@@ -129,7 +129,6 @@ op_codes_dict = {
     'LD ARRAY TO VRAM': '1a',
     'LD ARRAY PC TO REGISTER': '1b',
     'LD REGISTERS TO VRAM': '1c',
-    'LD REGISTERS TO VRAM W VRAM INDEX': 'ff',
     'LD R[U] R[V]': '1d',
     'LD R[U:V] R[Y]': '1e',
     'LD R[U:V] R[Y:Z]': '1f',
@@ -143,7 +142,8 @@ op_codes_dict = {
     'INPUT': '27',
     'SHT': '28',
     'WAIT': '29',
-    'EXIT': '2a',
+    'LD REGISTERS TO VRAM W VRAM INDEX': '2a',
+    'EXIT': 'ff',
 }
 
 pointer_label_to_slot_index = {
