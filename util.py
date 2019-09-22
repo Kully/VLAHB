@@ -129,6 +129,7 @@ op_codes_dict = {
     'LD ARRAY TO VRAM': '1a',
     'LD ARRAY PC TO REGISTER': '1b',
     'LD REGISTERS TO VRAM': '1c',
+    'LD REGISTERS TO VRAM W VRAM INDEX': 'ff',
     'LD R[U] R[V]': '1d',
     'LD R[U:V] R[Y]': '1e',
     'LD R[U:V] R[Y:Z]': '1f',
@@ -268,4 +269,5 @@ REGEX_UV_TWO = r'R\[([UVYZ]):([UVYZ])]'
 # for arrays
 REGEX_ARRAY_LD = r'([A-Za-z_]{1}[A-Za-z_\d]{1,}) R\[(\d+)\] R\[(\d+)\] (\d+) (\d+)'
 REGEX_REGISTER_ONLY_ARRAY_LD = r'R\[([UVYZ])] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\]'
+REGEX_REGISTER_ONLY_VRAM_IDX_ARRAY_LD = r'R\[([UVYZ])] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\]'
 REGEX_LD_LABEL_PC = r'R\[(\d+)\] ([A-Za-z_]{1}[A-Za-z_\d]{1,})'
