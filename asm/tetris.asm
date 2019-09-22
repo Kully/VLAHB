@@ -1,9 +1,9 @@
-LD R[4096] SPRITE_FONT_0
+LD R[4096] SPRITE_FONT_2
 
-LD R[0] 15620  // vram
-LD R[1] // w
-LD R[2] // h
-// LD R[U] R[0] R[1] R[2]
+LD R[7] 4700  // vram
+LD R[1] 5 // w
+LD R[2] 5 // h
+LD R[U] R[7] R[1] R[2]
 
 BLIT
 

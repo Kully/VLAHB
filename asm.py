@@ -253,18 +253,18 @@ def validate_and_make_hexfile(lines):
                     )
 
                     UVYZ           = all_args[0][0]
-                    vram_idx       = all_args[0][1]
+                    idx_to_vram_idx       = all_args[0][1]
                     width_sprite   = all_args[0][2]
                     height_sprite  = all_args[0][3]
 
                     UVYZ_digit = util.UVYZ_to_hex_digit[str(UVYZ)]
-                    vram_idx = util.int_to_hex(vram_idx).zfill(4)
+                    idx_to_vram_idx = util.int_to_hex(idx_to_vram_idx).zfill(4)
                     width_sprite = util.int_to_hex(width_sprite).zfill(2)
                     height_sprite = util.int_to_hex(height_sprite).zfill(2)
 
                     word0_first_half = UVYZ_digit + '000'
                     word0_second_half = opcode_val.zfill(4)
-                    word1 = vram_idx + width_sprite + height_sprite
+                    word1 = idx_to_vram_idx + width_sprite + height_sprite
 
                     hex_file_str = write_two_lines_to_hexfile(
                         word0_first_half, word0_second_half,

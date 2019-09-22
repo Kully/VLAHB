@@ -349,9 +349,12 @@ int main(int argc, char* argv[])
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t ram_index_i = letter_code_to_ram_index(i);
 
-                const uint16_t vram_idx = (rom[pc - 1] >> 24) & 0xFFFF;
+                const uint16_t idx_to_vram_idx = (rom[pc - 1] >> 16) & 0xFFFF;
+
                 const uint16_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
-                const uint16_t height_sprite = (rom[pc - 1]) & 0xFF;                
+                const uint16_t height_sprite = (rom[pc - 1]) & 0xFF;
+
+                const uint16_t vram_idx = ram[idx_to_vram_idx];
 
                 for(uint16_t h = 0; h < ram[height_sprite]; h++)
                 {
