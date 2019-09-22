@@ -1,51 +1,147 @@
-// 0 == don't move
-// 1 == subtract
-// 3 == add
+// GRIDS - the new approach to tetris
+// we are in large tetris-cell land (10*18 grid)
+// T piece (middle piece ALWAYS remains)
+
+LD R[50000] 5   // consistent piece X
+LD R[50001] 2   // consistent piece Y <- depends on the piece
+
+GRAVITY:
+    ADD R[50001] 1
 
 
-// LD R[65000] 3  // X
-// LD R[65001] 3  // Y
+SPRITE_TETRIS_T_BLOCK
+how much vertical space: 3
+// rotation 0
+//
+//  [][][]
+//    []
+N
+N-1
+N+1
+N+10
 
-// LD R[30001] 10
-// LD R[30002] 10
+// rotation 1
+//    []
+//  [][]
+//    []
+//
+N-10
+N-1
+N
+N+10
 
-// CALL X_DECIDE_IF_SPRITE_ROTATION_MOVES
-// CALL Y_DECIDE_IF_SPRITE_ROTATION_MOVES
-// EXIT
+// rotation 2
+//    []
+//  [][][]
+//    
+N-10
+N-1
+N
+N+1
+
+// rotation 3
+//    []
+//    [][]
+//    []
+N-10
+N
+N+1
+N+10
 
 
-// X_DECIDE_IF_SPRITE_ROTATION_MOVES:
-//     // X
-//     GT R[65000] 0
-//     RETURN
-//     LT R[65000] 2
-//     GOTO _MOVE_SPRITE_RIGHT_ONE_CELL
-//     GOTO _MOVE_SPRITE_LEFT_ONE_CELL
-
-//     _MOVE_SPRITE_RIGHT_ONE_CELL:
-//         ADD R[30001] 8
-//         RETURN
-
-//     _MOVE_SPRITE_LEFT_ONE_CELL:
-//         SUB R[30001] 8
-//         RETURN
+SPRITE_TETRIS_S_BLOCK
+how much vertical space: 3
+// rotation 0
+//
+//     [][]
+//   [][]
 
 
-// Y_DECIDE_IF_SPRITE_ROTATION_MOVES:
-//     // Y
-//     GT R[65001] 0
-//     RETURN
-//     LT R[65001] 2
-//     GOTO _MOVE_SPRITE_DOWN_ONE_CELL
-//     GOTO _MOVE_SPRITE_UP_ONE_CELL
+// rotation 1
+// []
+// [][]
+//   []
 
-//     _MOVE_SPRITE_DOWN_ONE_CELL:
-//         ADD R[30002] 8
-//         RETURN
 
-//     _MOVE_SPRITE_UP_ONE_CELL:
-//         SUB R[30002] 8
-//         RETURN
+SPRITE_TETRIS_Z_BLOCK
+// rotation 0
+//
+//   [][]
+//     [][]
+
+
+// rotation 1
+//         []
+//       [][]
+//       []
+
+
+SPRITE_TETRIS_L_BLOCK
+how much vertical space: 2
+// rotation 0
+//
+//  [][][]
+//  []
+
+// rotation 1
+//  [][]
+//    []
+//    []
+
+// rotation 2
+//      []
+//  [][][] 
+//
+
+// rotation 3
+//    []
+//    []
+//    [][]
+
+
+SPRITE_TETRIS_J_BLOCK
+how much vertical space: 2
+// rotation 0
+//
+//  [][][]
+//      []
+
+// rotation 1
+//    []
+//    []
+//  [][]
+
+// rotation 2
+//  []
+//  [][][]
+//
+
+// rotation 3
+//    [][]
+//    []
+//    []
+
+
+SPRITE_TETRIS_O_BLOCK
+how much vertical space: 2
+// rotation 0
+//    [][]
+//    [][]
+
+
+SPRITE_TETRIS_I_BLOCK
+how much vertical space: 4
+// rotation 0
+//    []
+//    []
+//    []
+//    []
+
+// rotation 1
+//
+//
+//  [][][][]
+//
 
 
 
@@ -724,3 +820,62 @@ DECIDE_RANDOM_PIECE_AND_RETURN_INDEX_TO_PC:
 
     LD R[Z] R[V]
     RETURN
+
+
+
+
+
+
+
+
+
+
+// 0 == don't move
+// 1 == subtract
+// 3 == add
+
+
+// LD R[65000] 3  // X
+// LD R[65001] 3  // Y
+
+// LD R[30001] 10
+// LD R[30002] 10
+
+// CALL X_DECIDE_IF_SPRITE_ROTATION_MOVES
+// CALL Y_DECIDE_IF_SPRITE_ROTATION_MOVES
+// EXIT
+
+
+// X_DECIDE_IF_SPRITE_ROTATION_MOVES:
+//     // X
+//     GT R[65000] 0
+//     RETURN
+//     LT R[65000] 2
+//     GOTO _MOVE_SPRITE_RIGHT_ONE_CELL
+//     GOTO _MOVE_SPRITE_LEFT_ONE_CELL
+
+//     _MOVE_SPRITE_RIGHT_ONE_CELL:
+//         ADD R[30001] 8
+//         RETURN
+
+//     _MOVE_SPRITE_LEFT_ONE_CELL:
+//         SUB R[30001] 8
+//         RETURN
+
+
+// Y_DECIDE_IF_SPRITE_ROTATION_MOVES:
+//     // Y
+//     GT R[65001] 0
+//     RETURN
+//     LT R[65001] 2
+//     GOTO _MOVE_SPRITE_DOWN_ONE_CELL
+//     GOTO _MOVE_SPRITE_UP_ONE_CELL
+
+//     _MOVE_SPRITE_DOWN_ONE_CELL:
+//         ADD R[30002] 8
+//         RETURN
+
+//     _MOVE_SPRITE_UP_ONE_CELL:
+//         SUB R[30002] 8
+//         RETURN
+
