@@ -5,11 +5,6 @@
 // Convention: put the Width and Height above the
 // sprite as a comment eg. 16x16
 //
-// If you want to load MY_SPRITE to position (3,7)
-// then you would write
-//
-// LD MY_SPRITE R[U] R[V] 16 16
-//
 // ***********************************************
 // ***********************************************
 

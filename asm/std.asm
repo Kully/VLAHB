@@ -259,6 +259,7 @@ STD_MATH_CEIL_DIV:
 
 
 // Python: R[0] // R[1]
+// NOTE: `LD R[4100] 0` before calling
 STD_MATH_FLOOR_DIV:
     GTE R[0] R[1]
     RETURN
@@ -267,6 +268,7 @@ STD_MATH_FLOOR_DIV:
     GOTO STD_MATH_FLOOR_DIV
 
 // Python: R[0] % R[1]
+// NOTE: `LD R[4100] 0` before calling
 STD_MATH_DIV_REMAINDER:
     CALL STD_MATH_FLOOR_DIV
     LD R[3] R[1]

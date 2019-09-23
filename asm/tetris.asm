@@ -1,3 +1,16 @@
+// store active tiles and fixed tile
+//
+// eg. J fixed point is shown by the 'X' below
+//               [ ]
+// [ ][X][ ]     [X]
+//       [ ]  [ ][ ]
+//
+// R[5151] - active1 (Fixed Point)
+// R[5152] - active2
+// R[5153] - active3
+// R[5154] - active4
+// R[5155] - min-height above Fixed Point (grid-space)
+
 CALL STD_SCREEN_FILL_BLACK  // clear screen
 
 // load background
@@ -14,8 +27,6 @@ ADD R[0] 16
 LD SPRITE_TETRIS_BKGD_STRIP_16_144 R[0] R[1] 16 144
 
 
-
-
 LD R[5100] SPRITE_TETRIS_O_BLOCK
 LD R[5101] SPRITE_TETRIS_I_BLOCK
 LD R[5102] SPRITE_TETRIS_J_BLOCK
@@ -25,26 +36,27 @@ LD R[5105] SPRITE_TETRIS_Z_BLOCK
 LD R[5106] SPRITE_TETRIS_T_BLOCK
 
 
-// SQUARE
-LD R[0] 0  // X in grid
-LD R[1] 0  // Y in grid
-CALL XY_FROM_GRID_TO_INDEX_IN_PLAYFIELD
+LD R[0] 5  // X in grid
+LD R[1] 3  // Y in grid
+CALL TETRIS_COMPUTE_AND_STORE_CELL_INDICES_J_ROT0_SPRITE
 
-LD R[4096] SPRITE_TETRIS_O_BLOCK
-LD R[0] R[4100]
-LD R[1] 8
-LD R[2] 8
-LD R[U] R[0] R[1] R[2]
-// N+1
-ADD R[0] 8
-LD R[U] R[0] R[1] R[2]
-// N+10
-ADD R[0] 1272
-LD R[U] R[0] R[1] R[2]
-// N+11
-ADD R[0] 8
-LD R[U] R[0] R[1] R[2]
 
+LD R[0] R[5151]
+CALL _X_FROM_INDEX_GRID
+EXIT
+
+
+LD R[4096] SPRITE_TETRIS_J_BLOCK
+LD R[0] R[5151]
+LD R[1] 8  // W
+LD R[2] 8  // H
+LD R[U] R[0] R[1] R[2]
+LD R[0] R[5152]
+LD R[U] R[0] R[1] R[2]
+LD R[0] R[5153]
+LD R[U] R[0] R[1] R[2]
+LD R[0] R[5154]
+LD R[U] R[0] R[1] R[2]
 
 BLIT
 ASGDJASDGKASD_GAME_LOOP:
@@ -68,7 +80,90 @@ ASGDJASDGKASD_GAME_LOOP:
 
 
 
-XY_FROM_GRID_TO_INDEX_IN_PLAYFIELD:
+
+
+
+TETRIS_COMPUTE_AND_STORE_CELL_INDICES_J_ROT0_SPRITE:
+    // rotation 0
+    //
+    //  [b][a][c]
+    //        [d]
+    CALL _FLATTEN_XY_GRID_TO_INDEX_IN_GRID
+
+    LD R[5151] R[4100]
+    SUB R[4100] 1
+    LD R[5152] R[4100]
+    ADD R[4100] 2
+    LD R[5153] R[4100]
+    ADD R[4100] 10
+    LD R[5154] R[4100]
+
+    RETURN
+
+
+
+
+
+DRAW_SPRITE_J_ROT0_IN_PLAYFIELD:
+    // rotation 0
+    //
+    //  [b][a][c]
+    //        [d]
+    CALL _FLATTEN_XY_GRID_TO_INDEX_IN_PLAYFIELD
+
+    LD R[4096] SPRITE_TETRIS_J_BLOCK
+    LD R[1] 8  // W
+    LD R[2] 8  // H
+
+    LD R[0] R[4100]  // a
+    // LD R[U] R[0] R[1] R[2]
+    LD R[5151] R[0] // store in active1 - Fixed Point
+
+    SUB R[0] 8  // b
+    //LD R[U] R[0] R[1] R[2]
+    LD R[5152] R[0] // store in active2
+
+    ADD R[0] 16  // c
+    // LD R[U] R[0] R[1] R[2]
+    LD R[5153] R[0] // store in active3
+
+    ADD R[0] 1280 // d
+    // LD R[U] R[0] R[1] R[2]
+    LD R[5154] R[0] // store in active4
+
+    RETURN
+
+
+DRAW_SPRITE_O_ROT0_IN_PLAYFIELD:
+    // rotation 0
+    //    [a][b]
+    //    [c][d]
+    CALL _FLATTEN_XY_GRID_TO_INDEX_IN_PLAYFIELD
+
+    LD R[4096] SPRITE_TETRIS_O_BLOCK
+    LD R[1] 8  // W
+    LD R[2] 8  // H
+
+    LD R[0] R[4100]  // a
+    LD R[U] R[0] R[1] R[2]
+    LD R[5151] R[0] // store in active1
+
+    ADD R[0] 8  // b
+    LD R[U] R[0] R[1] R[2]
+    LD R[5152] R[0] // store in active2
+
+    ADD R[0] 1272  // c
+    LD R[U] R[0] R[1] R[2]
+    LD R[5153] R[0] // store in active3
+    
+    ADD R[0] 8  // d
+    LD R[U] R[0] R[1] R[2]
+    LD R[5154] R[0] // store in active4
+
+    RETURN
+
+
+_FLATTEN_XY_GRID_TO_INDEX_IN_PLAYFIELD:
     // X = R[0]
     // Y = R[1]
     // returns = (4101+16)+(8*x)+(8*160*y)
@@ -80,6 +175,31 @@ XY_FROM_GRID_TO_INDEX_IN_PLAYFIELD:
     ADD R[4100] R[99]
     ADD R[4100] 4117
     RETURN
+
+
+_FLATTEN_XY_GRID_TO_INDEX_IN_GRID:
+    // (x,y) -> x +(y*10)
+    // 0 < index < 179
+    LD R[4100] R[1]
+    MUL R[4100] 10
+    ADD R[4100] R[0]
+    RETURN
+
+
+_X_FROM_INDEX_GRID:
+    LD R[1] 2
+    LD R[4100] 0
+    CALL STD_MATH_DIV_REMAINDER
+    RETURN
+
+_Y_FROM_INDEX_GRID:
+    LD R[1] 10
+    LD R[4100] 0
+    CALL STD_MATH_FLOOR_DIV
+    RETURN
+
+
+
 
 
 
@@ -194,13 +314,6 @@ XY_FROM_GRID_TO_INDEX_IN_PLAYFIELD:
 // //    [][]
 // //    []
 // //    []
-
-
-// SPRITE_TETRIS_O_BLOCK
-// how much vertical space: 2
-// // rotation 0
-// //    [][]
-// //    [][]
 
 
 // SPRITE_TETRIS_I_BLOCK
