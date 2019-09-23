@@ -40,7 +40,7 @@ SPRITE_FONT_0:
     0XFAFAFAFF
     0XFAFAFAFF
     0XFFFFFF00
-// 5 5
+// 5 5 - Doesn't look right
 SPRITE_FONT_1:
     0XFFFFFF00
     0XFAFAFAFF

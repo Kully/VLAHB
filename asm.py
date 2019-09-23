@@ -243,6 +243,34 @@ def validate_and_make_hexfile(lines):
                         word1, hex_file_str
                     )
 
+                # LD R[U] R[vram_idx] R[k] R[k] (k,l must be <= 255)
+                elif re.match(util.REGEX_REGISTER_ONLY_VRAM_IDX_ARRAY_LD, ' '.join(args)):
+                    opcode_val = util.op_codes_dict['LD REGISTERS TO VRAM W VRAM INDEX']
+
+                    all_args = re.findall(
+                        util.REGEX_REGISTER_ONLY_VRAM_IDX_ARRAY_LD,
+                        ' '.join(args)
+                    )
+
+                    UVYZ           = all_args[0][0]
+                    idx_to_vram_idx       = all_args[0][1]
+                    width_sprite   = all_args[0][2]
+                    height_sprite  = all_args[0][3]
+
+                    UVYZ_digit = util.UVYZ_to_hex_digit[str(UVYZ)]
+                    idx_to_vram_idx = util.int_to_hex(idx_to_vram_idx).zfill(4)
+                    width_sprite = util.int_to_hex(width_sprite).zfill(2)
+                    height_sprite = util.int_to_hex(height_sprite).zfill(2)
+
+                    word0_first_half = UVYZ_digit + '000'
+                    word0_second_half = opcode_val.zfill(4)
+                    word1 = idx_to_vram_idx + width_sprite + height_sprite
+
+                    hex_file_str = write_two_lines_to_hexfile(
+                        word0_first_half, word0_second_half,
+                        word1, hex_file_str
+                    )
+
                 elif re.match(util.REGEX_LD_R_ONE, args[0]):
                     # LD R[i] R[j]
                     if re.match(util.REGEX_LD_R_ONE, args[1]):
