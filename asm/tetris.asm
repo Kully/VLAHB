@@ -1,147 +1,173 @@
-// GRIDS - the new approach to tetris
-// we are in large tetris-cell land (10*18 grid)
-// T piece (middle piece ALWAYS remains)
+LD R[4096] SPRITE_TETRIS_J_BLOCK
+LD R[0] 4101
+LD R[1] 8
+LD R[2] 8
 
-LD R[50000] 5   // consistent piece X
-LD R[50001] 2   // consistent piece Y <- depends on the piece
+// LD R[U] R[0] R[1] R[2]
 
-GRAVITY:
-    ADD R[50001] 1
+BLIT
+ASGDJASDGKASD_GAME_LOOP:
+    INPUT R[0]
+    SHT R[0] R[28000] 0  // UP
+    SHT R[0] R[28001] 1  // LEFT
+    SHT R[0] R[28002] 2  // DOWN
+    SHT R[0] R[28003] 3  // RIGHT
+    SHT R[0] R[28004] 4  // Z
+    SHT R[0] R[28005] 5  // X
+    SHT R[0] R[28006] 6  // END
+    SHT R[0] R[28007] 7  // ESC
 
+    // exit vm if ESC/END is pressed
+    CMP R[28006] 0
+        EXIT
+    CMP R[28007] 0
+        EXIT
 
-SPRITE_TETRIS_T_BLOCK
-how much vertical space: 3
-// rotation 0
-//
-//  [][][]
-//    []
-N
-N-1
-N+1
-N+10
-
-// rotation 1
-//    []
-//  [][]
-//    []
-//
-N-10
-N-1
-N
-N+10
-
-// rotation 2
-//    []
-//  [][][]
-//    
-N-10
-N-1
-N
-N+1
-
-// rotation 3
-//    []
-//    [][]
-//    []
-N-10
-N
-N+1
-N+10
+    GOTO ASGDJASDGKASD_GAME_LOOP
 
 
-SPRITE_TETRIS_S_BLOCK
-how much vertical space: 3
-// rotation 0
-//
-//     [][]
-//   [][]
+// SPRITE_TETRIS_T_BLOCK
+// how much vertical space: 3
+// // rotation 0
+// //
+// //  [][][]
+// //    []
+// N
+// N-1
+// N+1
+// N+10
+
+// // rotation 1
+// //    []
+// //  [][]
+// //    []
+// //
+// N-10
+// N-1
+// N
+// N+10
+
+// // rotation 2
+// //    []
+// //  [][][]
+// //    
+// N-10
+// N-1
+// N
+// N+1
+
+// // rotation 3
+// //    []
+// //    [][]
+// //    []
+// N-10
+// N
+// N+1
+// N+10
 
 
-// rotation 1
-// []
-// [][]
-//   []
+// SPRITE_TETRIS_S_BLOCK
+// how much vertical space: 3
+// // rotation 0
+// //
+// //     [][]
+// //   [][]
 
 
-SPRITE_TETRIS_Z_BLOCK
-// rotation 0
-//
-//   [][]
-//     [][]
+// // rotation 1
+// // []
+// // [][]
+// //   []
 
 
-// rotation 1
-//         []
-//       [][]
-//       []
+// SPRITE_TETRIS_Z_BLOCK
+// // rotation 0
+// //
+// //   [][]
+// //     [][]
 
 
-SPRITE_TETRIS_L_BLOCK
-how much vertical space: 2
-// rotation 0
-//
-//  [][][]
-//  []
-
-// rotation 1
-//  [][]
-//    []
-//    []
-
-// rotation 2
-//      []
-//  [][][] 
-//
-
-// rotation 3
-//    []
-//    []
-//    [][]
+// // rotation 1
+// //         []
+// //       [][]
+// //       []
 
 
-SPRITE_TETRIS_J_BLOCK
-how much vertical space: 2
-// rotation 0
-//
-//  [][][]
-//      []
+// SPRITE_TETRIS_L_BLOCK
+// how much vertical space: 2
+// // rotation 0
+// //
+// //  [][][]
+// //  []
 
-// rotation 1
-//    []
-//    []
-//  [][]
+// // rotation 1
+// //  [][]
+// //    []
+// //    []
 
-// rotation 2
-//  []
-//  [][][]
-//
+// // rotation 2
+// //      []
+// //  [][][] 
+// //
 
-// rotation 3
-//    [][]
-//    []
-//    []
-
-
-SPRITE_TETRIS_O_BLOCK
-how much vertical space: 2
-// rotation 0
-//    [][]
-//    [][]
+// // rotation 3
+// //    []
+// //    []
+// //    [][]
 
 
-SPRITE_TETRIS_I_BLOCK
-how much vertical space: 4
-// rotation 0
-//    []
-//    []
-//    []
-//    []
+// SPRITE_TETRIS_J_BLOCK
+// how much vertical space: 2
+// // rotation 0
+// //
+// //  [][][]
+// //      []
 
-// rotation 1
-//
-//
-//  [][][][]
-//
+// // rotation 1
+// //    []
+// //    []
+// //  [][]
+
+// // rotation 2
+// //  []
+// //  [][][]
+// //
+
+// // rotation 3
+// //    [][]
+// //    []
+// //    []
+
+
+// SPRITE_TETRIS_O_BLOCK
+// how much vertical space: 2
+// // rotation 0
+// //    [][]
+// //    [][]
+
+
+// SPRITE_TETRIS_I_BLOCK
+// how much vertical space: 4
+// // rotation 0
+// //    []
+// //    []
+// //    []
+// //    []
+
+// // rotation 1
+// //
+// //
+// //  [][][][]
+// //
+
+
+
+
+
+
+
+
+
 
 
 
