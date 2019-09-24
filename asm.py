@@ -45,11 +45,11 @@ def return_hex_instruction_lines(opcode, args, word0_first_half,
             util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
         )
     if re.search(util.REGEX_LD_R_ONE, args[1]):
-        opcode_val = util.op_codes_dict[to_register_key]
+        opcode_val = util.opcode_lookup_dict[to_register_key]
         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
     else:
-        opcode_val = util.op_codes_dict[to_direct_key]
+        opcode_val = util.opcode_lookup_dict[to_direct_key]
         word1 = util.int_to_hex(args[1]).zfill(8)
 
     word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -146,7 +146,7 @@ def validate_and_make_hexfile(lines):
                 if len(args) < 1:
                     raise Exception(util.GOTO_EXCEPTION_MSG)
 
-                opcode_val = util.op_codes_dict['GOTO']
+                opcode_val = util.opcode_lookup_dict['GOTO']
                 word0_second_half = opcode_val.zfill(4)
 
                 try:
@@ -165,7 +165,7 @@ def validate_and_make_hexfile(lines):
 
                 # LD MARIO R[X] R[Y] W H (X,Y must be <= 255)
                 if re.match(util.REGEX_ARRAY_LD, ' '.join(args)):
-                    opcode_val = util.op_codes_dict['LD ARRAY TO VRAM']
+                    opcode_val = util.opcode_lookup_dict['LD ARRAY TO VRAM']
 
                     all_args = re.findall(util.REGEX_ARRAY_LD, ' '.join(args))
 
@@ -195,7 +195,7 @@ def validate_and_make_hexfile(lines):
 
                 # LD R[i] MARIO  (load PC of MARIO array to R[i])
                 elif re.match(util.REGEX_LD_LABEL_PC, ' '.join(args)):
-                    opcode_val = util.op_codes_dict['LD ARRAY PC TO REGISTER']
+                    opcode_val = util.opcode_lookup_dict['LD ARRAY PC TO REGISTER']
                     word0_second_half = opcode_val.zfill(4)
 
                     # parse out args
@@ -218,7 +218,7 @@ def validate_and_make_hexfile(lines):
 
                 # LD R[U] R[i] R[j] R[k] R[k] (i,j,k,l must be <= 255)
                 elif re.match(util.REGEX_REGISTER_ONLY_ARRAY_LD, ' '.join(args)):
-                    opcode_val = util.op_codes_dict['LD REGISTERS TO VRAM']
+                    opcode_val = util.opcode_lookup_dict['LD REGISTERS TO VRAM']
 
                     all_args = re.findall(util.REGEX_REGISTER_ONLY_ARRAY_LD, ' '.join(args))
 
@@ -245,7 +245,7 @@ def validate_and_make_hexfile(lines):
 
                 # LD R[U] R[vram_idx] R[k] R[k] (k,l must be <= 255)
                 elif re.match(util.REGEX_REGISTER_ONLY_VRAM_IDX_ARRAY_LD, ' '.join(args)):
-                    opcode_val = util.op_codes_dict['LD REGISTERS TO VRAM W VRAM INDEX']
+                    opcode_val = util.opcode_lookup_dict['LD REGISTERS TO VRAM W VRAM INDEX']
 
                     all_args = re.findall(
                         util.REGEX_REGISTER_ONLY_VRAM_IDX_ARRAY_LD,
@@ -274,18 +274,17 @@ def validate_and_make_hexfile(lines):
                 elif re.match(util.REGEX_LD_R_ONE, args[0]):
                     # LD R[i] R[j]
                     if re.match(util.REGEX_LD_R_ONE, args[1]):
-                        opcode_val = util.op_codes_dict['REGISTER TO REGISTER LOAD']
+                        opcode_val = util.opcode_lookup_dict['REGISTER TO REGISTER LOAD']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                     # LD R[i] j
                     elif re.match(r'\d+', args[1]) or re.match(util.REGEX_HEX, args[1]):
-                        opcode_val = util.op_codes_dict['DIRECT LOAD']
+                        opcode_val = util.opcode_lookup_dict['DIRECT LOAD']
                         word1 = util.int_to_hex(args[1]).zfill(8)
 
                     # LD R[i] R[U]
                     elif re.match(util.REGEX_UV_ONE, args[1]) and len(args) == 2:
-                        opcode_val = util.op_codes_dict['LD R[i] R[U]']
-                        # word1 = util.int_to_hex(args[1]).zfill(8)
+                        opcode_val = util.opcode_lookup_dict['LD R[i] R[U]']
 
                         letters_arg0 = re.findall(util.REGEX_UV_ONE, args[1])
                         i = util.UVYZ_to_hex_digit[str(letters_arg0[0])]
@@ -306,17 +305,17 @@ def validate_and_make_hexfile(lines):
 
                     # LD R[U] R[V]
                     if re.match(util.REGEX_UV_ONE, args[1]):
-                        opcode_val = util.op_codes_dict['LD R[U] R[V]']
+                        opcode_val = util.opcode_lookup_dict['LD R[U] R[V]']
                         j = util.UVYZ_to_hex_digit[args[1][2:-1]]
 
                     # LD R[U] R[i]
                     elif re.match(r'R\[\d+]', args[1]):
-                        opcode_val = util.op_codes_dict['LD R[U] R[i]']
+                        opcode_val = util.opcode_lookup_dict['LD R[U] R[i]']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                     # LD R[U] i
                     elif re.match(r'\d+', args[1]):
-                        opcode_val = util.op_codes_dict['LD R[U] i']
+                        opcode_val = util.opcode_lookup_dict['LD R[U] i']
                         word1 = util.int_to_hex(args[1]).zfill(8)
 
                     word0_first_half = i+j+'00'
@@ -336,23 +335,23 @@ def validate_and_make_hexfile(lines):
 
                     # LD R[U:V] R[i]
                     if re.match(r'R\[\d+]', args[1]):
-                        opcode_val = util.op_codes_dict['LD R[U:V] R[i]']
+                        opcode_val = util.opcode_lookup_dict['LD R[U:V] R[i]']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                     # LD R[U:V] i
                     if re.match(r'\d+', args[1]):
-                        opcode_val = util.op_codes_dict['LD R[U:V] i']
+                        opcode_val = util.opcode_lookup_dict['LD R[U:V] i']
                         word1 = util.int_to_hex(args[1]).zfill(8)
 
                     # LD R[U:V] R[Y]
                     elif re.match(util.REGEX_UV_ONE, args[1]):
-                        opcode_val = util.op_codes_dict['LD R[U:V] R[Y]']
+                        opcode_val = util.opcode_lookup_dict['LD R[U:V] R[Y]']
                         k = re.findall(util.REGEX_UV_ONE, args[1])[0]
                         k = util.UVYZ_to_hex_digit[k]
                         
                     # LD R[U:V] R[Y:Z]
                     elif re.match(util.REGEX_UV_TWO, args[1]):
-                        opcode_val = util.op_codes_dict['LD R[U:V] R[Y:Z]']
+                        opcode_val = util.opcode_lookup_dict['LD R[U:V] R[Y:Z]']
 
                         k_and_l = re.findall(util.REGEX_UV_TWO, args[1]) 
                         k = util.UVYZ_to_hex_digit[str(k_and_l[0][0])]
@@ -376,11 +375,11 @@ def validate_and_make_hexfile(lines):
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.match(util.REGEX_LD_R_ONE, args[1]):
-                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER ADD']
+                    opcode_val = util.opcode_lookup_dict['REGISTER TO REGISTER ADD']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = util.op_codes_dict['DIRECT ADD']
+                    opcode_val = util.opcode_lookup_dict['DIRECT ADD']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -393,11 +392,11 @@ def validate_and_make_hexfile(lines):
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.match(util.REGEX_LD_R_ONE, args[1]):
-                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER SUBTRACT']
+                    opcode_val = util.opcode_lookup_dict['REGISTER TO REGISTER SUBTRACT']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = util.op_codes_dict['DIRECT SUBTRACT']
+                    opcode_val = util.opcode_lookup_dict['DIRECT SUBTRACT']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -410,11 +409,11 @@ def validate_and_make_hexfile(lines):
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.match(util.REGEX_LD_R_ONE, args[1]):
-                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER MULTIPLY']
+                    opcode_val = util.opcode_lookup_dict['REGISTER TO REGISTER MULTIPLY']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = util.op_codes_dict['DIRECT MULTIPLY']
+                    opcode_val = util.opcode_lookup_dict['DIRECT MULTIPLY']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -427,11 +426,11 @@ def validate_and_make_hexfile(lines):
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.match(util.REGEX_LD_R_ONE, args[1]):
-                    opcode_val = util.op_codes_dict['REGISTER TO REGISTER DIVIDE']
+                    opcode_val = util.opcode_lookup_dict['REGISTER TO REGISTER DIVIDE']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = util.op_codes_dict['DIRECT DIVIDE']
+                    opcode_val = util.opcode_lookup_dict['DIRECT DIVIDE']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -447,14 +446,14 @@ def validate_and_make_hexfile(lines):
 
                 if re.match(util.REGEX_LD_R_ONE, args[0]):
                     if re.match(util.REGEX_LD_R_ONE, args[1]):
-                        opcode_val = util.op_codes_dict['COMPARE REGISTER TO REGISTER']
+                        opcode_val = util.opcode_lookup_dict['COMPARE REGISTER TO REGISTER']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                         word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                         word0_second_half = opcode_val.zfill(4)
 
                     else:
-                        opcode_val = util.op_codes_dict['COMPARE REGISTER TO DIRECT']
+                        opcode_val = util.opcode_lookup_dict['COMPARE REGISTER TO DIRECT']
                         word1 = util.int_to_hex(args[1]).zfill(8)
 
                         word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -465,7 +464,7 @@ def validate_and_make_hexfile(lines):
                     i = util.UVYZ_to_hex_digit[str(letters_arg0[0])]
 
                     if re.match(r'\d+', args[1]):
-                        opcode_val = util.op_codes_dict['COMPARE UV TO DIRECT']
+                        opcode_val = util.opcode_lookup_dict['COMPARE UV TO DIRECT']
                         word1 = util.int_to_hex(args[1]).zfill(8)
 
                         word0_first_half = i + '000'
@@ -485,11 +484,11 @@ def validate_and_make_hexfile(lines):
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.match(util.REGEX_LD_R_ONE, args[1]):
-                    opcode_val = util.op_codes_dict['LESS THAN REGISTER TO REGISTER']
+                    opcode_val = util.opcode_lookup_dict['LESS THAN REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = util.op_codes_dict['LESS THAN REGISTER TO DIRECT']
+                    opcode_val = util.opcode_lookup_dict['LESS THAN REGISTER TO DIRECT']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -503,11 +502,11 @@ def validate_and_make_hexfile(lines):
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.match(util.REGEX_LD_R_ONE, args[1]):
-                    opcode_val = util.op_codes_dict['LESS THAN OR EQUAL REGISTER TO REGISTER']
+                    opcode_val = util.opcode_lookup_dict['LESS THAN OR EQUAL REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = util.op_codes_dict['LESS THAN OR EQUAL REGISTER TO DIRECT']
+                    opcode_val = util.opcode_lookup_dict['LESS THAN OR EQUAL REGISTER TO DIRECT']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -521,11 +520,11 @@ def validate_and_make_hexfile(lines):
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.match(util.REGEX_LD_R_ONE, args[1]):
-                    opcode_val = util.op_codes_dict['STRICT GREATER THAN REGISTER TO REGISTER']
+                    opcode_val = util.opcode_lookup_dict['STRICT GREATER THAN REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = util.op_codes_dict['STRICT GREATER THAN REGISTER TO DIRECT']
+                    opcode_val = util.opcode_lookup_dict['STRICT GREATER THAN REGISTER TO DIRECT']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -539,11 +538,11 @@ def validate_and_make_hexfile(lines):
                         util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
                     )
                 if re.match(util.REGEX_LD_R_ONE, args[1]):
-                    opcode_val = util.op_codes_dict['GREATER THAN OR EQUAL REGISTER TO REGISTER']
+                    opcode_val = util.opcode_lookup_dict['GREATER THAN OR EQUAL REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
                 else:
-                    opcode_val = util.op_codes_dict['GREATER THAN OR EQUAL REGISTER TO DIRECT']
+                    opcode_val = util.opcode_lookup_dict['GREATER THAN OR EQUAL REGISTER TO DIRECT']
                     word1 = util.int_to_hex(args[1]).zfill(8)
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
@@ -554,7 +553,7 @@ def validate_and_make_hexfile(lines):
                 if len(args) != 1:
                     raise Exception(util.CALL_EXCEPTION_MSG)
 
-                opcode_val = util.op_codes_dict['CALL']
+                opcode_val = util.opcode_lookup_dict['CALL']
                 word0_second_half = opcode_val.zfill(4)
 
                 if args[0] not in LABELS_TO_PC.keys():
@@ -566,7 +565,7 @@ def validate_and_make_hexfile(lines):
                 if len(args) > 0:
                     raise Exception(util.RETURN_EXCEPTION_MSG)
 
-                opcode_val = util.op_codes_dict['RETURN']
+                opcode_val = util.opcode_lookup_dict['RETURN']
                 word0_second_half = opcode_val.zfill(4)
 
             elif opcode in ('POP', 'PUSH'):
@@ -574,18 +573,18 @@ def validate_and_make_hexfile(lines):
                 if len(args) > 0:
                     raise Exception(util.POP_PUSH_EXCEPTION_MSG.format(opcode))
 
-                opcode_val = util.op_codes_dict[opcode]
+                opcode_val = util.opcode_lookup_dict[opcode]
                 word0_second_half = opcode_val.zfill(4)
 
             # transfer RAM portion to display and update
             elif opcode == 'BLIT':
                 valid_opcode = True
-                opcode_val = util.op_codes_dict['BLIT']
+                opcode_val = util.opcode_lookup_dict['BLIT']
                 word0_second_half = opcode_val.zfill(4)
 
             elif opcode == 'RAND':
                 valid_opcode = True
-                opcode_val = util.op_codes_dict[opcode]
+                opcode_val = util.opcode_lookup_dict[opcode]
                 word0_second_half = opcode_val.zfill(4)
 
                 if len(args) < 1:
@@ -598,7 +597,7 @@ def validate_and_make_hexfile(lines):
 
             elif opcode == 'INPUT':
                 valid_opcode = True
-                opcode_val = util.op_codes_dict[opcode]
+                opcode_val = util.opcode_lookup_dict[opcode]
                 word0_second_half = opcode_val.zfill(4)
 
                 if len(args) == 1 and re.match(util.REGEX_LD_R_ONE, args[0]):
@@ -607,7 +606,7 @@ def validate_and_make_hexfile(lines):
 
             elif opcode == 'SHT':  # shift right plus AND
                 valid_opcode = True
-                opcode_val = util.op_codes_dict[opcode]
+                opcode_val = util.opcode_lookup_dict[opcode]
                 word0_second_half = opcode_val.zfill(4)
 
                 if len(args) == 3 and (re.match(util.REGEX_LD_R_ONE, args[0]) and
@@ -625,12 +624,12 @@ def validate_and_make_hexfile(lines):
 
             elif opcode == 'WAIT':  # wait 1/60 sec
                 valid_opcode = True
-                opcode_val = util.op_codes_dict[opcode]
+                opcode_val = util.opcode_lookup_dict[opcode]
                 word0_second_half = opcode_val.zfill(4)    
 
             elif opcode == 'EXIT':
                 valid_opcode = True
-                opcode_val = util.op_codes_dict['EXIT']
+                opcode_val = util.opcode_lookup_dict['EXIT']
                 word0_second_half = opcode_val.zfill(4)
 
             # TODO: ignore line if invalid line of code

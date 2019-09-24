@@ -99,8 +99,7 @@ UVYZ_to_ram_index = {
     'Z': 4099,
 }
 
-# 42 opcodes
-op_codes_dict = {
+opcode_lookup_dict = {
     'GOTO': '1',
     'DIRECT LOAD': '2',
     'DIRECT ADD': '3',
