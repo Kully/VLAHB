@@ -429,14 +429,6 @@ _COMPUTE_XY_OF_FIXED_POINT:
 
 
 
-
-
-
-
-
-
-
-
 // **********
 // * TETRIS *
 // **********
