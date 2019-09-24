@@ -139,6 +139,8 @@ int main(int argc, char* argv[])
         printf("    ...\n");
         printf("    30001: %u\n", ram[30001]);
         printf("    30002: %u\n", ram[30002]);
+        printf("    ...\n");
+        printf("    51000: %u\n", ram[51000]);
         printf("\n\n");
 #endif
         pc += 2;
