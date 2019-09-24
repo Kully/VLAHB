@@ -1,13 +1,4 @@
-LD R[4096] SPRITE_FONT_1
-LD R[0] 10
-LD R[3] 10
-LD R[1] 5
-LD R[2] 5
-LD R[U] R[0] R[3] R[1] R[2]
-BLIT
-AGADAJSHDGLDLLADLL:
-    GOTO AGADAJSHDGLDLLADLL
-
+LD R[9] R[Z]
 // **********
 // * TETRIS *
 // **********

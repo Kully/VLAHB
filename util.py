@@ -143,6 +143,7 @@ op_codes_dict = {
     'SHT': '28',
     'WAIT': '29',
     'LD REGISTERS TO VRAM W VRAM INDEX': '2a',
+    'LD R[i] R[U]': '2b',
     'EXIT': 'ff',
 }
 
@@ -261,7 +262,7 @@ REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
 REGEX_HEX = r'0X[0-9a-fA-F]+'
 REGEX_HEX_WITH_SPACE_BEFORE = r'[\t ]*0X[0-9a-fA-F]+'
 
-# for LD R[U:V] R[Z]
+# for pointers U,V,Y,Z
 REGEX_UV_ONE_AND_ONE = r'R\[([UVYZ])] R\[([UVYZ])]'
 REGEX_UV_ONE = r'R\[([UVYZ])]'
 REGEX_UV_TWO = r'R\[([UVYZ]):([UVYZ])]'

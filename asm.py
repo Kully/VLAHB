@@ -282,8 +282,14 @@ def validate_and_make_hexfile(lines):
                         opcode_val = util.op_codes_dict['DIRECT LOAD']
                         word1 = util.int_to_hex(args[1]).zfill(8)
 
-                    else:
-                        raise Exception('LD R[i] XXX')
+                    # LD R[i] R[U]
+                    elif re.match(util.REGEX_UV_ONE, args[1]) and len(args) == 2:
+                        opcode_val = util.op_codes_dict['LD R[i] R[U]']
+                        # word1 = util.int_to_hex(args[1]).zfill(8)
+
+                        letters_arg0 = re.findall(util.REGEX_UV_ONE, args[1])
+                        i = util.UVYZ_to_hex_digit[str(letters_arg0[0])]
+                        word1 = i+'0000000'
 
                     word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                     word0_second_half = opcode_val.zfill(4)
