@@ -524,6 +524,15 @@ int main(int argc, char* argv[])
                 }
                 break;
             }
+            case 0x002b:  // LD R[i] R[U] //
+            {
+                const uint16_t i = (word1_first_half >> 12) & 0XF; // i000
+                const uint16_t ram_index_i = letter_code_to_ram_index(i);
+
+                ram[word0_first_half] = ram[ram[ram_index_i]];
+
+                break;
+            }
             case 0x00ff:
             {
                 done = true;
