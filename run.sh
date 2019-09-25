@@ -1,7 +1,6 @@
 #!/bin/bash
 
 filename="tetris"
-# filename="bbb"
 
 # remove -fsanitize=address to run much faster
 python3 asm.py $filename.asm

@@ -536,6 +536,16 @@ int main(int argc, char* argv[])
 
                 break;
             }
+            case 0X002c:  // REGISTER TO REGISTER REMAINDER //
+            {
+                ram[word0_first_half] %= ram[word1];
+                break;
+            }
+            case 0X002d:  // DIRECT REMAINDER //
+            {
+                ram[word0_first_half] %= word1;
+                break;
+            }
             case 0x00ff:
             {
                 done = true;

@@ -1,12 +1,3 @@
-// LD R[0] 8
-// LD R[1] 5
-// R[0]/R[1] -> R[0]
-
-// REM R[0] R[1]
-// should be 3
-
-
-
 // store active tiles and fixed tile
 //
 // eg. J fixed point is shown by the 'X' below
@@ -382,7 +373,6 @@ _COMPUTE_XY_OF_FIXED_POINT:
 // //
 // //  [][][][]
 // //
-
 
 
 
