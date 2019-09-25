@@ -143,6 +143,8 @@ opcode_lookup_dict = {
     'WAIT': '29',
     'LD REGISTERS TO VRAM W VRAM INDEX': '2a',
     'LD R[i] R[U]': '2b',
+    'REGISTER TO REGISTER REMAINDER': '2c',
+    'DIRECT REMAINDER': '2d',
     'EXIT': 'ff',
 }
 

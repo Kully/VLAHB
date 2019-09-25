@@ -437,14 +437,23 @@ def validate_and_make_hexfile(lines):
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                 word0_second_half = opcode_val.zfill(4)
 
+            # REMAINDER
             elif opcode == 'REM':
                 valid_opcode = True
                 if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
                     raise Exception(
                         f'\n\n  `{code}` invalid syntax [{file_asm}, line {line_idx+1}]\n'
                     )
+                if re.match(util.REGEX_LD_R_ONE, args[1]):
+                    opcode_val = util.opcode_lookup_dict['REGISTER TO REGISTER REMAINDER']
+                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
-                
+                else:
+                    opcode_val = util.opcode_lookup_dict['DIRECT REMAINDER']
+                    word1 = util.int_to_hex(args[1]).zfill(8)
+
+                word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
+                word0_second_half = opcode_val.zfill(4)
 
             # ==
             elif opcode == 'CMP':
