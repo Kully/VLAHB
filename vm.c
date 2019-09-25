@@ -15,7 +15,7 @@
 #define STACK_MAX_SIZE 32
 #define VRAM_FIRST_INDEX 4101
 #define MAX_RAMVALUE UINT_MAX
-#define DEBUG 0
+#define DEBUG 1
 
 uint32_t rom[ROM_SLOTS];
 uint32_t ram[RAM_SLOTS];
@@ -531,6 +531,16 @@ int main(int argc, char* argv[])
 
                 ram[word0_first_half] = ram[ram[ram_index_i]];
 
+                break;
+            }
+            case 0X002c:  // REGISTER TO REGISTER REMAINDER //
+            {
+                ram[word0_first_half] %= ram[word1];
+                break;
+            }
+            case 0X002d:  // DIRECT REMAINDER //
+            {
+                ram[word0_first_half] %= word1;
                 break;
             }
             case 0x00ff:
