@@ -209,6 +209,7 @@ ONE_ARG_EXCEPTION_MSG = (
 )
 
 # TODO: update the syntax in error message below
+# remove this
 LD_EXCEPTION_MSG = (
     '\nThe Opcode LD is used to load values into RAM slots\nLD '
     'must be followed by 2 exactly arguments:'
