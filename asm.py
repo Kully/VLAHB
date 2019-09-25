@@ -99,7 +99,8 @@ def validate_and_make_hexfile(lines):
     hex_file_str = ''
     extra_line_for_raw_hex = 0
 
-    for line in lines:
+    # for line in lines:
+    for line_idx, line in enumerate(lines):
         first_comment_idx = line.find(COMMENT_SYMBOL)
 
         if first_comment_idx == -1:
@@ -435,6 +436,15 @@ def validate_and_make_hexfile(lines):
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                 word0_second_half = opcode_val.zfill(4)
+
+            elif opcode == 'REM':
+                valid_opcode = True
+                if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
+                    raise Exception(
+                        f'\n\n  `{code}` invalid syntax [{file_asm}, line {line_idx+1}]\n'
+                    )
+
+                
 
             # ==
             elif opcode == 'CMP':
