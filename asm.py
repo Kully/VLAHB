@@ -147,15 +147,25 @@ def validate_and_make_hexfile(lines):
                 if len(args) < 1:
                     raise Exception(util.GOTO_EXCEPTION_MSG)
 
-                opcode_val = util.opcode_lookup_dict['GOTO']
-                word0_second_half = opcode_val.zfill(4)
+                # GOTO LABEL
+                if re.match(util.REGEX_LABEL, args[0]):
+                    opcode_val = util.opcode_lookup_dict['GOTO']
 
-                try:
-                    word1 = util.int_to_hex(args[0]).zfill(8)
-                except ValueError:
                     if args[0] not in LABELS_TO_PC.keys():
                         raise Exception('\nUnknown Label %s' %args[0])
                     word1 = util.int_to_hex(LABELS_TO_PC[args[0]]).zfill(8)
+
+                # GOTO i
+                elif re.match(util.REGEX_INT, args[0]):
+                    opcode_val = util.opcode_lookup_dict['GOTO']
+                    word1 = util.int_to_hex(args[0]).zfill(8)
+
+                # GOTO R[i]
+                elif re.match(util.REGEX_LD_R_ONE, args[0]):
+                    opcode_val = util.opcode_lookup_dict['GOTO R[i]']
+                    word1 = util.int_to_hex(args[0][2:-1]).zfill(8)
+
+                word0_second_half = opcode_val.zfill(4)
 
             elif opcode == 'LD':
                 valid_opcode = True

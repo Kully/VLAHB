@@ -543,6 +543,11 @@ int main(int argc, char* argv[])
                 ram[word0_first_half] %= word1;
                 break;
             }
+            case 0x002e:  // GOTO R[i] //
+            {
+                pc = ram[word1];
+                break;
+            }
             case 0x00ff:
             {
                 done = true;
