@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
         pc += 2;
         switch(word0_second_half)
         {
-            case 0x0001:  // GOTO //
+            case 0x0001:  // GOTO LABEL, GOTO k //
             {
                 pc = word1;
                 break;
@@ -208,7 +208,7 @@ int main(int argc, char* argv[])
                 if(ram[word0_first_half] == ram[word1]) pc += 2;
                 break;
             }
-            case 0x000e:  // CALL (GOTO AND PUSH) //
+            case 0x000e:  // CALL LABEL, CALL k//
             {
                 stack[sp] = pc;
                 int a = STACK_FRAME_SIZE * (0 + sp);
@@ -220,7 +220,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x000f:  // RETURN (GOTO AND POP) //
+            case 0x000f:  // RETURN //
             {
                 int a = STACK_FRAME_SIZE * (0 + sp);
                 int b = STACK_FRAME_SIZE * (1 + sp);
@@ -546,6 +546,18 @@ int main(int argc, char* argv[])
             case 0x002e:  // GOTO R[i] //
             {
                 pc = ram[word1];
+                break;
+            }
+            case 0x002f:  // CALL R[i] //
+            {
+                stack[sp] = pc;
+                int a = STACK_FRAME_SIZE * (0 + sp);
+                int b = STACK_FRAME_SIZE * (1 + sp);
+                for(int x = 0; x < b; x++) ram[a + x] = ram[0 + x];
+
+                sp += 1;  // increment stack pointer
+                pc = ram[word1]; // GOTO
+
                 break;
             }
             case 0x00ff:

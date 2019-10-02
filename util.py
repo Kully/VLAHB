@@ -130,6 +130,7 @@ opcode_lookup_dict = {
     'REGISTER TO REGISTER REMAINDER': '2c',
     'DIRECT REMAINDER': '2d',
     'GOTO R[i]': '2e',
+    'CALL R[i]': '2f',
     'EXIT': 'ff',
 }
 
