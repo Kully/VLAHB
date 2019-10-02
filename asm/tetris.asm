@@ -281,7 +281,6 @@ LD R[30002]  0  // Y pos of new piece when spawning at top
 LD R[65000] R[65001]  // load gravity speed - number of frames after piece moves down
 
 
-CALL UPDATE_ACTIVE_PIECE_SLOTS
 CALL TETRIS_MAIN_LOOP
 
 

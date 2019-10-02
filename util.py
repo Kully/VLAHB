@@ -83,22 +83,6 @@ UVYZ_to_hex_digit = {
     'Z': '4',
 }
 
-
-hex_digit_to_UVYZ = {
-    '1': 'U',
-    '2': 'V',
-    '3': 'Y',
-    '4': 'Z', 
-}
-
-
-UVYZ_to_ram_index = {
-    'U': 4096,
-    'V': 4097,
-    'Y': 4098,
-    'Z': 4099,
-}
-
 opcode_lookup_dict = {
     'GOTO': '1',
     'DIRECT LOAD': '2',
@@ -145,6 +129,8 @@ opcode_lookup_dict = {
     'LD R[i] R[U]': '2b',
     'REGISTER TO REGISTER REMAINDER': '2c',
     'DIRECT REMAINDER': '2d',
+    'GOTO R[i]': '2e',
+    'CALL R[i]': '2f',
     'EXIT': 'ff',
 }
 
@@ -261,6 +247,7 @@ REGEX_RGBA_PATTERN = r'\d{1,3},\d{1,3},\d{1,3},\d{1,3}'
 REGEX_LD_R_ONE = r'R\[\d+]'
 REGEX_LD_R_RANGE = r'R\[\d+:\d+]'
 REGEX_HEX = r'0X[0-9a-fA-F]+'
+REGEX_INT = r'[0-9]+'
 REGEX_HEX_WITH_SPACE_BEFORE = r'[\t ]*0X[0-9a-fA-F]+'
 
 # for pointers U,V,Y,Z
