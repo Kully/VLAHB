@@ -668,7 +668,6 @@ LD R[65001] 10  // gravity: number of frames after piece moves down
 LD R[65000] R[65001]  // load gravity speed
 
 
-CALL UPDATE_ACTIVE_PIECE_SLOTS
 CALL TETRIS_MAIN_LOOP
 
 
