@@ -93,7 +93,7 @@ void Push(const int args)
 {
     fprintf(stdout, "\tPUSH\n");
     for(int i = 0; i < args; i++)
-        fprintf(stdout, "\tLD R[%d], R[%d]\n", i, i + sp);
+        fprintf(stdout, "\tLD R[%d] R[%d]\n", i, i + sp);
 }
 
 void Pop(void)
@@ -178,14 +178,30 @@ void Return(void)
     fprintf(stdout, "\tRET\n");
 }
 
+void Loop(void)
+{
+    const int l0 = label++;
+    const int l1 = label++;
+    Match('@');
+    Expression();
+    fprintf(stdout, "\tCMP R[%d] 0\n", sp - 1);
+    fprintf(stdout, "\tGOTO L%d\n", l0);
+    fprintf(stdout, "\tGOTO L%d\n", l1);
+    fprintf(stdout, "L%d\n", l0);
+    Block();
+    fprintf(stdout, "L%d\n", l1);
+}
+
 void Expression(void)
 {
     while(!End())
         if(tape == '?')
             Conditional();
         else if(tape == '@')
+            Loop();
+        else if(tape == '$')
         {
-            Match('@');
+            Match('$');
             Expression();
             Return();
         }
