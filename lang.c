@@ -54,14 +54,14 @@ void Match(int c)
 
 void Load1(void)
 {
-    fprintf(stdout, "\tLOAD R[%d] %c\n", sp, tape);
+    fprintf(stdout, "\tLD R[%d] %c\n", sp, tape);
     sp++;
 }
 
 void Load2(const int name)
 {
     const int temp = idents[name];
-    fprintf(stdout, "\tLOAD R[%d] R[%d]\n", sp, temp);
+    fprintf(stdout, "\LD R[%d] R[%d]\n", sp, temp);
     sp++;
 }
 
