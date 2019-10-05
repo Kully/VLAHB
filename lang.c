@@ -61,7 +61,7 @@ void Load1(void)
 void Load2(const int name)
 {
     const int temp = idents[name];
-    fprintf(stdout, "\LD R[%d] R[%d]\n", sp, temp);
+    fprintf(stdout, "\tLD R[%d] R[%d]\n", sp, temp);
     sp++;
 }
 
