@@ -85,7 +85,7 @@ void Match(int c)
 
 void Load(void)
 {
-    fprintf(stdout, "\tLOAD R[%d] %c\n", sp, tape);
+    fprintf(stdout, "\tLD R[%d] %c\n", sp, tape);
     sp++;
 }
 
@@ -136,7 +136,7 @@ void Function(void)
         Statement();
     Match('}');
     fprintf(stdout, "\tLD R[4100] R[%d]\n", sp - 1);
-    fprintf(stdout, "\tRET\n");
+    fprintf(stdout, "\tRETURN\n");
 }
 
 int main(void)
