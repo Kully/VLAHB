@@ -32,11 +32,11 @@ void Reset(void)
         idents[i] = -1;
 }
 
-void Open(void)
+void Open(int argc, char* argv[])
 {
     Reset();
-    fi = fopen("a.lng", "r");
-    fo = stdout;
+    fi = fopen(argv[1], "r");
+    fo = fopen(argv[2], "w");
     Spin();
 }
 
@@ -54,52 +54,52 @@ void Match(int c)
 
 void Load1(void)
 {
-    fprintf(stdout, "\tLD R[%d] %c\n", sp, tape);
+    fprintf(fo, "\tLD R[%d] %c\n", sp, tape);
     sp++;
 }
 
 void Load2(const int name)
 {
     const int temp = idents[name];
-    fprintf(stdout, "\tLD R[%d] R[%d]\n", sp, temp);
+    fprintf(fo, "\tLD R[%d] R[%d]\n", sp, temp);
     sp++;
 }
 
 void Mul(void)
 {
     sp--;
-    fprintf(stdout, "\tMUL R[%d] R[%d]\n", sp - 1, sp);
+    fprintf(fo, "\tMUL R[%d] R[%d]\n", sp - 1, sp);
 }
 
 void Div(void)
 {
     sp--;
-    fprintf(stdout, "\tDIV R[%d] R[%d]\n", sp - 1, sp);
+    fprintf(fo, "\tDIV R[%d] R[%d]\n", sp - 1, sp);
 }
 
 void Add(void)
 {
     sp--;
-    fprintf(stdout, "\tADD R[%d] R[%d]\n", sp - 1, sp);
+    fprintf(fo, "\tADD R[%d] R[%d]\n", sp - 1, sp);
 }
 
 void Sub(void)
 {
     sp--;
-    fprintf(stdout, "\tSUB R[%d] R[%d]\n", sp - 1, sp);
+    fprintf(fo, "\tSUB R[%d] R[%d]\n", sp - 1, sp);
 }
 
 void Push(const int args)
 {
-    fprintf(stdout, "\tPUSH\n");
+    fprintf(fo, "\tPUSH\n");
     for(int i = 0; i < args; i++)
-        fprintf(stdout, "\tLD R[%d] R[%d]\n", i, i + sp);
+        fprintf(fo, "\tLD R[%d] R[%d]\n", i, i + sp);
 }
 
 void Pop(void)
 {
-    fprintf(stdout, "\tPOP\n");
-    fprintf(stdout, "\tLD R[%d] R[4100]\n", sp);
+    fprintf(fo, "\tPOP\n");
+    fprintf(fo, "\tLD R[%d] R[4100]\n", sp);
 }
 
 void Call(const int name)
@@ -117,7 +117,7 @@ void Call(const int name)
     Match(')');
     sp = temp;
     Push(args);
-    fprintf(stdout, "\tCALL %c\n", name);
+    fprintf(fo, "\tCALL %c\n", name);
     Pop();
     sp++;
 }
@@ -128,10 +128,18 @@ void Indirect(void)
     Spin();
     if(tape == '=')
     {
-        assert(idents[name] == -1);
-        idents[name] = sp; // First see if existing?
+        int temp = -1;
+        if(idents[name] == -1)
+            idents[name] = sp;
+        else
+        {
+            temp = sp;
+            sp = idents[name];
+        }
         Match('=');
         Expression();
+        if(temp != -1)
+            sp = temp;
     }
     else if(tape == '(')
         Call(name);
@@ -164,32 +172,29 @@ void Conditional(void)
     const int l1 = label++;
     Match('?');
     Expression();
-    fprintf(stdout, "\tCMP R[%d] 0\n", sp - 1);
-    fprintf(stdout, "\tGOTO L%d\n", l0);
-    fprintf(stdout, "\tGOTO L%d\n", l1);
-    fprintf(stdout, "L%d:\n", l0);
+    fprintf(fo, "\tCMP R[%d] 0\n", sp - 1);
+    fprintf(fo, "\tGOTO L%d\n", l0);
+    fprintf(fo, "\tGOTO L%d\n", l1);
+    fprintf(fo, "L%d:\n", l0);
     Block();
-    fprintf(stdout, "L%d:\n", l1);
+    fprintf(fo, "L%d:\n", l1);
 }
 
 void Return(void)
 {
-    fprintf(stdout, "\tLD R[4100] R[%d]\n", CLAMP(sp - 1));
-    fprintf(stdout, "\tRET\n");
+    fprintf(fo, "\tLD R[4100] R[%d]\n", CLAMP(sp - 1));
+    fprintf(fo, "\tRET\n");
 }
 
 void Loop(void)
 {
     const int l0 = label++;
-    const int l1 = label++;
     Match('@');
+    fprintf(fo, "L%d:\n", l0);
     Expression();
-    fprintf(stdout, "\tCMP R[%d] 0\n", sp - 1);
-    fprintf(stdout, "\tGOTO L%d\n", l0);
-    fprintf(stdout, "\tGOTO L%d\n", l1);
-    fprintf(stdout, "L%d\n", l0);
+    fprintf(fo, "\tCMP R[%d] 0\n", sp - 1);
     Block();
-    fprintf(stdout, "L%d\n", l1);
+    fprintf(fo, "\tGOTO L%d\n", l0);
 }
 
 void Expression(void)
@@ -247,7 +252,7 @@ void Function(void)
     idents[tape] = 0;
     int temp[MAX];
     Copy(temp, idents);
-    fprintf(stdout, "%c:\n", tape);
+    fprintf(fo, "%c:\n", tape);
     Spin();
     Arguments();
     Block();
@@ -255,9 +260,9 @@ void Function(void)
     Copy(idents, temp);
 }
 
-int main(void)
+int main(int argc, char* argv[])
 {
-    Open();
+    Open(argc, argv);
     while(tape != EOF)
         Function();
     Close();
