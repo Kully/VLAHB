@@ -14,6 +14,7 @@ int tape;
 int sp;
 int idents[MAX];
 int label;
+char namespace[64];
 
 void Expression(void);
 
@@ -32,9 +33,23 @@ void Reset(void)
         idents[i] = -1;
 }
 
+void Tag(int argc, char* argv[])
+{
+    int j = 0;
+    for(int i = 0; i < sizeof(namespace); i++)
+    {
+        const char c = toupper(argv[2][i]);
+        if(c == '\0')
+            break;
+        if(isalnum(c))
+            namespace[j++] = c;
+    }
+}
+
 void Open(int argc, char* argv[])
 {
     Reset();
+    Tag(argc, argv);
     fi = fopen(argv[1], "r");
     fo = fopen(argv[2], "w");
     Spin();
@@ -175,9 +190,9 @@ void Conditional(void)
     fprintf(fo, "\tCMP R[%d] 0\n", sp - 1);
     fprintf(fo, "\tGOTO L%d\n", l0);
     fprintf(fo, "\tGOTO L%d\n", l1);
-    fprintf(fo, "L%d:\n", l0);
+    fprintf(fo, "%s_L%d:\n", namespace, l0);
     Block();
-    fprintf(fo, "L%d:\n", l1);
+    fprintf(fo, "%s_L%d:\n", namespace, l1);
 }
 
 void Return(void)
@@ -190,7 +205,7 @@ void Loop(void)
 {
     const int l0 = label++;
     Match('@');
-    fprintf(fo, "L%d:\n", l0);
+    fprintf(fo, "%s_L%d:\n", namespace, l0);
     Expression();
     fprintf(fo, "\tCMP R[%d] 0\n", sp - 1);
     Block();
@@ -224,6 +239,7 @@ void Arguments(void)
     Match('(');
     while(tape != ')')
     {
+        idents[tape] = sp;
         Spin();
         sp++;
         if(tape != ')')
@@ -252,7 +268,7 @@ void Function(void)
     idents[tape] = 0;
     int temp[MAX];
     Copy(temp, idents);
-    fprintf(fo, "%c:\n", tape);
+    fprintf(fo, "%s_%c:\n", namespace, tape);
     Spin();
     Arguments();
     Block();
