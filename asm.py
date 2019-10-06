@@ -685,18 +685,28 @@ def validate_and_make_hexfile(lines):
     return hex_file_str
 
 
-if __name__ == "__main__":
-    filename = sys.argv[1]
+if __name__ == '__main__':
+    # filename = sys.argv[1]
 
-    # gather all files in /asm folder
-    all_asm_files = []
-    all_files_in_asm_folder = os.listdir('./asm')
+    staticallyLinked = (True if '-s' in sys.argv else False)
+    asm_filenames_in_argv = [f for f in sys.argv if f.endswith('.asm')]
+    all_files_in_asm_folder = sorted([f for f in os.listdir('./asm') if f.endswith('.asm')])
 
-    # check if picked valid filename
-    if filename not in all_files_in_asm_folder:
-        raise Exception(util.NO_FILE_FOUND_EXCEPTION_MSG.format(
-            filename, all_files_in_asm_folder
-        ))
+    if staticallyLinked:
+        # gather all files in /asm folder
+        asm_files_for_compile = all_files_in_asm_folder
+    else:
+        asm_files_for_compile = asm_filenames_in_argv
+
+        # check if asm filenames are valid
+        for filename in asm_files_for_compile:
+            if filename not in all_files_in_asm_folder:
+                raise Exception(util.NO_FILE_FOUND_EXCEPTION_MSG.format(
+                    filename, all_files_in_asm_folder
+                ))
+
+    print('asm_files_for_compile: %r' %asm_files_for_compile)
+    exit(1)
 
     # gather and sort all .asm files
     for f_name in all_files_in_asm_folder:
@@ -711,7 +721,10 @@ if __name__ == "__main__":
     for asm_f in  all_asm_files:
         file_asm = 'asm/%s' %asm_f
 
-        if filename == asm_f:
+        # if filename == asm_f:
+        #     where_PC_starts = cumsum_hex_lines
+
+        if filename == asm_filenames_in_sysargv[0]:
             where_PC_starts = cumsum_hex_lines
 
         # one file at a time
