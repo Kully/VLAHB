@@ -1,3 +1,13 @@
+LD R[0] 0XFA100101
+SHT R[0] R[1] 0
+SHT R[0] R[2] 1
+SHT R[0] R[3] 2
+SHT R[0] R[4] 3
+SHT R[0] R[5] 4
+SHT R[0] R[6] 5
+SHT R[0] R[7] 6
+LD R[8] 69
+EXIT
 // store active tiles and fixed tile
 //
 // eg. J fixed point is shown by the 'X' below
