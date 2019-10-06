@@ -1,4 +1,4 @@
-for f in loop conditional function array
+for f in loop conditional function array inline
 do
     # COMPILE.
     ../lang $f.lng $f.asm
