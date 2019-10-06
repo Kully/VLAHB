@@ -686,17 +686,17 @@ def validate_and_make_hexfile(lines):
 
 
 if __name__ == '__main__':
-    # filename = sys.argv[1]
-
     staticallyLinked = (True if '-s' in sys.argv else False)
     asm_filenames_in_argv = [f for f in sys.argv if f.endswith('.asm')]
     all_files_in_asm_folder = sorted([f for f in os.listdir('./asm') if f.endswith('.asm')])
+
+    filename_where_pc_starts = asm_filenames_in_argv[0]
 
     if staticallyLinked:
         # gather all files in /asm folder
         asm_files_for_compile = all_files_in_asm_folder
     else:
-        asm_files_for_compile = asm_filenames_in_argv
+        asm_files_for_compile = sorted(asm_filenames_in_argv)
 
         # check if asm filenames are valid
         for filename in asm_files_for_compile:
@@ -705,31 +705,17 @@ if __name__ == '__main__':
                     filename, all_files_in_asm_folder
                 ))
 
-    print('asm_files_for_compile: %r' %asm_files_for_compile)
-    exit(1)
-
-    # gather and sort all .asm files
-    for f_name in all_files_in_asm_folder:
-        if f_name.endswith('.asm'):
-            all_asm_files.append(f_name)
-    all_asm_files = sorted(all_asm_files)
-
     # gather all labels across hex files
     cumsum_hex_lines = 0
     giant_hex_file_str = ''
     all_lines_for_programs = []
-    for asm_f in  all_asm_files:
-        file_asm = 'asm/%s' %asm_f
-
-        # if filename == asm_f:
-        #     where_PC_starts = cumsum_hex_lines
-
-        if filename == asm_filenames_in_sysargv[0]:
+    for asm_file in  asm_files_for_compile:
+        # set where PC starts
+        if asm_file == filename_where_pc_starts:
             where_PC_starts = cumsum_hex_lines
 
-        # one file at a time
         lines_for_program, cumsum_hex_lines = compute_label_indices_from_file(
-            file_asm, cumsum_hex_lines
+            'asm/'+asm_file, cumsum_hex_lines
         )
         all_lines_for_programs.append(lines_for_program)
 
@@ -738,7 +724,7 @@ if __name__ == '__main__':
         hex_file_str = validate_and_make_hexfile(lines_for_program)
         giant_hex_file_str += hex_file_str
 
-    # write statically linked hexfile to disk
+    # write (statically-linked) hexfile to disk
     f = open('hex/file.hex', 'w')
     f.write(giant_hex_file_str)
     f.close()
