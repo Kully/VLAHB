@@ -188,8 +188,8 @@ void Conditional(void)
     Match('?');
     Expression();
     fprintf(fo, "\tCMP R[%d] 0\n", sp - 1);
-    fprintf(fo, "\tGOTO L%d\n", l0);
-    fprintf(fo, "\tGOTO L%d\n", l1);
+    fprintf(fo, "\tGOTO %s_L%d\n", namespace, l0);
+    fprintf(fo, "\tGOTO %s_L%d\n", namespace, l1);
     fprintf(fo, "%s_L%d:\n", namespace, l0);
     Block();
     fprintf(fo, "%s_L%d:\n", namespace, l1);
@@ -209,7 +209,7 @@ void Loop(void)
     Expression();
     fprintf(fo, "\tCMP R[%d] 0\n", sp - 1);
     Block();
-    fprintf(fo, "\tGOTO L%d\n", l0);
+    fprintf(fo, "\tGOTO %s_L%d\n", namespace, l0);
 }
 
 void Expression(void)
@@ -262,24 +262,43 @@ void Copy(int a[], int b[])
         a[i] = b[i];
 }
 
-void Function(void)
+void Function(int label)
 {
     sp = 0;
-    idents[tape] = 0;
     int temp[MAX];
     Copy(temp, idents);
-    fprintf(fo, "%s_%c:\n", namespace, tape);
-    Spin();
+    fprintf(fo, "%s_%c:\n", namespace, label);
     Arguments();
     Block();
     Return();
     Copy(idents, temp);
 }
 
+void Array(int label)
+{
+    fprintf(fo, "%s_%c:\n", namespace, label);
+    Match('[');
+    Match(']');
+    Match('{');
+    while(tape != '}')
+    {
+        fprintf(fo, "\t0x%08X\n", tape - '0');
+        Spin();
+        if(tape != '}')
+            Match(',');
+    }
+    Match('}');
+}
+
 int main(int argc, char* argv[])
 {
     Open(argc, argv);
     while(tape != EOF)
-        Function();
+    {
+        int label = tape;
+        idents[label] = 0;
+        Spin();
+        tape == '[' ? Array(label) : Function(label);
+    }
     Close();
 }
