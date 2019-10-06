@@ -20,9 +20,14 @@ void Expression(void);
 
 void Block(void);
 
-void Spin(void)
+void Advance(void)
 {
     tape = getc(fi);
+}
+
+void Spin(void)
+{
+    Advance();
     if(isspace(tape))
         Spin();
 }
@@ -248,11 +253,25 @@ void Arguments(void)
     Match(')');
 }
 
+void Inline(void)
+{
+    Match('#');
+    Match('{');
+    fprintf(fo, "\n; -- inline asm begin\n");
+    while(tape != '}')
+    {
+        fprintf(fo, "%c", tape);
+        Advance();
+    }
+    Match('}');
+    fprintf(fo, "\n; -- inline asm end\n");
+}
+
 void Block(void)
 {
     Match('{');
     while(tape != '}')
-        Statement();
+        tape == '#' ? Inline() : Statement();
     Match('}');
 }
 
