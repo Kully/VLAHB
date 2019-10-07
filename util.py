@@ -159,8 +159,8 @@ STACK_OVERFLOW_ERROR_MSG = (
 
 # ASM
 NO_FILE_FOUND_EXCEPTION_MSG = (
-    '"{}" is not a file in the /asm folder.\n\nHere is a list '
-    'of assembly files in this folder:\n{}'
+    '"{}" is not a file in the /asm folder.\n'
+    'Valid Files: {}'
 )
 
 GOTO_EXCEPTION_MSG = (
