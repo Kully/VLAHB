@@ -43,6 +43,13 @@ LD R[30030] PONG_SPRITE_BALL
 LD R[30040] 0  // counter A
 LD R[30041] 0  // counter B
 
+LD R[30050] 0  // leftHeldDown
+// LEFTPushed
+// CMP R[28001] 0
+// ADD R[28021] 1
+// CMP R[28001] 1
+// LD R[30050] 0
+
 PONG_GAME_LOOP:
     INPUT R[0]
     SHT R[0] R[28000] 0  // UP
@@ -169,15 +176,14 @@ PONG_GAME_LOOP:
     // draw LScore
     // ===========
 
-    LD R[200] R[30004] // LD R[200] w/ LScore
-    ADD R[200] 30020
-    LD R[4096] 200
-
     LD R[0] 0  // X
     LD R[1] 0  // Y
     LD R[2] 5  // W
     LD R[3] 5  // H
-    LD R[4096] SPRITE_FONT_0
+
+    LD R[4099] 30020
+    ADD R[4099] R[30004]
+    LD R[4096] R[Z]
     LD R[U] R[0] R[1] R[2] R[3]
 
 
@@ -189,8 +195,12 @@ PONG_GAME_LOOP:
     LD R[1] 0    // Y
     LD R[2] 5    // W
     LD R[3] 5    // H
-    LD R[4096] SPRITE_FONT_1
+
+    LD R[4099] 30020
+    ADD R[4099] R[30005]
+    LD R[4096] R[Z]
     LD R[U] R[0] R[1] R[2] R[3]
+
 
     // "PONG!!!"
     LD R[0] 65
@@ -256,7 +266,7 @@ PONG_RESET_BALL:
     LD R[30007] 80  // Ball X
     LD R[30008] 72  // Ball Y
     LD R[30009] 1  // Ball Velocity X
-    LD R[30010] 2  // Ball Velocity Y
+    LD R[30010] 1  // Ball Velocity Y
 
     LD R[30013] 1  // Ball X-Velo Sign (0-> -ve, 1-> +ve)
     LD R[30014] 0  // Ball Y-Velo Sign (0-> -ve, 1-> +ve)
@@ -321,7 +331,7 @@ PONG_BALL_AT_LEFT_SCREEN:
 
     __PONG_BALL_GOES_IN_L_GOAL:
         CALL PONG_RESET_BALL
-        CALL INCREASE_L_SCORE
+        CALL INCREASE_R_SCORE
         RETURN
 
 
@@ -368,7 +378,7 @@ PONG_BALL_AT_RIGHT_SCREEN:
 
     __PONG_BALL_GOES_IN_R_GOAL:
         CALL PONG_RESET_BALL
-        CALL INCREASE_R_SCORE
+        CALL INCREASE_L_SCORE
         RETURN
 
 
