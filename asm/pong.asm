@@ -23,7 +23,7 @@ LD R[30013] 0  // Ball X-Velo Sign (0-> -ve, 1-> +ve)
 LD R[30014] 1  // Ball Y-Velo Sign (0-> -ve, 1-> +ve)
 
 LD R[30015] 4  // width of ball in px
-LD R[30016] 2  // paddle speed
+LD R[30016] 2  // paddle speed 
 
 // load pcs of sprites to RAM
 LD R[30020] SPRITE_FONT_0
@@ -38,6 +38,10 @@ LD R[30028] SPRITE_FONT_8
 LD R[30029] SPRITE_FONT_9
 
 LD R[30030] PONG_SPRITE_BALL
+
+// counters for physics
+LD R[30040] 0  // counter A
+LD R[30041] 0  // counter B
 
 PONG_GAME_LOOP:
     INPUT R[0]
@@ -188,34 +192,8 @@ PONG_GAME_LOOP:
     LD R[4096] SPRITE_FONT_1
     LD R[U] R[0] R[1] R[2] R[3]
 
-    // "GAME OVER"
-    LD R[0] 10
-    LD R[4096] SPRITE_FONT_G
-    LD R[U] R[0] R[1] R[2] R[3]
-    ADD R[0] 6
-    LD R[4096] SPRITE_FONT_A
-    LD R[U] R[0] R[1] R[2] R[3]
-    ADD R[0] 6
-    LD R[4096] SPRITE_FONT_M
-    LD R[U] R[0] R[1] R[2] R[3]
-    ADD R[0] 6
-    LD R[4096] SPRITE_FONT_E
-    LD R[U] R[0] R[1] R[2] R[3]
-
-    ADD R[0] 8
-    LD R[4096] SPRITE_FONT_O
-    LD R[U] R[0] R[1] R[2] R[3]
-    ADD R[0] 6
-    LD R[4096] SPRITE_FONT_V
-    LD R[U] R[0] R[1] R[2] R[3]
-    ADD R[0] 6
-    LD R[4096] SPRITE_FONT_E
-    LD R[U] R[0] R[1] R[2] R[3]
-    ADD R[0] 6
-    LD R[4096] SPRITE_FONT_R
-    LD R[U] R[0] R[1] R[2] R[3]
-
-    ADD R[0] 8
+    // "PONG!!!"
+    LD R[0] 65
     LD R[4096] SPRITE_FONT_P
     LD R[U] R[0] R[1] R[2] R[3]
     ADD R[0] 6
@@ -236,8 +214,6 @@ PONG_GAME_LOOP:
     ADD R[0] 3
     LD R[4096] SPRITE_FONT_EXCLAMATION
     LD R[U] R[0] R[1] R[2] R[3]
-
-
 
     WAIT  // wait 17 ms
     BLIT  // draw to screen
