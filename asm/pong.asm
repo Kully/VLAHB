@@ -23,7 +23,7 @@ LD R[30013] 0  // Ball X-Velo Sign (0-> -ve, 1-> +ve)
 LD R[30014] 1  // Ball Y-Velo Sign (0-> -ve, 1-> +ve)
 
 LD R[30015] 4  // width of ball in px
-LD R[30016] 2  // pattle speed
+LD R[30016] 2  // paddle speed
 
 // load pcs of sprites to RAM
 LD R[30020] SPRITE_FONT_0
@@ -58,15 +58,15 @@ PONG_GAME_LOOP:
 
     // handle L-Pattle Movement
     CMP R[28004] 0  // Z
-    CALL PONG_MOVE_LPATTLE_UP
+    CALL PONG_MOVE_LPADDLE_UP
     CMP R[28005] 0  // X
-    CALL PONG_MOVE_LPATTLE_DOWN
+    CALL PONG_MOVE_LPADDLE_DOWN
 
     // handle R-Pattle Movement
     CMP R[28001] 0  // LEFT
-    CALL PONG_MOVE_RPATTLE_UP
+    CALL PONG_MOVE_RPADDLE_UP
     CMP R[28003] 0  // RIGHT
-    CALL PONG_MOVE_RPATTLE_DOWN
+    CALL PONG_MOVE_RPADDLE_DOWN
 
 
     // ========================
@@ -224,27 +224,27 @@ PONG_GAME_LOOP:
 // helper functions
 // ****************
 
-// left pattle
-PONG_MOVE_LPATTLE_UP:
+// left paddle
+PONG_MOVE_LPADDLE_UP:
 	GTE R[30001] R[30011]
 	RETURN
 	SUB R[30001] R[30016]
 	RETURN
 
-PONG_MOVE_LPATTLE_DOWN:
+PONG_MOVE_LPADDLE_DOWN:
 	LTE R[30001] R[30012]
 	RETURN
 	ADD R[30001] R[30016]
 	RETURN
 
-// right pattle
-PONG_MOVE_RPATTLE_UP:
+// right paddle
+PONG_MOVE_RPADDLE_UP:
     GTE R[30003] R[30011]
     RETURN
     SUB R[30003] R[30016]
     RETURN
 
-PONG_MOVE_RPATTLE_DOWN:
+PONG_MOVE_RPADDLE_DOWN:
     LTE R[30003] R[30012]
     RETURN
     ADD R[30003] R[30016]
@@ -306,7 +306,7 @@ PONG_MOVE_BALL_UP_OR_DOWN:
 
 // left side logic
 PONG_BALL_AT_LEFT_SCREEN:
-    CALL PONG_IS_BALL_IN_L_PATTLE
+    CALL PONG_IS_BALL_IN_L_PADDLE
     
     CMP R[4100] 1
     GOTO __PONG_BALL_GOES_IN_L_GOAL
@@ -324,7 +324,7 @@ PONG_BALL_AT_LEFT_SCREEN:
         RETURN
 
 
-PONG_IS_BALL_IN_L_PATTLE:
+PONG_IS_BALL_IN_L_PADDLE:
     LD R[4100] 0
 
     // R[42] -> L-Pattle y0
@@ -353,7 +353,7 @@ PONG_IS_BALL_IN_L_PATTLE:
 
 // right side logic
 PONG_BALL_AT_RIGHT_SCREEN:
-    CALL PONG_IS_BALL_IN_R_PATTLE
+    CALL PONG_IS_BALL_IN_R_PADDLE
     
     CMP R[4100] 1
     GOTO __PONG_BALL_GOES_IN_R_GOAL
@@ -371,7 +371,7 @@ PONG_BALL_AT_RIGHT_SCREEN:
         RETURN
 
 
-PONG_IS_BALL_IN_R_PATTLE:
+PONG_IS_BALL_IN_R_PADDLE:
     LD R[4100] 0
 
     // R[42] -> R-Pattle y0
