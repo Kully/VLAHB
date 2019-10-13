@@ -188,7 +188,7 @@ PONG_GAME_LOOP:
     LD R[4096] SPRITE_FONT_1
     LD R[U] R[0] R[1] R[2] R[3]
 
-    // A-z
+    // "GAME OVER"
     LD R[0] 10
     LD R[4096] SPRITE_FONT_G
     LD R[U] R[0] R[1] R[2] R[3]
@@ -201,6 +201,7 @@ PONG_GAME_LOOP:
     ADD R[0] 6
     LD R[4096] SPRITE_FONT_E
     LD R[U] R[0] R[1] R[2] R[3]
+
     ADD R[0] 8
     LD R[4096] SPRITE_FONT_O
     LD R[U] R[0] R[1] R[2] R[3]
@@ -213,6 +214,30 @@ PONG_GAME_LOOP:
     ADD R[0] 6
     LD R[4096] SPRITE_FONT_R
     LD R[U] R[0] R[1] R[2] R[3]
+
+    ADD R[0] 8
+    LD R[4096] SPRITE_FONT_P
+    LD R[U] R[0] R[1] R[2] R[3]
+    ADD R[0] 6
+    LD R[4096] SPRITE_FONT_O
+    LD R[U] R[0] R[1] R[2] R[3]
+    ADD R[0] 6
+    LD R[4096] SPRITE_FONT_N
+    LD R[U] R[0] R[1] R[2] R[3]
+    ADD R[0] 6
+    LD R[4096] SPRITE_FONT_G
+    LD R[U] R[0] R[1] R[2] R[3]
+    ADD R[0] 6
+    LD R[4096] SPRITE_FONT_EXCLAMATION
+    LD R[U] R[0] R[1] R[2] R[3]
+    ADD R[0] 3
+    LD R[4096] SPRITE_FONT_EXCLAMATION
+    LD R[U] R[0] R[1] R[2] R[3]
+    ADD R[0] 3
+    LD R[4096] SPRITE_FONT_EXCLAMATION
+    LD R[U] R[0] R[1] R[2] R[3]
+
+
 
     WAIT  // wait 17 ms
     BLIT  // draw to screen
