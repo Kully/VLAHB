@@ -2,7 +2,6 @@
 // PONG
 // ****
 PONG_MAIN:
-
     // global variables
     LD R[30000] 4    // LPattle X
     LD R[30001] 80   // LPattle Y
@@ -16,7 +15,7 @@ PONG_MAIN:
     LD R[30012] 124 // max Y height
 
     LD R[30015] 4  // width of ball in px
-    LD R[30016] 2  // paddle speed 
+    LD R[30016] 2  // paddle speed
 
     // load pcs of sprites to RAM
     LD R[30020] SPRITE_FONT_0
@@ -32,12 +31,13 @@ PONG_MAIN:
 
     LD R[30030] PONG_SPRITE_BALL
 
-    // counters for physics
-    LD R[30040] 0  // counter A
-    LD R[30041] 0  // counter B
+    // array of stuff abs distances
+    LD R[30040] 0
+    LD R[30041] 1
+    LD R[30042] 2
+    LD R[30043] 3
+    LD R[30044] 4
 
-    LD R[30050] 0  // leftHeldDown
-    
     // background color
     LD R[30060] 0X000000FF
 
@@ -228,8 +228,8 @@ PONG_MAIN:
     // left paddle
     PONG_MOVE_LPADDLE_UP:
     	GTE R[30001] R[30011]
-    	RETURN
-    	SUB R[30001] R[30016]
+        RETURN
+        SUB R[30001] R[30016]
     	RETURN
 
     PONG_MOVE_LPADDLE_DOWN:
@@ -254,12 +254,19 @@ PONG_MAIN:
 
     PONG_RESET_BALL:
         LD R[30007] 78  // Ball X
-        LD R[30008] 52  // Ball Y
+        LD R[30008] 68  // Ball Y
         LD R[30009] 1  // Ball Velocity X
-        LD R[30010] 1   // Ball Velocity Y
+        LD R[30010] 0   // Ball Velocity Y
 
-        RAND R[30013]  // Ball X-Velo Sign (0-> -ve, 1-> +ve)
+        RAND R[30013] // Ball X-Velo Sign (0-> -ve, 1-> +ve)
         RAND R[30014]  // Ball Y-Velo Sign (0-> -ve, 1-> +ve)
+
+        LD R[30017] 0  // number of consecutive hits
+
+        // random walk the ball Y a bit
+        LD R[0] 30  // exit value for loop
+        LD R[1] 0  // set counter at 0
+
     	RETURN
 
 
@@ -315,12 +322,18 @@ PONG_MAIN:
 
 
         __PONG_SWITCH_DIR_GO_RIGHT:
-            LD R[30013] 1
+            LD R[30013] 1  // x-velo -> +ve
+
+            LD R[0] R[30001]
+            CALL PONG_HANDLE_Y_VELOCITY_OF_BALL
+
+            CALL PONG_HANDLE_X_VELOCITY_OF_BALL
+
             CALL __PONG_MOVE_BALL_RIGHT
             RETURN
 
         __PONG_BALL_GOES_IN_L_GOAL:
-            CALL WAIT_1_SECOND
+            CALL WAIT_N_SECOND
             CALL PONG_RESET_BALL
             CALL INCREASE_R_SCORE
             RETURN
@@ -336,21 +349,19 @@ PONG_MAIN:
         LD R[42] R[30001]
         LD R[43] R[42]
         ADD R[43] 12
-
         LD R[44] R[30008]
         SUB R[44] 4
         LD R[45] R[44]
         ADD R[45] 4
 
-        // extend hitbox of pattle
-        SUB R[42] 2
-        ADD R[43] 2
+        // correct hitbox
+        SUB R[42] 4
 
-        // check if ball touching L-Pattle
         GTE R[45] R[42]
             RETURN
         LTE R[44] R[43]
             RETURN
+
 
         LD R[4100] 1
         RETURN
@@ -366,12 +377,19 @@ PONG_MAIN:
 
 
         __PONG_SWITCH_DIR_GO_LEFT:
-            LD R[30013] 0
+            LD R[30013] 0  // x-velo -> -ve
+            ADD R[30017] 1  // +1 consec hits
+
+            LD R[0] R[30003]
+            CALL PONG_HANDLE_Y_VELOCITY_OF_BALL
+
+            CALL PONG_HANDLE_X_VELOCITY_OF_BALL
+
             CALL __PONG_MOVE_BALL_LEFT
             RETURN
 
         __PONG_BALL_GOES_IN_R_GOAL:
-            CALL WAIT_1_SECOND
+            CALL WAIT_N_SECOND
             CALL PONG_RESET_BALL
             CALL INCREASE_L_SCORE
             RETURN
@@ -387,15 +405,13 @@ PONG_MAIN:
         LD R[42] R[30003]
         LD R[43] R[42]
         ADD R[43] 12
-
         LD R[44] R[30008]
         SUB R[44] 4
         LD R[45] R[44]
         ADD R[45] 4
 
-        // extend hitbox of pattle
-        SUB R[42] 2
-        ADD R[43] 2
+        // correct hitbox
+        SUB R[42] 4
 
         // check if ball touching R-Pattle
         GTE R[45] R[42]
@@ -462,116 +478,13 @@ PONG_MAIN:
 
         BLIT
 
-        LD R[30006] 0  // for general counter loop
-        LD R[30061] 86  // cursor Y position
-
+        LD R[65000] 0
+        LD R[65001] 0X7FFFFFF  // counter for each blink
         _LOOP_THROUGH_GENERAL_COUNTER:
-            INPUT R[9]
-            SHT R[9] R[28000] 0  // UP
-            SHT R[9] R[28001] 1  // LEFT
-            SHT R[9] R[28002] 2  // DOWN
-            SHT R[9] R[28003] 3  // RIGHT
-            SHT R[9] R[28004] 4  // Z
-            SHT R[9] R[28005] 5  // X
-            SHT R[9] R[28006] 6  // ENTER
-            SHT R[9] R[28007] 7  // ESC
-
-            // exit if ESC pressed
-            CMP R[28007] 0
-                EXIT
-
-            // "RESTART?"
-            LD R[0] 46  // set X
-            LD R[1] 70 // set Y
-            LD R[4096] SPRITE_FONT_R
-            LD R[U] R[0] R[1] R[2] R[3]
-            ADD R[0] 6
-            LD R[4096] SPRITE_FONT_E
-            LD R[U] R[0] R[1] R[2] R[3]
-            ADD R[0] 6
-            LD R[4096] SPRITE_FONT_S
-            LD R[U] R[0] R[1] R[2] R[3]
-            ADD R[0] 6
-            LD R[4096] SPRITE_FONT_T
-            LD R[U] R[0] R[1] R[2] R[3]
-            ADD R[0] 6
-            LD R[4096] SPRITE_FONT_A
-            LD R[U] R[0] R[1] R[2] R[3]
-            ADD R[0] 6
-            LD R[4096] SPRITE_FONT_R
-            LD R[U] R[0] R[1] R[2] R[3]
-            ADD R[0] 6
-            LD R[4096] SPRITE_FONT_T
-            LD R[U] R[0] R[1] R[2] R[3]
-            ADD R[0] 6
-            LD R[4096] SPRITE_FONT_QUESTION_MARK
-            LD R[U] R[0] R[1] R[2] R[3]
-
-            LD R[0] 55
-            LD R[1] 70
-
-            // "YES"
-            ADD R[0] 5  // reset X
-            ADD R[1] 8  // new Y line
-            LD R[4096] SPRITE_FONT_Y
-            LD R[U] R[0] R[1] R[2] R[3]
-            ADD R[0] 6
-            LD R[4096] SPRITE_FONT_E
-            LD R[U] R[0] R[1] R[2] R[3]
-            ADD R[0] 6
-            LD R[4096] SPRITE_FONT_S
-            LD R[U] R[0] R[1] R[2] R[3]
-
-            // "NO"
-            LD R[0] 60  // reset X
-            ADD R[1] 8  // new Y line
-            LD R[4096] SPRITE_FONT_N
-            LD R[U] R[0] R[1] R[2] R[3]
-            ADD R[0] 6
-            LD R[4096] SPRITE_FONT_O
-            LD R[U] R[0] R[1] R[2] R[3]
-
-
-            // LD R[1] 78 // or YES
-            // LD R[1] 86 // or NO
-
-
-            CALL DECIDE_WHERE_CURSOR_POINTS
-
-            // ">"
-            LD R[0] 53
-            LD R[1] R[30061] // set cursor Y val
-            LD R[4096] PONG_CURSOR
-            LD R[2] 5
-            LD R[3] 5
-            LD R[U] R[0] R[1] R[2] R[3]
-
-            // if x or y pressed, start game again
-            CMP R[28004] 0
-            GOTO PONG_MAIN
-            CMP R[28005] 0
-            GOTO PONG_MAIN
-
-            BLIT
-            WAIT
-
+            ADD R[65000] 1
+            CMP R[65000] R[65001]
             GOTO _LOOP_THROUGH_GENERAL_COUNTER
-
             EXIT
-
-    DECIDE_WHERE_CURSOR_POINTS:
-        CMP R[28000] 1
-        GOTO __CURSOR_POINTS_AT_YES
-        GOTO __CURSOR_POINTS_AT_NO
-
-        __CURSOR_POINTS_AT_YES:
-            LD R[30061] 86
-            RETURN
-
-        __CURSOR_POINTS_AT_NO:
-            LD R[30061] 78
-            RETURN
-
 
     PONG_COLOR_SCREEN_GREY:
         CALL STD_GET_LAST_VRAM_INDEX
@@ -583,15 +496,44 @@ PONG_MAIN:
         RETURN
 
 
-WAIT_1_SECOND:
+WAIT_N_SECOND:
     LD R[0] 0
-
-    _WAIT_1_SECOND_LOOP:
+    _WAIT_N_SECOND_LOOP:
         ADD R[0] 1
-        CMP R[0] 0X3FFFFFF
-        GOTO _WAIT_1_SECOND_LOOP
+        CMP R[0] 0XFFFFF
+        GOTO _WAIT_N_SECOND_LOOP
     RETURN
 
+
+PONG_HANDLE_X_VELOCITY_OF_BALL:
+    ADD R[30017] 1  // +1 consec hits
+    // if consecutive hits > 10, add 1 to x-velo
+
+    LT R[30017] 5
+    LD R[30009] 2
+    RETURN
+
+
+PONG_HANDLE_Y_VELOCITY_OF_BALL:
+    // LD R[0] R[30001]  // Lpattle y0
+    ADD R[0] 8 // R[0] -> midY of LPattle
+
+    LD R[1] R[30008]  // ball y0
+    ADD R[1] 2
+    CALL STD_MATH_ABS_DIFF
+
+    // array of abs distances
+    // [0,1,2,3]
+    LD R[30010] R[30040]
+    LT R[4100] 1
+    LD R[30010] R[30041]
+    LT R[4100] 3
+    LD R[30010] R[30042]
+    LT R[4100] 6
+    LD R[30010] R[30043]
+    LT R[4100] 8
+    LD R[30010] R[30044]
+    RETURN
 
 // 4 4
 PONG_SPRITE_BALL:
@@ -611,67 +553,3 @@ PONG_SPRITE_BALL:
 	0XABABABFF
 	0XABABABFF
 	0XABABABFF
-
-// 5 5
-PONG_CURSOR:
-    0XAB1569FF
-    0XAB1569FF
-    0XAB1569FF
-    0XFFFFFF00
-    0XFFFFFF00
-
-    0XFFFFFF00
-    0XAB1569FF
-    0XAB1569FF
-    0XAB1569FF
-    0XFFFFFF00
-
-    0XFFFFFF00
-    0XFFFFFF00
-    0XAB1569FF
-    0XAB1569FF
-    0XAB1569FF
-
-    0XFFFFFF00
-    0XAB1569FF
-    0XAB1569FF
-    0XAB1569FF
-    0XFFFFFF00
-
-    0XAB1569FF
-    0XAB1569FF
-    0XAB1569FF
-    0XFFFFFF00
-    0XFFFFFF00
-
-// 5 5
-PONG_CURSOR_WHITE:
-    0XABABABFF
-    0XABABABFF
-    0XABABABFF
-    0XFFFFFF00
-    0XFFFFFF00
-
-    0XFFFFFF00
-    0XABABABFF
-    0XABABABFF
-    0XABABABFF
-    0XFFFFFF00
-
-    0XFFFFFF00
-    0XFFFFFF00
-    0XABABABFF
-    0XABABABFF
-    0XABABABFF
-
-    0XFFFFFF00
-    0XABABABFF
-    0XABABABFF
-    0XABABABFF
-    0XFFFFFF00
-
-    0XABABABFF
-    0XABABABFF
-    0XABABABFF
-    0XFFFFFF00
-    0XFFFFFF00
