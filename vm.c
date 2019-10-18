@@ -132,7 +132,9 @@ int main(int argc, char* argv[])
         printf("    ...\n");
         printf("    4100: %u\n", ram[4100]);
         printf("    ...\n");
-        printf("    30008: %u\n", ram[30008]);
+        printf("    28002: %u //number of neighbours for (x,y)\n", ram[28002]);
+        printf("    28003: %u //index of vram for (x,y)\n", ram[28003]);
+        printf("    28011: %u //pixelInVRAM\n", ram[28011]);
         printf("\n\n");
 #endif
         pc += 2;
