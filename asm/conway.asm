@@ -22,7 +22,7 @@ CONWAY_MAIN:
 	LD R[28009] 0  // len of neighbour path
 	LD R[28010] 0  // pos in path
 	LD R[28011] 0  // pixelInVRAM
-	LD R[28012] 0  // number of times going through gameloop
+	LD R[28012] 0  // counter for number of generations
 
 	// load map
 	CALL CONWAY_LOAD_MAP_BLINKER
@@ -39,10 +39,6 @@ CONWAY_MAIN:
         CMP R[29001] 0
         	EXIT
 
-        // exit in N-generations
-        LT R[28012] 120
-        EXIT
-
         LD R[28000] 0
         LD R[28001] 0
         _CONWAY_LOOP_THROUGH_EACH_PIXEL:
@@ -58,11 +54,7 @@ CONWAY_MAIN:
         	// determine next-gen state of (x,y)
         	CALL _CONWAY_WILL_PIXEL_BE_ALIVE_NEXT_ROUND
 
-        	// LD R[4100] 1
-        	// MUL R[4100] 0XFFFFFFFF
-        	// EXIT
-
-        	// move next next-gen state of pixel to vram2
+        	// move next next-gen state of pixel to VRAM2
         	MUL R[4100] 0XFFFFFFFF
         	LD R[4099] R[28003]
         	ADD R[4099] 25899
@@ -87,15 +79,17 @@ CONWAY_MAIN:
         LD R[4099] 53040
         LD R[U:V] R[Y:Z]
         
-        // clear vram2
+        // clear VRAM2
         CALL CONWAY_CLEAR_VRAM2
 
         BLIT
         WAIT
 
-        ADD R[28012] 1  // number of loops
+        ADD R[28012] 1  // +1 to generation counter
 
         GOTO CONWAY_GAME_LOOP
+
+
 
     // ==============
     // util functions
@@ -130,6 +124,7 @@ CONWAY_MAIN:
         	GOTO _CONWAY_LOAD_MAP_2
        	RETURN
 
+
 	CONWAY_LOAD_MAP_BEACON:
 		LD R[12181] 0XFFFFFFFF
 		LD R[12182] 0XFFFFFFFF
@@ -144,11 +139,13 @@ CONWAY_MAIN:
 		LD R[12664] 0XFFFFFFFF
 		RETURN
 
+
 	CONWAY_LOAD_MAP_BLINKER:
 		LD R[12181] 0XFFFFFFFF
 		LD R[12182] 0XFFFFFFFF
 		LD R[12183] 0XFFFFFFFF
 		RETURN
+
 
 	_CONWAY_FIND_NUM_OF_ALIVE_NEIGHBOURS:
 		// R[28003] <- vram_idx_of_(x,y)
@@ -158,6 +155,7 @@ CONWAY_MAIN:
 		// 6 7 8
 		// 5 * 1
 		// 4 3 2
+		//
 
 		LD R[28002] 0  // reset alive neighbours -> 0
 
@@ -223,8 +221,7 @@ CONWAY_MAIN:
 		// 0   0,1,2,4,5,6,7,8 ->  0  # Barren
 
 		LD R[4096] R[28003]
-		CMP R[U] 0
-    	// CMP R[28003] 0
+		CMP R[U] 0  // check if cell is dead or alive
     	GOTO _PIXEL_NEXT_STATE_IF_CURRENT_PIXEL_IS_ALIVE
     	GOTO _PIXEL_NEXT_STATE_IF_CURRENT_PIXEL_IS_DEAD
 
@@ -246,12 +243,13 @@ CONWAY_MAIN:
 			LD R[4100] 1  // "ALIVE"
 			RETURN
 
-	// CMP R[28003] 0
+
 	IF_PIXEL_ALIVE_INCREASE_NEIGHBOUR_COUNT:
 		LD R[4098] R[28003]
 		CMP R[Y] 0
 		ADD R[28002] 1
 		RETURN
+
 
 	_CONWAY_IS_PIXEL_IN_VRAM:
 		LD R[28011] 1  // pixelInVRAM (BOOL)
@@ -261,27 +259,21 @@ CONWAY_MAIN:
 		LD R[28011] 0
 		RETURN
 
-CONWAY_COLOR_SCREEN_BLACK:
-    CALL STD_GET_LAST_VRAM_INDEX
-    LD R[4097] R[4100]
-    LD R[65000] 0
-    LD R[4099] 65000
-    LD R[4096] 4101
-    LD R[U:V] R[Z]
-    RETURN
 
-CONWAY_CLEAR_VRAM2:
-    LD R[4097] 53040
-    LD R[65000] 0XFF0000FF
-    LD R[4099] 65000
-    LD R[4096] 30000
-    LD R[U:V] R[Z]
-    RETURN
+	CONWAY_COLOR_SCREEN_BLACK:
+	    CALL STD_GET_LAST_VRAM_INDEX
+	    LD R[4097] R[4100]
+	    LD R[65000] 0
+	    LD R[4099] 65000
+	    LD R[4096] 4101
+	    LD R[U:V] R[Z]
+	    RETURN
 
-CONWAY_WAIT_N_SECOND:
-    LD R[0] 0
-    _CONWAY_WAIT_N_SECOND:
-        ADD R[0] 1
-        CMP R[0] 0XFFFFFF4
-        GOTO _CONWAY_WAIT_N_SECOND
-    RETURN
+
+	CONWAY_CLEAR_VRAM2:
+	    LD R[4097] 53040
+	    LD R[65000] 0XFF0000FF
+	    LD R[4099] 65000
+	    LD R[4096] 30000
+	    LD R[U:V] R[Z]
+	    RETURN
