@@ -21,8 +21,8 @@ A Virtual Machine, Assembler, and Compiler, written in Python and C
 - statically-linked library
 
 ## How to Build
-1. Pick filename in run.sh
-2. `./run.sh`
+1. Ensure filename in `run.sh` is the name of a file in `/asm`
+2. `$ ./run.sh`
 
 ## Motivation
 
