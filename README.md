@@ -1,6 +1,6 @@
 # VLAHB
 
-_(vee-lab)_<br>
+pron. _(vee-lab)_<br>
 
 **V**irtual Machine <br>
 **L**anguage <br>
