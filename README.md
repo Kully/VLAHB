@@ -22,7 +22,7 @@ A Virtual Machine, Assembler, and Compiler, written in Python and C
 
 ## How to Build
 1. Ensure filename in `run.sh` is the name of a file in `/asm`
-2. `$ ./run.sh`
+2. Run `$ ./run.sh`
 
 ## Motivation
 
