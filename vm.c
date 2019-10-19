@@ -8,9 +8,8 @@
 #include <time.h>
 
 // global constants
-// biggest accesible index for RAM and ROM is 0XFFFF or 65535
-#define ROM_SLOTS 128000
-#define RAM_SLOTS 128000
+#define ROM_SLOTS 65535
+#define RAM_SLOTS 65535
 #define STACK_FRAME_SIZE 128
 #define STACK_MAX_SIZE 32
 #define VRAM_FIRST_INDEX 4101
