@@ -1,9 +1,11 @@
-# V-LAHB
+# VLAHB
 **V**irtual Machine <br>
 **L**anguage <br>
 **A**ssembler <br>
 **H**exadecimal <br>
 **B**inary <br>
+
+_(vee-lab)_
 
 <!-- Add Cool GIFS here :)
 ![screenshot](img/peekgif.gif) -->
