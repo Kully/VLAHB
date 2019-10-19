@@ -11,7 +11,7 @@ _(vee-lab)_<br>
 <!-- Add Cool GIFS here :)
 ![screenshot](img/peekgif.gif) -->
 
-A Virtual Machine, Assembler, and Compiler written in Python
+A Virtual Machine, Assembler, and Compiler, written in Python and C
 
 - 16 bit virtual machine with 32-bit opcodes
 - two-pass assembler
@@ -20,15 +20,13 @@ A Virtual Machine, Assembler, and Compiler written in Python
 - 160X144 px resolution display
 - statically-linked library
 
-## Why?
-
-1. An opportunity to learn and write algorithms in a primative programming language.
-2. Build cool assembly programs.
-3. The love and curiosity of learning.
-
 ## How to Build
 1. Pick filename in run.sh
 2. `./run.sh`
 
-### BLOG
-Coming Soon...
+## Motivation
+
+The opportunity to understand how computers work on the lower level and to learn how to think more like a computer.
+
+## BLOG
+Coming Soon..
