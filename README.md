@@ -27,6 +27,3 @@ A Virtual Machine, Assembler, and Compiler, written in Python and C
 ## Motivation
 
 The opportunity to understand how computers work on the lower level and to learn how to think more like a computer.
-
-## BLOG
-Coming Soon..
