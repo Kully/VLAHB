@@ -26,7 +26,8 @@ CONWAY_MAIN:
     LD R[28012] 0  // counter for number of generations
 
     // load initial state
-    CALL CONWAY_INIT_STATE_INFINITE_GROWTH_2
+    // CALL CONWAY_INIT_STATE_INFINITE_GROWTH_2
+    CALL CONWAY_INIT_STATE_2
     
     BLIT
 
