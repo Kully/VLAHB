@@ -2,29 +2,30 @@
 
 (_Special thanks to [glouw](https://github.com/glouw) for the idea of VLAHB and his support throughout the project._)
 
-VLAHB (pron. _vee-lab_) is a project that I created and fueled by the the desire to understana the low level of computers. My goal was to create a virtual machine and an assembly language that I could write games with.
+**VLAHB** (pron. _vee-lab_) began as a passion project fueled with a genuine curiousity about the innerworkings of computers. I started the project back in early April 2019 with the goal to write a virtual machine, an assembler, an assembly language, and a way to transform my assembly code into machine-code that my virtual machine could run and understand. Many long nights and cups of coffee later, I can proudly say that VLAHB is finished.
 
-Read this guide to learn how to write a virtual machine ("vm") that reads bytes, and a program that converts hexadecimal code to bytes, and an assembler that compiles assembly code to hexadecimal that compiles to bytes that the vm reads. I've included Pong and [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) in the GitHub repo if you want to run those.
+In this post, I will present an overview of the basic principles that I learned, show some snippets of code along the way, and do my best to teach these ideas.
 
-If you only care about running the project, go to [How to Build](#how-to-build). Otherwise, keep reading for your own Assembly Superpowers! :tada:
+Checkout the [Github](https://github.com/Kully/VLAHB) page for the full project and to run on your own machine. With my language I wrote a bunch of small programs and a couple games: Pong and [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
 
 ---
 
 #### Table of Contents
 
-> 1. [Binary](#binary) <br>
+> 1. [The Basics](#the-basics) <br>
 2. [Ram](#ram) <br>
-2. [Virtual Machine](#virtual-machine) <br>
-3. [Assembly](#assembly) <br>
-4. [Let's Write a Simple Program](#lets-write-a-simple-program) <br>
-5. [How to Build](#how-to-build)<br>
-6. [Further Reading](#Further-Reading)<br>
+3. [Virtual Machine](#virtual-machine) <br>
+4. [What does Virtual Machine Read?](#what-does-virtual-machine-read) <br>
+5. [Assembly](#assembly) <br>
+6. [Let's Write a Simple Program](#lets-write-a-simple-program) <br>
+7. [How to Build](#how-to-build)<br>
+8. [Further Reading](#Further-Reading)<br>
 
 ---
 
-## Binary
+## The Basics
 
-_a little background_
+_0s and 1s_
 
 Look at your phone, the one that's parked next to you on the table. Now open it up and look at the back. What do you see? It's a bunch of green silicon with etches in it. In all green silicon boards that you find (in your microwave, TV, speakers, phone, Wakki Takki, digital clock) is a place where electricity, or electrons, flow in and out of other places. They chill in one corner for a bit, then move to another spot, and all this net movement of the electrons is the _actual_ reason why your phone works.
 
@@ -41,30 +42,29 @@ Now I'm sure you might be asking "But how do the 1s and 0s do stuff?" That is a 
 
 _all computers have them_
 
-Right now your computer right is using dedicated registers where electricity can be stored dynamically. When the specs for your Computer read "8 GB of ram", this is referring to the amount of physically space on the computer for these.
+Right now your computer right is using dedicated registers where electricity can be stored dynamically. If a computer has "8 GB of ram" according to its specs, this is telling you how much physically space on the circuit board is dedicated to this.
 
-Imagine you have a bunch of "slots" that can contain numbers:
+Imagine you have a bunch of containers or "slots" that can store numbers with a max size:
 
 ```c
-[ ][ ][ ][ ][ ][ ][ ][ ]
+[0][0][0][0][0][0][0][0]
 ```
 
-This is what ram is. Each slot can store a number between `$00000000` and `$FFFFFFFF` (0 to 4.29 billion).
+This is what ram is: a bunch of slots Each slot can store a number between `$00000000` and `$FFFFFFFF` (0 to 4.29 billion). They all start with `0`s inside.
 
->> $AF is a hexideciaml value <br>
-each letter can be a character in {0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f}
+>> A hexideciaml number looks like 0XFF or 0X1A4A9<br>
+Each symbol is from the set of values 0-9 and letters a-f
 
-Disclaimer: we are _not_ going to touch the real slots that our computer uses and calls its RAM. Instead, we are going to write a Virtual Machine, or a virutal computer, to simulate what it would be like if we were able to directly target some ram slots that we create:
+Disclaimer: we are _not_ touching the real slots that our computer uses and calls its ram. Instead our virtual machine will act like our computer and we will be simulating the ram slots with a list in C.
 
 <!-- Diagram of computer within a computer: rectangle within a rectangle -->
 
 
 ## Virtual Machine
 
-_the brains of the operation_
+_How do we do stuff with our slots of ram?_
 
-
-So at this point we can forget electricity. We are going to use the C Programming Language to write a `vm.c` program that will create a list called ram. This is a snippet of `vm.c`:
+Our virtual machine is a C file. For setup, we set some initial variables and structures:
 
 ```c
 uint32_t rom[ROM_SLOTS];       // rom
@@ -73,7 +73,9 @@ int16_t sp;                    // stack pointer
 int16_t stack[STACK_MAX_SIZE]; // stack
 ```
 
-We will come back to this snippet but notice that we have ram in here. The meat of the vm looks like this:
+There are more in [vm.c](https://github.com/Kully/VLAHB/blob/master/vm.c) but the really important ones are `rom`, `ram`, `stack pointer` and the `stack`. We touch on these later, but notice that ram is in there.
+
+Scroll through vm.c some more and we get to the brains of the program:
 
 ```c
 switch(word0_second_half)
@@ -103,59 +105,82 @@ switch(word0_second_half)
         ram[word0_first_half] *= word1;
         break;
     }
+    ... 
 ```
 
-Look at the cases. This virtual machine takes lines of code, looks at part of them, and does something based on what value they are.
+When the virtual machine is running, it is going to look for a file called `file.bin`. It is going to read this binary file line by line and do things based on what the binary says.
 
-The code that the vm looks at looks something like this:
+>> bin stands for binary, so file.bin is a file of 1s and 0s
 
-```
-00010002
-00000007
-00040003
-00000002
-```
+Each case corresponds to an instruction in our vm. Depending on what the lines of bytes say in `file.bin`, the vm will do something different. These instructions are arbitrary. For `case 0X0001`, I could have chosen to summon a monster to eat `ram` and give birth to 2 more `rom`s. But I want to create a vm that operates _closely_ to how a real computer does.
 
-The vm looks at this code 2 lines at a time:
 
-First
+## What does Virtual Machine Read?
 
-```
-00010002
-00000007
-```
-
-Second
+Here is a snippet of the file that vm may reads
 
 ```
 00040003
+00000001
+0001000c
+00000000
+00040003
+00000001
+0004000c
 00000002
 ```
-and so on.
 
+Okay, what does that all mean? When designing your own virtual machine, you can make it do *ANYTHING YOU WANT!* :smile: 
 
-Let's look at the first 2 lines. We could have made our vm read this code any which way we wanted. The way our vm works is by looks at the second half of the first line, treating that as an instruction (vis a vis the cases) and then interpretting what to do based on that.
+---
 
-```
-00010002
-00000007
-
-[0001][0002]
-[ 00000007 ]
-```
-
-The vm reads:
-	"Load `[0002]` the value `[00000007]` into slot `[0001]` of `ram`"
-
-And now our ram looks like this:
+Let's say we want to load ram's 2nd slot with the number 5...then we write 2 lines of hex code:
 
 ```c
-[ ][7][ ][ ][ ][ ]
- ^  ^  ^  ^  ^  ^
- 0  1  2  3  4  5
+00010002
+00000005
 ```
 
-This works for all of the cases, and you can go through them if you want in [vm.c](https://github.com/Kully/VLAHB/blob/master/vm.c#L135-L566)
+>This reads "load (opcode `0002`) slot `0001` with the value `00000005`"
+
+```c
+ram: [0][5][0][0][0][0]
+```
+
+Now let's say we want to add the number 2 to the same 2nd slot. We write
+
+```c
+00010003
+00000002
+```
+
+>This reads "add (opcode `0003`) the value `00000002` to slot `0001` "
+
+```c
+ram: [0][5][0][0][0][0]
+```
+
+Now I'm not gonna spend anymore on these codes. If you are interested, you can read the vm.c in full. But what we get in the end is the ability to
+- add
+- sub
+- multiply
+- divide
+- copy and paste sections of ram (similar to python )
+- draw to the screen
+
+```python
+myList[0:4] = myList[4:8]
+```
+
+>> An "opcode" is a fancy name for the code that treated as an instruction by the virtual machine.
+
+
+## VRAM
+
+```bash
+[0-4095][4096-4099][4100][4101-27141][27141-65535]
+```
+
 
 
 ## Assembly:
@@ -186,6 +211,8 @@ which results in `7` getting loaded into slot `1` of ram
 
 To read the full assembler file, [click here](https://github.com/Kully/VLAHB/blob/master/asm.py).
 
+
+- Pointers!!! 4096-4099
 
 ## Let's Write a Simple Program
 
@@ -235,3 +262,7 @@ In the spirit of intellectual humility, I can assuredly say that the further rea
 - [ ] Check out [Crash Course YouTube Channel](https://www.youtube.com/user/crashcourse) for awesome educational videos on computers
 - [ ] Jack Crenshaw's [Let's Build a Compiler](https://compilers.iecc.com/crenshaw/) guide
 - [ ] If you want an intro to making NES games, checkout [Easy 6502](http://www.6502.org/tutorials/6502opcodes.html) which is a Javascript 6502 Assembler and Simulator
+
+
+
+<!-- to learn how to write an assembler that turns assembly code into to hexadecimal code, a program that takes hexadecimal code and turns it into raw bytes, and then a virtual machine ("vm") with opcodes and all, that can read your raw byte file and run the file. The entire -->
