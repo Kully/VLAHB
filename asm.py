@@ -791,8 +791,6 @@ if __name__ == '__main__':
             'asm/'+asm_file, cumsum_hex_lines, num_errors
         )
         filename_and_lines_pairs.append((asm_file, lines_for_program))
-        # all_lines_for_programs.append(lines_for_program)
-
 
     for item in filename_and_lines_pairs:
         asm_file = item[0]
@@ -802,14 +800,6 @@ if __name__ == '__main__':
             asm_file, lines_for_program, num_errors
         )
         giant_hex_file_str += hex_file_str
-
-
-
-    # for lines_for_program in all_lines_for_programs:
-    #     hex_file_str, num_errors = validate_and_make_hexfile(
-    #         asm_file, lines_for_program, num_errors
-    #     )
-    #     giant_hex_file_str += hex_file_str
 
     print('\n%s error%s generated' %(num_errors, ('s' if num_errors!=1 else '')))
     if num_errors == 0:
