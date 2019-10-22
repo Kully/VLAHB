@@ -16,8 +16,8 @@
 #define MAX_RAMVALUE UINT_MAX
 #define DEBUG 0
 
-uint32_t rom[ROM_SLOTS];
-uint32_t ram[RAM_SLOTS];
+uint32_t rom[ROM_SLOTS];       // rom
+uint32_t ram[RAM_SLOTS];       // ram
 int16_t sp;                    // stack pointer
 int16_t stack[STACK_MAX_SIZE]; // stack
 
