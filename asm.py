@@ -22,19 +22,21 @@ import util
 from termcolor import colored
 
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-
 LABELS_TO_PC = {}
 COMMENT_SYMBOL = '//'
+
+valid_opcodes_keywords = [
+    'LD', 'ADD', 'SUB', 'MUL', 'DIV', 'CALL', 'CMP', 'LT', 'LTE', 'GT', 'GTE',
+    'GOTO', 'RETURN', 'PUSH', 'POP', 'EXIT', 'WAIT', 'SHT', 'RAND', 'INPUT', 'BLIT'
+]
+
+def error_msg(file_asm, line_idx, line, num_errors, msg):
+    print(f'\n{file_asm}:{line_idx}', colored('error:', 'red'), msg)
+    print(f'{line}')
+    print(colored('^'+'~'*(len(line)-1), 'green'))
+    num_errors += 1
+
+    return num_errors
 
 
 def write_two_lines_to_hexfile(word0_first_half,
@@ -50,28 +52,7 @@ def write_two_lines_to_hexfile(word0_first_half,
     return hex_file_str
 
 
-def return_hex_instruction_lines(opcode, args, word0_first_half,
-                                 word0_second_half, word1,
-                                 to_register_key, to_direct_key):
-    if len(args) < 2 or not re.search(util.REGEX_LD_R_ONE, args[0]):
-        raise Exception(
-            util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
-        )
-    if re.search(util.REGEX_LD_R_ONE, args[1]):
-        opcode_val = util.opcode_lookup_dict[to_register_key]
-        word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
-
-    else:
-        opcode_val = util.opcode_lookup_dict[to_direct_key]
-        word1 = util.int_to_hex(args[1]).zfill(8)
-
-    word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
-    word0_second_half = opcode_val.zfill(4)
-
-    return word0_first_half, word0_second_half, word1
-
-
-def compute_label_indices_from_file(file_asm, cumsum_hex_lines):
+def compute_label_indices_from_file(file_asm, cumsum_hex_lines, num_errors):
     '''line = code // comment'''
     lines = util.return_lines_from_file(file_asm)
     lines_for_program = []  # all but commentsa and blank lines
@@ -90,12 +71,10 @@ def compute_label_indices_from_file(file_asm, cumsum_hex_lines):
             label = re.findall(util.REGEX_LABEL_AND_COLON, code)[0]
 
             if label in LABELS_TO_PC.keys():
-                print(f'{file_asm}:{line_idx}')
-                print(util.LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG.format(
-                        label=label
-                ))
-                print(colored('hello', 'red'), colored('world', 'green'))
-                print('   > label: %s' %label)
+                msg='label defined more than once'
+                num_errors = error_msg(
+                    file_asm, line_idx, line, num_errors, msg
+                )
 
             LABELS_TO_PC[label] = cumsum_hex_lines
 
@@ -107,10 +86,10 @@ def compute_label_indices_from_file(file_asm, cumsum_hex_lines):
             lines_for_program.append(code)
             cumsum_hex_lines += 2
 
-    return lines_for_program, cumsum_hex_lines
+    return lines_for_program, cumsum_hex_lines, num_errors
 
 
-def validate_and_make_hexfile(lines):
+def validate_and_make_hexfile(file_asm, lines, num_errors):
     hex_file_str = ''
     extra_line_for_raw_hex = 0
 
@@ -148,7 +127,10 @@ def validate_and_make_hexfile(lines):
             if re.match(util.REGEX_HEX, opcode):
                 valid_opcode = False
                 if len(args) > 0:
-                    raise Exception(util.RAW_HEX_EXCEPTION_MSG)
+                    msg='invalid hexcode'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
 
                 opcode_int = util.hex_to_int(opcode)
                 opcode_hex = util.int_to_hex(opcode_int)
@@ -156,41 +138,57 @@ def validate_and_make_hexfile(lines):
                 hex_file_str += opcode_hex.zfill(8)
                 hex_file_str += '\n'
 
+            # valid opcode
+            elif opcode not in valid_opcodes_keywords:
+                msg=f'invalid opcode'
+                num_errors = error_msg(
+                    file_asm, line_idx, line, num_errors, msg
+                )
 
             elif opcode == 'GOTO':
                 valid_opcode = True
                 if len(args) < 1:
-                    raise Exception(util.GOTO_EXCEPTION_MSG)
+                    msg='missing argument'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
 
                 # GOTO LABEL
-                if re.match(util.REGEX_LABEL, args[0]):
+                elif re.match(util.REGEX_LABEL, args[0]):
                     opcode_val = util.opcode_lookup_dict['GOTO']
 
                     if args[0] not in LABELS_TO_PC.keys():
-                        raise Exception('\nUnknown Label %s' %args[0])
-                    word1 = util.int_to_hex(LABELS_TO_PC[args[0]]).zfill(8)
+                        msg='unknown label'
+                        num_errors = error_msg(
+                            file_asm, line_idx, line, num_errors, msg
+                        )
+                    else:
+                        word1 = util.int_to_hex(LABELS_TO_PC[args[0]]).zfill(8)
+                        word0_second_half = opcode_val.zfill(4)
 
                 # GOTO i
                 elif re.match(util.REGEX_INT, args[0]):
                     opcode_val = util.opcode_lookup_dict['GOTO']
                     word1 = util.int_to_hex(args[0]).zfill(8)
+                    word0_second_half = opcode_val.zfill(4)
 
                 # GOTO R[i]
                 elif re.match(util.REGEX_LD_R_ONE, args[0]):
                     opcode_val = util.opcode_lookup_dict['GOTO R[i]']
                     word1 = util.int_to_hex(args[0][2:-1]).zfill(8)
-
-                word0_second_half = opcode_val.zfill(4)
+                    word0_second_half = opcode_val.zfill(4)
 
             elif opcode == 'LD':
-                valid_opcode = True
-
                 # Validate
                 if len(args) < 2:
-                    raise Exception(util.LD_EXCEPTION_MSG)
+                    msg=f'requires 2 or more arguments after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
 
-                # LD MARIO R[X] R[Y] W H (X,Y must be <= 255)
-                if re.match(util.REGEX_ARRAY_LD, ' '.join(args)):
+                # LD ARRAY R[X] R[Y] W H (X,Y must be <= 255)
+                elif re.match(util.REGEX_ARRAY_LD, ' '.join(args)):
+                    valid_opcode = True
                     opcode_val = util.opcode_lookup_dict['LD ARRAY TO VRAM']
 
                     all_args = re.findall(util.REGEX_ARRAY_LD, ' '.join(args))
@@ -202,7 +200,10 @@ def validate_and_make_hexfile(lines):
                     height_sprite  = all_args[0][4]
 
                     if label not in LABELS_TO_PC.keys():
-                        raise Exception('\nUnknown Label %s' %label)
+                        msg='unknown label'
+                        num_errors = error_msg(
+                            file_asm, line_idx, line, num_errors, msg
+                        )
 
                     label_idx = util.int_to_hex(LABELS_TO_PC[label]).zfill(4)
                     x_sprite = util.int_to_hex(x_sprite).zfill(2)
@@ -219,8 +220,9 @@ def validate_and_make_hexfile(lines):
                         word1, hex_file_str
                     )
 
-                # LD R[i] MARIO  (load PC of MARIO array to R[i])
+                # LD R[i] ARRAY  (load PC of ARRAY to R[i])
                 elif re.match(util.REGEX_LD_LABEL_PC, ' '.join(args)):
+                    valid_opcode = True
                     opcode_val = util.opcode_lookup_dict['LD ARRAY PC TO REGISTER']
                     word0_second_half = opcode_val.zfill(4)
 
@@ -230,7 +232,10 @@ def validate_and_make_hexfile(lines):
                     label = all_args[0][1]
 
                     if label not in LABELS_TO_PC.keys():
-                        raise Exception('\nUnknown Label %s' %label)
+                        msg='unknown label'
+                        num_errors = error_msg(
+                            file_asm, line_idx, line, num_errors, msg
+                        )
 
                     label_idx = util.int_to_hex(LABELS_TO_PC[label]).zfill(4)
 
@@ -244,6 +249,7 @@ def validate_and_make_hexfile(lines):
 
                 # LD R[U] R[i] R[j] R[k] R[k] (i,j,k,l must be <= 255)
                 elif re.match(util.REGEX_REGISTER_ONLY_ARRAY_LD, ' '.join(args)):
+                    valid_opcode = True
                     opcode_val = util.opcode_lookup_dict['LD REGISTERS TO VRAM']
 
                     all_args = re.findall(util.REGEX_REGISTER_ONLY_ARRAY_LD, ' '.join(args))
@@ -271,6 +277,7 @@ def validate_and_make_hexfile(lines):
 
                 # LD R[U] R[vram_idx] R[k] R[k] (k,l must be <= 255)
                 elif re.match(util.REGEX_REGISTER_ONLY_VRAM_IDX_ARRAY_LD, ' '.join(args)):
+                    valid_opcode = True
                     opcode_val = util.opcode_lookup_dict['LD REGISTERS TO VRAM W VRAM INDEX']
 
                     all_args = re.findall(
@@ -298,6 +305,8 @@ def validate_and_make_hexfile(lines):
                     )
 
                 elif re.match(util.REGEX_LD_R_ONE, args[0]):
+                    valid_opcode = True
+
                     # LD R[i] R[j]
                     if re.match(util.REGEX_LD_R_ONE, args[1]):
                         opcode_val = util.opcode_lookup_dict['REGISTER TO REGISTER LOAD']
@@ -325,6 +334,7 @@ def validate_and_make_hexfile(lines):
                     )
 
                 elif re.match(util.REGEX_UV_ONE, args[0]) and len(args) == 2:
+                    valid_opcode = True
                     letters_arg0 = re.findall(util.REGEX_UV_ONE, args[0])
                     i = util.UVYZ_to_hex_digit[str(letters_arg0[0])]
                     j = '0'
@@ -353,6 +363,7 @@ def validate_and_make_hexfile(lines):
                     )
 
                 elif re.match(util.REGEX_UV_TWO, args[0]):
+                    valid_opcode = True
                     letters_arg0 = re.findall(util.REGEX_UV_TWO, args[0])
                     i = util.UVYZ_to_hex_digit[str(letters_arg0[0][0])]
                     j = util.UVYZ_to_hex_digit[str(letters_arg0[0][1])]
@@ -391,16 +402,21 @@ def validate_and_make_hexfile(lines):
                         word1, hex_file_str
                     )
 
-                else:
-                    raise Exception(util.LD_EXCEPTION_MSG)
+                if not valid_opcode:
+                    msg='invalid syntax'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
 
             elif opcode == 'ADD':
                 valid_opcode = True
                 if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
-                    raise Exception(
-                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
+                    msg=f'requires 2 or more arguments after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
                     )
-                if re.match(util.REGEX_LD_R_ONE, args[1]):
+
+                elif re.match(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.opcode_lookup_dict['REGISTER TO REGISTER ADD']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -414,10 +430,12 @@ def validate_and_make_hexfile(lines):
             elif opcode == 'SUB':
                 valid_opcode = True
                 if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
-                    raise Exception(
-                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
+                    msg=f'requires 2 or more arguments after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
                     )
-                if re.match(util.REGEX_LD_R_ONE, args[1]):
+
+                elif re.match(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.opcode_lookup_dict['REGISTER TO REGISTER SUBTRACT']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -431,10 +449,11 @@ def validate_and_make_hexfile(lines):
             elif opcode == 'MUL':
                 valid_opcode = True
                 if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
-                    raise Exception(
-                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
+                    msg=f'requires 2 or more arguments after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
                     )
-                if re.match(util.REGEX_LD_R_ONE, args[1]):
+                elif re.match(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.opcode_lookup_dict['REGISTER TO REGISTER MULTIPLY']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -447,11 +466,14 @@ def validate_and_make_hexfile(lines):
 
             elif opcode == 'DIV':
                 valid_opcode = True
+
                 if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
-                    raise Exception(
-                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
+                    msg=f'requires 2 or more arguments after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
                     )
-                if re.match(util.REGEX_LD_R_ONE, args[1]):
+
+                elif re.match(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.opcode_lookup_dict['REGISTER TO REGISTER DIVIDE']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -462,33 +484,16 @@ def validate_and_make_hexfile(lines):
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                 word0_second_half = opcode_val.zfill(4)
 
-            # REMAINDER
-            elif opcode == 'REM':
-                valid_opcode = True
-                if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
-                    raise Exception(
-                        f'\n\n  `{code}` invalid syntax [{file_asm}, line {line_idx+1}]\n'
-                    )
-                if re.match(util.REGEX_LD_R_ONE, args[1]):
-                    opcode_val = util.opcode_lookup_dict['REGISTER TO REGISTER REMAINDER']
-                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
-
-                else:
-                    opcode_val = util.opcode_lookup_dict['DIRECT REMAINDER']
-                    word1 = util.int_to_hex(args[1]).zfill(8)
-
-                word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
-                word0_second_half = opcode_val.zfill(4)
-
             # ==
             elif opcode == 'CMP':
                 valid_opcode = True
                 if len(args) < 2:
-                    raise Exception(
-                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
+                    msg=f'requires 2 or more arguments after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
                     )
 
-                if re.match(util.REGEX_LD_R_ONE, args[0]):
+                elif re.match(util.REGEX_LD_R_ONE, args[0]):
                     if re.match(util.REGEX_LD_R_ONE, args[1]):
                         opcode_val = util.opcode_lookup_dict['COMPARE REGISTER TO REGISTER']
                         word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
@@ -524,10 +529,11 @@ def validate_and_make_hexfile(lines):
             elif opcode == 'LT':
                 valid_opcode = True
                 if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
-                    raise Exception(
-                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
+                    msg=f'requires 2 or more arguments after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
                     )
-                if re.match(util.REGEX_LD_R_ONE, args[1]):
+                elif re.match(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.opcode_lookup_dict['LESS THAN REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -542,10 +548,11 @@ def validate_and_make_hexfile(lines):
             elif opcode == 'LTE':
                 valid_opcode = True
                 if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
-                    raise Exception(
-                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
+                    msg=f'requires 2 or more arguments after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
                     )
-                if re.match(util.REGEX_LD_R_ONE, args[1]):
+                elif re.match(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.opcode_lookup_dict['LESS THAN OR EQUAL REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -560,10 +567,11 @@ def validate_and_make_hexfile(lines):
             elif opcode == 'GT':
                 valid_opcode = True
                 if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
-                    raise Exception(
-                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
+                    msg=f'requires 2 or more arguments after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
                     )
-                if re.match(util.REGEX_LD_R_ONE, args[1]):
+                elif re.match(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.opcode_lookup_dict['STRICT GREATER THAN REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -578,10 +586,11 @@ def validate_and_make_hexfile(lines):
             elif opcode == 'GTE':
                 valid_opcode = True
                 if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
-                    raise Exception(
-                        util.TWO_ARGS_EXCEPTION_MSG.format(opcode=opcode)
+                    msg=f'requires 2 or more arguments after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
                     )
-                if re.match(util.REGEX_LD_R_ONE, args[1]):
+                elif re.match(util.REGEX_LD_R_ONE, args[1]):
                     opcode_val = util.opcode_lookup_dict['GREATER THAN OR EQUAL REGISTER TO REGISTER']
                     word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
 
@@ -595,10 +604,13 @@ def validate_and_make_hexfile(lines):
             elif opcode == 'CALL':
                 valid_opcode = True
                 if len(args) < 1:
-                    raise Exception(util.CALL_EXCEPTION_MSG)
+                    msg=f'requires 1 or more arguments after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
 
                 # CALL LABEL
-                if re.match(util.REGEX_LABEL, args[0]):
+                elif re.match(util.REGEX_LABEL, args[0]):
                     opcode_val = util.opcode_lookup_dict['CALL']
 
                     if args[0] not in LABELS_TO_PC.keys():
@@ -619,8 +631,12 @@ def validate_and_make_hexfile(lines):
 
             elif opcode == 'RETURN':
                 valid_opcode = True
+                
                 if len(args) > 0:
-                    raise Exception(util.RETURN_EXCEPTION_MSG)
+                    msg=f'no args after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
 
                 opcode_val = util.opcode_lookup_dict['RETURN']
                 word0_second_half = opcode_val.zfill(4)
@@ -628,7 +644,10 @@ def validate_and_make_hexfile(lines):
             elif opcode in ('POP', 'PUSH'):
                 valid_opcode = True
                 if len(args) > 0:
-                    raise Exception(util.POP_PUSH_EXCEPTION_MSG.format(opcode))
+                    msg=f'no args after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
 
                 opcode_val = util.opcode_lookup_dict[opcode]
                 word0_second_half = opcode_val.zfill(4)
@@ -636,6 +655,13 @@ def validate_and_make_hexfile(lines):
             # transfer RAM portion to display and update
             elif opcode == 'BLIT':
                 valid_opcode = True
+
+                if len(args) > 0:
+                    msg=f'no args after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
+
                 opcode_val = util.opcode_lookup_dict['BLIT']
                 word0_second_half = opcode_val.zfill(4)
 
@@ -644,13 +670,20 @@ def validate_and_make_hexfile(lines):
                 opcode_val = util.opcode_lookup_dict[opcode]
                 word0_second_half = opcode_val.zfill(4)
 
-                if len(args) < 1:
-                    raise Exception(
-                        util.ONE_ARG_EXCEPTION_MSG.format(opcode=opcode)
+                if len(args) != 1:
+                    msg=f'1 arg after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
                     )
 
-                if re.match(r'R\[\d+]', args[0]):
+                elif re.match(r'R\[\d+]', args[0]):
                     word1 = util.int_to_hex(args[0][2:-1]).zfill(8)
+
+                else:
+                    msg='invalid syntax'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
 
             elif opcode == 'INPUT':
                 valid_opcode = True
@@ -660,6 +693,12 @@ def validate_and_make_hexfile(lines):
                 if len(args) == 1 and re.match(util.REGEX_LD_R_ONE, args[0]):
                     ram_slot_idx = re.findall(r'R\[(\d+)]', args[0])[0]
                     word0_first_half = util.int_to_hex(ram_slot_idx).zfill(4)
+
+                else:
+                    msg='invalid syntax'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
 
             elif opcode == 'SHT':  # shift right plus AND
                 valid_opcode = True
@@ -679,25 +718,42 @@ def validate_and_make_hexfile(lines):
                     word1_second_half = util.int_to_hex(bitshift).zfill(4)
                     word1 = word1_first_half + word1_second_half
 
+                else:
+                    msg='invalid syntax'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
+
             elif opcode == 'WAIT':  # wait 1/60 sec
                 valid_opcode = True
                 opcode_val = util.opcode_lookup_dict[opcode]
-                word0_second_half = opcode_val.zfill(4)    
+                word0_second_half = opcode_val.zfill(4)
+
+                if len(args) > 0:
+                    msg=f'no args after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
 
             elif opcode == 'EXIT':
                 valid_opcode = True
                 opcode_val = util.opcode_lookup_dict['EXIT']
                 word0_second_half = opcode_val.zfill(4)
 
-            # TODO: ignore line if invalid line of code
+                if len(args) > 0:
+                    msg=f'no args after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
 
+            # write lines for LD and CMP
             if valid_opcode and opcode not in ['LD', 'CMP']:
                 hex_file_str = write_two_lines_to_hexfile(
                     word0_first_half, word0_second_half,
                     word1, hex_file_str
                 )
 
-    return hex_file_str
+    return hex_file_str, num_errors
 
 
 if __name__ == '__main__':
@@ -721,23 +777,46 @@ if __name__ == '__main__':
                 ))
 
     # gather all labels across hex files
+    num_errors = 0
     cumsum_hex_lines = 0
     giant_hex_file_str = ''
     all_lines_for_programs = []
+    filename_and_lines_pairs = []
     for asm_file in  asm_files_for_compile:
         # set where PC starts
         if asm_file == filename_where_pc_starts:
             where_PC_starts = cumsum_hex_lines
 
-        lines_for_program, cumsum_hex_lines = compute_label_indices_from_file(
-            'asm/'+asm_file, cumsum_hex_lines
+        lines_for_program, cumsum_hex_lines, num_errors = compute_label_indices_from_file(
+            'asm/'+asm_file, cumsum_hex_lines, num_errors
         )
-        all_lines_for_programs.append(lines_for_program)
+        filename_and_lines_pairs.append((asm_file, lines_for_program))
+        # all_lines_for_programs.append(lines_for_program)
 
-    # combine all asm files into one BIG hexfile
-    for lines_for_program in all_lines_for_programs:
-        hex_file_str = validate_and_make_hexfile(lines_for_program)
+
+    for item in filename_and_lines_pairs:
+        asm_file = item[0]
+        lines_for_program = item[1]
+
+        hex_file_str, num_errors = validate_and_make_hexfile(
+            asm_file, lines_for_program, num_errors
+        )
         giant_hex_file_str += hex_file_str
+
+
+
+    # for lines_for_program in all_lines_for_programs:
+    #     hex_file_str, num_errors = validate_and_make_hexfile(
+    #         asm_file, lines_for_program, num_errors
+    #     )
+    #     giant_hex_file_str += hex_file_str
+
+    print('\n%s error%s generated' %(num_errors, ('s' if num_errors!=1 else '')))
+    if num_errors == 0:
+        print(colored('pass', 'green'))
+    else:
+        print(colored('fail', 'red'))
+
 
     # write (statically-linked) hexfile to disk
     f = open('hex/file.hex', 'w')

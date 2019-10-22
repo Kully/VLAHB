@@ -1,3 +1,0 @@
-LOVE:
-LOVE:
-EXIT
