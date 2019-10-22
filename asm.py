@@ -19,6 +19,19 @@ import sys
 import time
 import util
 
+from termcolor import colored
+
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 
 LABELS_TO_PC = {}
 COMMENT_SYMBOL = '//'
@@ -62,7 +75,7 @@ def compute_label_indices_from_file(file_asm, cumsum_hex_lines):
     '''line = code // comment'''
     lines = util.return_lines_from_file(file_asm)
     lines_for_program = []  # all but commentsa and blank lines
-    for line in lines:
+    for line_idx, line in enumerate(lines):
         first_comment_idx = line.find(COMMENT_SYMBOL)
 
         comment = line[first_comment_idx+1:]
@@ -74,14 +87,16 @@ def compute_label_indices_from_file(file_asm, cumsum_hex_lines):
 
         # match label regex
         if re.match(util.REGEX_LABEL_AND_COLON, code):
-            label = re.findall(r'[\t ]*([A-z|\d|_]+):', code)[0]
+            label = re.findall(util.REGEX_LABEL_AND_COLON, code)[0]
 
             if label in LABELS_TO_PC.keys():
-                raise Exception(
-                    util.LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG.format(
+                print(f'{file_asm}:{line_idx}')
+                print(util.LABEL_DEFINED_MORE_THAN_ONCE_EXCEPTION_MSG.format(
                         label=label
-                    )
-                )
+                ))
+                print(colored('hello', 'red'), colored('world', 'green'))
+                print('   > label: %s' %label)
+
             LABELS_TO_PC[label] = cumsum_hex_lines
 
         elif re.match(util.REGEX_HEX_WITH_SPACE_BEFORE, code):

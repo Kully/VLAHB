@@ -240,7 +240,7 @@ ILLEGAL_LD_INT_EXCEPTION_MSG = (
 #########
 
 # REGEX_LABEL copied into REGEX_ARRAY_LD and REGEX_LD_LABEL_PC
-REGEX_LABEL_AND_COLON = r'[\t ]*[A-Za-z_]{1}[A-Za-z_\d]{1,}:'
+REGEX_LABEL_AND_COLON = r'[\t ]*([A-Za-z_]{1}[A-Za-z_\d]{1,}):'
 REGEX_LABEL = r'([A-Za-z_]{1}[A-Za-z_\d]{1,})'
 
 REGEX_RGBA_PATTERN = r'\d{1,3},\d{1,3},\d{1,3},\d{1,3}'
