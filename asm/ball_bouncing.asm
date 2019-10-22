@@ -15,59 +15,69 @@ LD R[65004] 1  // Y velo
 
 BALL_BOUNCING_OFF_WALLS_MAIN:
 
-	// ***************
-	// collision logic
-	// ***************
+    INPUT R[0]
+    SHT R[0] R[33001] 6  // END
+    SHT R[0] R[33002] 7  // ESC
 
-	// ** X - right wall
-	LT R[65001] 158  // screen width - 1
-	LD R[65003] 0
-	// ** X - left wall
-	GT R[65001] 2
-	LD R[65003] 1
+    // exit if ESC or END
+    CMP R[33001] 0
+        EXIT
+    CMP R[33002] 0
+        EXIT
 
-	// ** Y - bottom wall
-	LT R[65002] 118  // screen height
-	LD R[65004] 0
-	// ** Y - top wall
-	GT R[65002] 2
-	LD R[65004] 1
+    // ***************
+    // collision logic
+    // ***************
 
-	// ************************************
-	// update ball coords based on velocity
-	// ************************************
-	// ** X
-	GT R[65003] 0
-	SUB R[65001] 2
-	ADD R[65001] 1
-	// ** Y
-	GT R[65004] 0
-	SUB R[65002] 2
-	ADD R[65002] 1
+    // ** X - right wall
+    LT R[65001] 158  // screen width - 1
+    LD R[65003] 0
+    // ** X - left wall
+    GT R[65001] 2
+    LD R[65003] 1
+
+    // ** Y - bottom wall
+    LT R[65002] 118  // screen height
+    LD R[65004] 0
+    // ** Y - top wall
+    GT R[65002] 2
+    LD R[65004] 1
+
+    // ************************************
+    // update ball coords based on velocity
+    // ************************************
+    // ** X
+    GT R[65003] 0
+    SUB R[65001] 2
+    ADD R[65001] 1
+    // ** Y
+    GT R[65004] 0
+    SUB R[65002] 2
+    ADD R[65002] 1
 
 
-	// ****************
-	// fetch vram index
-	// ****************
-	LD R[0] R[65001]
-	LD R[1] R[65002]
-	CALL STD_VRAM_INDEX_FROM_X_Y
+    // ****************
+    // fetch vram index
+    // ****************
+    LD R[0] R[65001]
+    LD R[1] R[65002]
+    CALL STD_VRAM_INDEX_FROM_X_Y
 
-	LD R[4099] R[4100] // Z -> vram_index
+    LD R[4099] R[4100] // Z -> vram_index
 
-	// ****
-	// draw
-	// ****
+    // ****
+    // draw
+    // ****
 
-	LD R[4096] 4100
-	LD R[4097] 23300
-	LD R[U:V] 0X000000FF
+    LD R[4096] 4100
+    LD R[4097] 23300
+    LD R[U:V] 0X000000FF
 
-	LD R[Z] R[Y] // load color in display
+    LD R[Z] R[Y] // load color in display
 
-	BLIT
+    BLIT
 
-	GOTO BALL_BOUNCING_OFF_WALLS_MAIN
+    GOTO BALL_BOUNCING_OFF_WALLS_MAIN
 
 
 
