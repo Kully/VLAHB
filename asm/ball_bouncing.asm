@@ -6,6 +6,7 @@ LD R[65000] 0X30FA00FF  // ball color
 LD R[65001] 1  // ball X coord
 LD R[65002] 1  // ball Y coord
 
+
 // ball velocity
 // 0 is +
 // 1 is -
@@ -37,7 +38,7 @@ BALL_BOUNCING_OFF_WALLS_MAIN:
     LD R[65003] 1
 
     // ** Y - bottom wall
-    LT R[65002] 118  // screen height
+    LT R[65002] 142  // screen height
     LD R[65004] 0
     // ** Y - top wall
     GT R[65002] 2
@@ -55,7 +56,6 @@ BALL_BOUNCING_OFF_WALLS_MAIN:
     SUB R[65002] 2
     ADD R[65002] 1
 
-
     // ****************
     // fetch vram index
     // ****************
@@ -70,13 +70,12 @@ BALL_BOUNCING_OFF_WALLS_MAIN:
     // ****
 
     LD R[4096] 4100
-    LD R[4097] 23300
+    LD R[4097] 30000
     LD R[U:V] 0X000000FF
 
     LD R[Z] R[Y] // load color in display
 
     BLIT
-
     GOTO BALL_BOUNCING_OFF_WALLS_MAIN
 
 
