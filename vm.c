@@ -140,6 +140,11 @@ int main(int argc, char* argv[])
                 pc = word1;
                 break;
             }
+            case 0x002e:  // GOTO R[i] //
+            {
+                pc = ram[word1];
+                break;
+            }
             case 0x0002:  // DIRECT LOAD //
             {
                 ram[word0_first_half] = word1;
@@ -200,6 +205,15 @@ int main(int argc, char* argv[])
                 if(ram[word0_first_half] == ram[word1]) pc += 2;
                 break;
             }
+            case 0x0024:  // COMPARE UV TO DIRECT //
+            {
+                const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
+                const uint16_t ram_index_i = letter_code_to_ram_index(i);
+
+                if(ram[ram[ram_index_i]] == word1) pc += 2;
+
+                break;
+            }
             case 0x000e:  // CALL LABEL, CALL k//
             {
                 stack[sp] = pc;
@@ -208,7 +222,19 @@ int main(int argc, char* argv[])
                 for(int x = 0; x < b; x++) ram[a + x] = ram[0 + x];
 
                 sp += 1;  // increment stack pointer
-                pc = word1; // GOTO
+                pc = word1;
+
+                break;
+            }
+            case 0x002f:  // CALL R[i] //
+            {
+                stack[sp] = pc;
+                int a = STACK_FRAME_SIZE * (0 + sp);
+                int b = STACK_FRAME_SIZE * (1 + sp);
+                for(int x = 0; x < b; x++) ram[a + x] = ram[0 + x];
+
+                sp += 1;  // increment stack pointer
+                pc = ram[word1];
 
                 break;
             }
@@ -311,7 +337,7 @@ int main(int argc, char* argv[])
             }
             case 0x001b:  // LD ARRAY PC TO REGISTER //
             {
-                // syntax: LD R[i] MARIO
+                // syntax: LD R[i] ARRAY
                 ram[word1_second_half] = word0_first_half;
                 break;
             }
@@ -441,12 +467,35 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0024:  // COMPARE UV TO DIRECT //
+            case 0X002a:  // LD REGISTERS TO VRAM W VRAM INDEX //
             {
+                // syntax: LD R[U] R[i] R[j] R[k] R[l] //
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t ram_index_i = letter_code_to_ram_index(i);
 
-                if(ram[ram[ram_index_i]] == word1) pc += 2;
+                const uint16_t idx_to_vram_idx = (rom[pc - 1] >> 16) & 0xFFFF;
+
+                const uint16_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
+                const uint16_t height_sprite = (rom[pc - 1]) & 0xFF;
+
+                const uint16_t vram_idx = ram[idx_to_vram_idx];
+
+                for(uint16_t h = 0; h < ram[height_sprite]; h++)
+                {
+                    arraySliceAssignment(
+                        ram, rom, vram_idx + (h*160),
+                        ram[ram_index_i] + h*ram[width_sprite],
+                        ram[width_sprite]
+                    );
+                }
+                break;
+            }
+            case 0x002b:  // LD R[i] R[U] //
+            {
+                const uint16_t i = (word1_first_half >> 12) & 0XF; // i000
+                const uint16_t ram_index_i = letter_code_to_ram_index(i);
+
+                ram[word0_first_half] = ram[ram[ram_index_i]];
 
                 break;
             }
@@ -499,38 +548,6 @@ int main(int argc, char* argv[])
                 SDL_Delay(wait);
                 break;
             }
-            case 0X002a:  // LD REGISTERS TO VRAM W VRAM INDEX //
-            {
-                // syntax: LD R[U] R[i] R[j] R[k] R[l] //
-                const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
-                const uint16_t ram_index_i = letter_code_to_ram_index(i);
-
-                const uint16_t idx_to_vram_idx = (rom[pc - 1] >> 16) & 0xFFFF;
-
-                const uint16_t width_sprite = (rom[pc - 1] >> 8) & 0XFF;
-                const uint16_t height_sprite = (rom[pc - 1]) & 0xFF;
-
-                const uint16_t vram_idx = ram[idx_to_vram_idx];
-
-                for(uint16_t h = 0; h < ram[height_sprite]; h++)
-                {
-                    arraySliceAssignment(
-                        ram, rom, vram_idx + (h*160),
-                        ram[ram_index_i] + h*ram[width_sprite],
-                        ram[width_sprite]
-                    );
-                }
-                break;
-            }
-            case 0x002b:  // LD R[i] R[U] //
-            {
-                const uint16_t i = (word1_first_half >> 12) & 0XF; // i000
-                const uint16_t ram_index_i = letter_code_to_ram_index(i);
-
-                ram[word0_first_half] = ram[ram[ram_index_i]];
-
-                break;
-            }
             case 0X002c:  // REGISTER TO REGISTER REMAINDER //
             {
                 ram[word0_first_half] %= ram[word1];
@@ -539,23 +556,6 @@ int main(int argc, char* argv[])
             case 0X002d:  // DIRECT REMAINDER //
             {
                 ram[word0_first_half] %= word1;
-                break;
-            }
-            case 0x002e:  // GOTO R[i] //
-            {
-                pc = ram[word1];
-                break;
-            }
-            case 0x002f:  // CALL R[i] //
-            {
-                stack[sp] = pc;
-                int a = STACK_FRAME_SIZE * (0 + sp);
-                int b = STACK_FRAME_SIZE * (1 + sp);
-                for(int x = 0; x < b; x++) ram[a + x] = ram[0 + x];
-
-                sp += 1;  // increment stack pointer
-                pc = ram[word1]; // GOTO
-
                 break;
             }
             case 0x00ff:  // EXIT //

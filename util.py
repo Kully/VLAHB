@@ -58,6 +58,7 @@ UVYZ_to_hex_digit = {
 
 opcode_lookup_dict = {
     'GOTO': '1',
+    'GOTO R[i]': '2e',
     'DIRECT LOAD': '2',
     'DIRECT ADD': '3',
     'DIRECT SUBTRACT': '4',
@@ -70,7 +71,9 @@ opcode_lookup_dict = {
     'REGISTER TO REGISTER DIVIDE': 'b',
     'COMPARE REGISTER TO DIRECT': 'c',
     'COMPARE REGISTER TO REGISTER': 'd',
+    'COMPARE UV TO DIRECT': '24',
     'CALL': 'e',
+    'CALL R[i]': '2f',
     'RETURN': 'f',
     'LESS THAN REGISTER TO DIRECT': '10',
     'LESS THAN REGISTER TO REGISTER': '11',
@@ -92,18 +95,15 @@ opcode_lookup_dict = {
     'LD R[U] R[i]': '21',
     'LD R[U] i': '22',
     'LD R[U:V] i': '23',
-    'COMPARE UV TO DIRECT': '24',
+    'LD REGISTERS TO VRAM W VRAM INDEX': '2a',
+    'LD R[i] R[U]': '2b',
     'POP': '25',
     'PUSH': '26',
     'INPUT': '27',
     'SHT': '28',
     'WAIT': '29',
-    'LD REGISTERS TO VRAM W VRAM INDEX': '2a',
-    'LD R[i] R[U]': '2b',
     'REGISTER TO REGISTER REMAINDER': '2c',
     'DIRECT REMAINDER': '2d',
-    'GOTO R[i]': '2e',
-    'CALL R[i]': '2f',
     'EXIT': 'ff',
 }
 
