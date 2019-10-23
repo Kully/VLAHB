@@ -34,4 +34,4 @@ Happy Coding! :tada: :tada: :tada:
 
 ---
 
-For a more educational walkthrough of **VLAHB** checkout the [blogpost](http://adamkulidjian.com/vlahb-blog/)
+For a more educational walkthrough of **VLAHB** checkout the [blog post](http://adamkulidjian.com/vlahb-blog/)
