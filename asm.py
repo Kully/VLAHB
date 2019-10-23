@@ -26,8 +26,9 @@ LABELS_TO_PC = {}
 COMMENT_SYMBOL = '//'
 
 valid_opcodes_keywords = [
-    'LD', 'ADD', 'SUB', 'MUL', 'DIV', 'CALL', 'CMP', 'LT', 'LTE', 'GT', 'GTE',
-    'GOTO', 'RETURN', 'PUSH', 'POP', 'EXIT', 'WAIT', 'SHT', 'RAND', 'INPUT', 'BLIT'
+    'LD', 'ADD', 'SUB', 'MUL', 'DIV', 'CALL', 'CMP', 'LT', 'LTE', 'GT',
+    'GTE', 'GOTO', 'RETURN', 'PUSH', 'POP', 'EXIT', 'WAIT', 'SHT', 'RAND',
+    'INPUT', 'BLIT'
 ]
 
 def error_msg(file_asm, line_idx, line, num_errors, msg):
@@ -652,7 +653,6 @@ def validate_and_make_hexfile(file_asm, lines, num_errors):
                 opcode_val = util.opcode_lookup_dict[opcode]
                 word0_second_half = opcode_val.zfill(4)
 
-            # transfer RAM portion to display and update
             elif opcode == 'BLIT':
                 valid_opcode = True
 
@@ -724,7 +724,7 @@ def validate_and_make_hexfile(file_asm, lines, num_errors):
                         file_asm, line_idx, line, num_errors, msg
                     )
 
-            elif opcode == 'WAIT':  # wait 1/60 sec
+            elif opcode == 'WAIT':  # wait 17 ms
                 valid_opcode = True
                 opcode_val = util.opcode_lookup_dict[opcode]
                 word0_second_half = opcode_val.zfill(4)
@@ -772,9 +772,7 @@ if __name__ == '__main__':
         # check if asm filenames are valid
         for filename in asm_files_for_compile:
             if filename not in all_files_in_asm_folder:
-                raise Exception(util.NO_FILE_FOUND_EXCEPTION_MSG.format(
-                    filename, all_files_in_asm_folder
-                ))
+                print(f'"{filename}" is not a file in /asm folder.')
 
     # gather all labels across hex files
     num_errors = 0

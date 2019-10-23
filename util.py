@@ -6,6 +6,29 @@ import sys
 import time
 
 
+#########
+# REGEX #
+#########
+
+REGEX_LABEL_AND_COLON = r'[\t ]*([A-Za-z_]{1}[A-Za-z_\d]{1,}):'
+REGEX_LABEL = r'([A-Za-z_]{1}[A-Za-z_\d]{1,})'
+
+REGEX_LD_R_ONE = r'R\[\d+]'
+REGEX_HEX = r'0X[0-9a-fA-F]+'
+REGEX_INT = r'[0-9]+'
+REGEX_HEX_WITH_SPACE_BEFORE = r'[\t ]*0X[0-9a-fA-F]+'
+
+# for pointers U,V,Y,Z
+REGEX_UV_ONE = r'R\[([UVYZ])]'
+REGEX_UV_TWO = r'R\[([UVYZ]):([UVYZ])]'
+
+# for arrays
+REGEX_ARRAY_LD = r'([A-Za-z_]{1}[A-Za-z_\d]{1,}) R\[(\d+)\] R\[(\d+)\] (\d+) (\d+)'
+REGEX_REGISTER_ONLY_ARRAY_LD = r'R\[([UVYZ])] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\]'
+REGEX_REGISTER_ONLY_VRAM_IDX_ARRAY_LD = r'R\[([UVYZ])] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\]'
+REGEX_LD_LABEL_PC = r'R\[(\d+)\] ([A-Za-z_]{1}[A-Za-z_\d]{1,})'
+
+
 def hex_to_int(h):
 	return int(h, 16)
 
@@ -90,30 +113,3 @@ pointer_label_to_slot_index = {
     'Y': '4098',
     'Z': '4099',
 }
-
-NO_FILE_FOUND_EXCEPTION_MSG = (
-    '"{}" is not a file in the /asm folder.\n'
-    'Valid Files: {}'
-)
-
-#########
-# REGEX #
-#########
-
-REGEX_LABEL_AND_COLON = r'[\t ]*([A-Za-z_]{1}[A-Za-z_\d]{1,}):'
-REGEX_LABEL = r'([A-Za-z_]{1}[A-Za-z_\d]{1,})'
-
-REGEX_LD_R_ONE = r'R\[\d+]'
-REGEX_HEX = r'0X[0-9a-fA-F]+'
-REGEX_INT = r'[0-9]+'
-REGEX_HEX_WITH_SPACE_BEFORE = r'[\t ]*0X[0-9a-fA-F]+'
-
-# for pointers U,V,Y,Z
-REGEX_UV_ONE = r'R\[([UVYZ])]'
-REGEX_UV_TWO = r'R\[([UVYZ]):([UVYZ])]'
-
-# for arrays
-REGEX_ARRAY_LD = r'([A-Za-z_]{1}[A-Za-z_\d]{1,}) R\[(\d+)\] R\[(\d+)\] (\d+) (\d+)'
-REGEX_REGISTER_ONLY_ARRAY_LD = r'R\[([UVYZ])] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\]'
-REGEX_REGISTER_ONLY_VRAM_IDX_ARRAY_LD = r'R\[([UVYZ])] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\]'
-REGEX_LD_LABEL_PC = r'R\[(\d+)\] ([A-Za-z_]{1}[A-Za-z_\d]{1,})'
