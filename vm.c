@@ -510,9 +510,11 @@ int main(int argc, char* argv[])
 
                 for(uint16_t h = 0; h < ram[height_sprite]; h++)
                 {
-                    loadPixelsToVram(ram, rom, vram_idx + (h*160),
-                                     ram[ram_index_i] + h*ram[width_sprite],
-                                     ram[width_sprite]);
+                    loadPixelsToVram(
+                        ram, rom, vram_idx + (h*160),
+                        ram[ram_index_i] + h*ram[width_sprite],
+                        ram[width_sprite]
+                    );
                 }
                 break;
             }
@@ -552,7 +554,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x00ff:
+            case 0x00ff:  // EXIT //
             {
                 done = true;
                 break;
