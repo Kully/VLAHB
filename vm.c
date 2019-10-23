@@ -140,72 +140,72 @@ int main(int argc, char* argv[])
                 pc = word1;
                 break;
             }
-            case 0x002e:  // GOTO R[i] //
+            case 0x0002:  // GOTO R[i] //
             {
                 pc = ram[word1];
                 break;
             }
-            case 0x0002:  // DIRECT LOAD //
+            case 0x0003:  // DIRECT LOAD //
             {
                 ram[word0_first_half] = word1;
                 break;
             }
-            case 0x0003:  // DIRECT ADD //
+            case 0x0004:  // DIRECT ADD //
             {
                 ram[word0_first_half] += word1;
                 break;
             }
-            case 0x0004:  // DIRECT SUBTRACT //
+            case 0x0005:  // DIRECT SUBTRACT //
             {
                 ram[word0_first_half] -= word1;
                 break;
             }
-            case 0x0005:  // DIRECT MULTIPLY //
+            case 0x0006:  // DIRECT MULTIPLY //
             {
                 ram[word0_first_half] *= word1;
                 break;
             }
-            case 0x0006:  // DIRECT DIVIDE //
+            case 0x0007:  // DIRECT DIVIDE //
             {
                 ram[word0_first_half] /= word1;
                 break;
             }
-            case 0x0007:  // REGISTER TO REGISTER LOAD //
+            case 0x0008:  // REGISTER TO REGISTER LOAD //
             {
                 ram[word0_first_half] = ram[word1];
                 break;
             }
-            case 0x0008:  // REGISTER TO REGISTER ADD //
+            case 0x0009:  // REGISTER TO REGISTER ADD //
             {
                 ram[word0_first_half] += ram[word1];
                 break;
             }
-            case 0x0009:  // REGISTER TO REGISTER SUBTRACT //
+            case 0x000a:  // REGISTER TO REGISTER SUBTRACT //
             {
                 ram[word0_first_half] -= ram[word1];
                 break;
             }
-            case 0x000a:  // REGISTER TO REGISTER MULTIPLY //
+            case 0x000b:  // REGISTER TO REGISTER MULTIPLY //
             {
                 ram[word0_first_half] *= ram[word1];
                 break;
             }
-            case 0x000b:  // REGISTER TO REGISTER DIVIDE //
+            case 0x000c:  // REGISTER TO REGISTER DIVIDE //
             {
                 ram[word0_first_half] /= ram[word1];
                 break;
             }
-            case 0x000c:  // COMPARE REGISTER TO DIRECT //
+            case 0x000d:  // COMPARE REGISTER TO DIRECT //
             {
                 if(ram[word0_first_half] == word1) pc += 2;
                 break;
             }
-            case 0x000d:  // COMPARE REGISTER TO REGISTER //
+            case 0x000e:  // COMPARE REGISTER TO REGISTER //
             {
                 if(ram[word0_first_half] == ram[word1]) pc += 2;
                 break;
             }
-            case 0x0024:  // COMPARE UV TO DIRECT //
+            case 0x000f:  // COMPARE UV TO DIRECT //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t ram_index_i = letter_code_to_ram_index(i);
@@ -214,7 +214,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x000e:  // CALL LABEL, CALL k//
+            case 0x0010:  // CALL LABEL, CALL k//
             {
                 stack[sp] = pc;
                 int a = STACK_FRAME_SIZE * (0 + sp);
@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x002f:  // CALL R[i] //
+            case 0x0011:  // CALL R[i] //
             {
                 stack[sp] = pc;
                 int a = STACK_FRAME_SIZE * (0 + sp);
@@ -238,7 +238,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x000f:  // RETURN //
+            case 0x0012:  // RETURN //
             {
                 int a = STACK_FRAME_SIZE * (0 + sp);
                 int b = STACK_FRAME_SIZE * (1 + sp);
@@ -250,47 +250,47 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0010:  // STRICT LESS THAN REGISTER TO DIRECT a < b //
+            case 0x0013:  // STRICT LESS THAN REGISTER TO DIRECT a < b //
             {
                 if(ram[word0_first_half] < word1) pc += 2;
                 break;
             }
-            case 0x0011:  // STRICT LESS THAN REGISTER TO REGISTER a < b //
+            case 0x0014:  // STRICT LESS THAN REGISTER TO REGISTER a < b //
             {
                 if(ram[word0_first_half] < ram[word1]) pc += 2;
                 break;
             }
-            case 0x0012:  // LESS THAN OR EQUAL REGISTER TO DIRECT a <= b //
+            case 0x0015:  // LESS THAN OR EQUAL REGISTER TO DIRECT a <= b //
             {
                 if(ram[word0_first_half] <= word1) pc += 2;
                 break;
             }
-            case 0x0013:  // LESS THAN OR EQUAL REGISTER TO REGISTER a <= b //
+            case 0x0016:  // LESS THAN OR EQUAL REGISTER TO REGISTER a <= b //
             {
                 if(ram[word0_first_half] <= ram[word1]) pc += 2;
                 break;
             }
-            case 0x0014:  // STRICT GREATER THAN REGISTER TO DIRECT a > b //
+            case 0x0017:  // STRICT GREATER THAN REGISTER TO DIRECT a > b //
             {
                 if(ram[word0_first_half] > word1) pc += 2;
                 break;
             }
-            case 0x0015:  // STRICT GREATER THAN REGISTER TO REGISTER a > b //
+            case 0x0018:  // STRICT GREATER THAN REGISTER TO REGISTER a > b //
             {
                 if(ram[word0_first_half] > ram[word1]) pc += 2;
                 break;
             }
-            case 0x0016:  // GREATER THAN OR EQUAL REGISTER TO DIRECT a >= b //
+            case 0x0019:  // GREATER THAN OR EQUAL REGISTER TO DIRECT a >= b //
             {
                 if(ram[word0_first_half] >= word1) pc += 2;
                 break;
             }
-            case 0x0017:  // GREATER THAN OR EQUAL REGISTER TO REGISTER a >= b //
+            case 0x001a:  // GREATER THAN OR EQUAL REGISTER TO REGISTER a >= b //
             {
                 if(ram[word0_first_half] >= ram[word1]) pc += 2;
                 break;
             }
-            case 0x0018:  // BLIT //
+            case 0x001b:  // BLIT //
             {
                 void* raw;
                 int32_t pitch;
@@ -306,13 +306,13 @@ int main(int argc, char* argv[])
                 SDL_RenderPresent(renderer);
                 break;
             }
-            case 0x0019:  // RAND //
+            case 0x001c:  // RAND //
             {   
                 int random_bit = rand() % 2;
                 ram[word1] = random_bit;
                 break;
             }
-            case 0x001a:  // LD ARRAY TO VRAM //
+            case 0x001d:  // LD ARRAY TO VRAM //
             {
                 // syntax: LD MARIO R[X] R[Y] W H
                 const uint16_t label_idx = word0_first_half;
@@ -335,13 +335,13 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x001b:  // LD ARRAY PC TO REGISTER //
+            case 0x001e:  // LD ARRAY PC TO REGISTER //
             {
                 // syntax: LD R[i] ARRAY
                 ram[word1_second_half] = word0_first_half;
                 break;
             }
-            case 0x001c: // LD REGISTERS TO VRAM //
+            case 0x001f: // LD REGISTERS TO VRAM //
             {
                 // syntax: LD R[U] R[i] R[j] R[k] R[l] //
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
@@ -365,7 +365,7 @@ int main(int argc, char* argv[])
                 }
                 break;
             }
-            case 0x001d:  // LD R[U] R[V] //
+            case 0x0020:  // LD R[U] R[V] //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
@@ -377,7 +377,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x001e:  // LD R[U:V] R[Y] //
+            case 0x0021:  // LD R[U:V] R[Y] //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
@@ -396,7 +396,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x001f:  // LD R[U:V] R[Y:Z] //
+            case 0x0022:  // LD R[U:V] R[Y:Z] //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
@@ -415,7 +415,7 @@ int main(int argc, char* argv[])
                 }
                 break;
             }
-            case 0x0020:  // LD R[U:V] R[i] //
+            case 0x0023:  // LD R[U:V] R[i] //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
@@ -432,7 +432,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0021:  // LD R[U] R[i] //
+            case 0x0024:  // LD R[U] R[i] //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t ram_index_i = letter_code_to_ram_index(i);
@@ -441,7 +441,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0022:  // LD R[U] i //
+            case 0x0025:  // LD R[U] i //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t ram_index_i = letter_code_to_ram_index(i);
@@ -450,7 +450,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0023:  // LD R[U:V] i //
+            case 0x0026:  // LD R[U:V] i //
             {
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
                 const uint16_t j = (word0_first_half >> 8) & 0XF;  // 0j00
@@ -467,7 +467,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0X002a:  // LD REGISTERS TO VRAM W VRAM INDEX //
+            case 0X0027:  // LD REGISTERS TO VRAM W VRAM INDEX //
             {
                 // syntax: LD R[U] R[i] R[j] R[k] R[l] //
                 const uint16_t i = (word0_first_half >> 12) & 0XF; // i000
@@ -490,7 +490,7 @@ int main(int argc, char* argv[])
                 }
                 break;
             }
-            case 0x002b:  // LD R[i] R[U] //
+            case 0x0028:  // LD R[i] R[U] //
             {
                 const uint16_t i = (word1_first_half >> 12) & 0XF; // i000
                 const uint16_t ram_index_i = letter_code_to_ram_index(i);
@@ -499,7 +499,7 @@ int main(int argc, char* argv[])
 
                 break;
             }
-            case 0x0025:  // POP //
+            case 0x0029:  // POP //
             {
                 int a = STACK_FRAME_SIZE * (0 + sp);
                 int b = STACK_FRAME_SIZE * (1 + sp);
@@ -509,7 +509,7 @@ int main(int argc, char* argv[])
                 sp -= 1;
                 break;
             }
-            case 0x0026:  // PUSH //
+            case 0x002a:  // PUSH //
             {
                 stack[sp] = pc;
                 int a = STACK_FRAME_SIZE * (0 + sp);
@@ -519,7 +519,7 @@ int main(int argc, char* argv[])
                 sp += 1;  // increment stack pointer
                 break;
             }
-            case 0X0027:  // INPUT //
+            case 0X002b:  // INPUT //
             {
                 SDL_PumpEvents();
                 const uint8_t* key = SDL_GetKeyboardState(NULL);
@@ -535,25 +535,25 @@ int main(int argc, char* argv[])
                 ram[word0_first_half] = word;
                 break;
             }
-            case 0X0028:  // SHT //
+            case 0X002c:  // SHT //
             {
                 // syntax: SHT R[X] R[Y] k (shift right, and)
                 const uint32_t button = (ram[word1_first_half] >> word1_second_half) & 0x1;
                 ram[word0_first_half] = button;
                 break;
             }
-            case 0x0029:  // WAIT //
+            case 0x002d:  // WAIT //
             {
                 const uint32_t wait = 17;
                 SDL_Delay(wait);
                 break;
             }
-            case 0X002c:  // REGISTER TO REGISTER REMAINDER //
+            case 0X002e:  // REGISTER TO REGISTER REMAINDER //
             {
                 ram[word0_first_half] %= ram[word1];
                 break;
             }
-            case 0X002d:  // DIRECT REMAINDER //
+            case 0X002f:  // DIRECT REMAINDER //
             {
                 ram[word0_first_half] %= word1;
                 break;
