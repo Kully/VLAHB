@@ -1,6 +1,7 @@
 __pycache__/
+/hex
+/bin
 .ipynb_checkpoints/
-temp-plot.html
 start_pc.txt
 a.out.dSYM
 a.out
