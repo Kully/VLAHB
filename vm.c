@@ -53,11 +53,11 @@ uint16_t letter_code_to_ram_index(uint16_t letter_code)
 }
 
 
-void loadPixelsToVram(uint32_t array0[ ],
-                      uint32_t array1[ ],
-                      uint32_t i,
-                      uint32_t j,
-                      uint32_t width)
+void arraySliceAssignment(uint32_t array0[ ],
+                          uint32_t array1[ ],
+                          uint32_t i,
+                          uint32_t j,
+                          uint32_t width)
 {
     // i: array0 start index
     // j: array1 start index
@@ -300,9 +300,11 @@ int main(int argc, char* argv[])
 
                 for(int h = 0; h < height_sprite; h++)
                 {
-                    loadPixelsToVram(ram, rom, vram_idx + (h*160),
-                                     label_idx + h*width_sprite,
-                                     width_sprite);
+                    arraySliceAssignment(
+                        ram, rom, vram_idx + (h*160),
+                        label_idx + h*width_sprite,
+                        width_sprite
+                    );
                 }
 
                 break;
@@ -329,9 +331,11 @@ int main(int argc, char* argv[])
                 for(uint16_t h = 0; h < ram[height_sprite]; h++)
                 {
 
-                    loadPixelsToVram(ram, rom, vram_idx + (h*160),
-                                     ram[ram_index_i] + h*ram[width_sprite],
-                                     ram[width_sprite]);
+                    arraySliceAssignment(
+                        ram, rom, vram_idx + (h*160),
+                        ram[ram_index_i] + h*ram[width_sprite],
+                        ram[width_sprite]
+                    );
                 }
                 break;
             }
@@ -510,7 +514,7 @@ int main(int argc, char* argv[])
 
                 for(uint16_t h = 0; h < ram[height_sprite]; h++)
                 {
-                    loadPixelsToVram(
+                    arraySliceAssignment(
                         ram, rom, vram_idx + (h*160),
                         ram[ram_index_i] + h*ram[width_sprite],
                         ram[width_sprite]
