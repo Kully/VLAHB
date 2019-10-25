@@ -25,11 +25,19 @@ CONWAY_MAIN:
     LD R[28011] 0  // pixelInVRAM
     LD R[28012] 0  // counter for number of generations
 
-    // load initial state
-    CALL CONWAY_INIT_STATE_INFINITE_GROWTH_2
+    // ===================
+    // set up inital state
+    // ===================
+
+    // CALL CONWAY_INIT_STATE_1
     // CALL CONWAY_INIT_STATE_2
+    // CALL CONWAY_INIT_STATE_BEACON
+    // CALL CONWAY_INIT_STATE_BLINKER
+    // CALL CONWAY_INIT_STATE_INFINITE_GROWTH_2
+    CALL CONWAY_INIT_STATE_GOSPER_GLIDER_GUN
     
     BLIT
+
 
     CONWAY_GAME_LOOP:
         INPUT R[0]
@@ -89,6 +97,7 @@ CONWAY_MAIN:
         ADD R[28012] 1  // +1 to generation counter
 
         GOTO CONWAY_GAME_LOOP
+
 
     // ==============
     // initial states
@@ -175,6 +184,89 @@ CONWAY_MAIN:
         LD R[U] 0XFFFFFFFF
         SUB R[4096] 2
         LD R[U] 0XFFFFFFFF
+
+        RETURN
+
+    CONWAY_INIT_STATE_GOSPER_GLIDER_GUN:
+        LD R[4096] 12161  // top-left corner
+        ADD R[4096] 24
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 158
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 2
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 160
+        SUB R[4096] 12
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 1
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 7
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 1
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 13
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 1
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 159
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 1
+        LD R[U] 0XFFFFFFFF
+        SUB R[4096] 14
+        LD R[U] 0XFFFFFFFF
+        SUB R[4096] 1
+        LD R[U] 0XFFFFFFFF
+        SUB R[4096] 5
+        LD R[U] 0XFFFFFFFF
+        SUB R[4096] 4
+        LD R[U] 0XFFFFFFFF
+        SUB R[4096] 11
+        ADD R[4096] 160
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 1
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 160
+        LD R[U] 0XFFFFFFFF
+        SUB R[4096] 1
+        LD R[U] 0XFFFFFFFF
+        SUB R[4096] 160
+        ADD R[4096] 10
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 6
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 4
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 1
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 161
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 2
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 160
+        LD R[U] 0XFFFFFFFF
+        SUB R[4096] 160
+        LD R[U] 0XFFFFFFFF
+        SUB R[4096] 7
+        LD R[U] 0XFFFFFFFF
+        SUB R[4096] 1
+        LD R[U] 0XFFFFFFFF
+        SUB R[4096] 2
+        LD R[U] 0XFFFFFFFF
+        SUB R[4096] 4
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 160
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 6
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 159
+        LD R[U] 0XFFFFFFFF
+        SUB R[4096] 4
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 161
+        LD R[U] 0XFFFFFFFF
+        ADD R[4096] 1
+        LD R[U] 0XFFFFFFFF
+
 
         RETURN
 
