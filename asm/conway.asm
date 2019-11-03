@@ -7,8 +7,6 @@ CONWAY_MAIN:
     // init program
     // ============
 
-    // VRAM2 -> R[30000:53040]
-
     LD R[28000] 0  // x
     LD R[28001] 0  // y
     LD R[28002] 0  // number of neighbours for (x,y)
@@ -22,18 +20,13 @@ CONWAY_MAIN:
 
     LD R[28009] 0  // len of neighbour path
     LD R[28010] 0  // pos in path
-    LD R[28011] 0  // pixelInVRAM
-    LD R[28012] 0  // counter for number of generations
+    LD R[28011] 0  // pixelInVRAM (bool)
+    LD R[28012] 0  // number of generations counter
 
-    // ===================
-    // set up inital state
-    // ===================
+    // =================
+    // load inital state
+    // =================
 
-    // CALL CONWAY_INIT_STATE_1
-    // CALL CONWAY_INIT_STATE_2
-    // CALL CONWAY_INIT_STATE_BEACON
-    // CALL CONWAY_INIT_STATE_BLINKER
-    // CALL CONWAY_INIT_STATE_INFINITE_GROWTH_2
     CALL CONWAY_INIT_STATE_GOSPER_GLIDER_GUN
     
     BLIT
@@ -53,8 +46,6 @@ CONWAY_MAIN:
         LD R[28000] 0
         LD R[28001] 0
         _CONWAY_LOOP_THROUGH_EACH_PIXEL:
-            // do stuff here for (x,y)
-
             LD R[0] R[28000]
             LD R[1] R[28001]
             CALL STD_VRAM_INDEX_FROM_X_Y
@@ -65,7 +56,7 @@ CONWAY_MAIN:
             // determine next-gen state of (x,y)
             CALL _CONWAY_WILL_PIXEL_BE_ALIVE_NEXT_ROUND
 
-            // move next next-gen state of pixel to VRAM2
+            // move next next-gen state of pixel to vram2
             MUL R[4100] 0XFFFFFFFF
             LD R[4099] R[28003]
             ADD R[4099] 25899
@@ -89,7 +80,7 @@ CONWAY_MAIN:
         LD R[4099] 53040
         LD R[U:V] R[Y:Z]
         
-        // clear VRAM2
+        // clear vram2
         CALL CONWAY_CLEAR_VRAM2
 
         BLIT
@@ -97,6 +88,8 @@ CONWAY_MAIN:
         ADD R[28012] 1  // +1 to generation counter
 
         GOTO CONWAY_GAME_LOOP
+
+
 
 
     // ==============
@@ -171,7 +164,6 @@ CONWAY_MAIN:
         LD R[U] 0XFFFFFFFF
         ADD R[4096] 1
         LD R[U] 0XFFFFFFFF
-
         ADD R[4096] 157
         LD R[U] 0XFFFFFFFF
         ADD R[4096] 1
@@ -184,7 +176,6 @@ CONWAY_MAIN:
         LD R[U] 0XFFFFFFFF
         SUB R[4096] 2
         LD R[U] 0XFFFFFFFF
-
         RETURN
 
     CONWAY_INIT_STATE_GOSPER_GLIDER_GUN:
@@ -266,22 +257,23 @@ CONWAY_MAIN:
         LD R[U] 0XFFFFFFFF
         ADD R[4096] 1
         LD R[U] 0XFFFFFFFF
-
-
         RETURN
+
+
+
 
     // ==============
     // util functions
     // ==============
 
     _CONWAY_FIND_NUM_OF_ALIVE_NEIGHBOURS:
-        // R[28003] <- vram_idx_of_(x,y)
-        //   this will shift to the other
-        //   other pixels around it.
+        // returns number of alive neighbours
+        //   traverse around current pixel
+        //   using the numbered grid below
         //
-        // 6 7 8
-        // 5 * 1
-        // 4 3 2
+        //   6 7 8
+        //   5 * 1
+        //   4 3 2
 
         LD R[28002] 0  // reset alive neighbours -> 0
 
@@ -335,10 +327,10 @@ CONWAY_MAIN:
 
         // reset pixel back to original value
         SUB R[28003] 161
-
         RETURN
 
     _CONWAY_WILL_PIXEL_BE_ALIVE_NEXT_ROUND:
+        // CONWAY RULES:
         // 1   0,1             ->  0  # Lonely
         // 1   4,5,6,7,8       ->  0  # Overcrowded
         // 1   2,3             ->  1  # Lives
