@@ -119,18 +119,24 @@ int main(int argc, char* argv[])
         const uint16_t word1_first_half = (word1 >> 16) & 0xFFFF;
         const uint16_t word1_second_half = (word1 >> 0) & 0xFFFF;
 #if DEBUG == 1
-        printf("word0: 0x%08X\n", word0);
-        printf("word1: 0x%08X\n", word1);
-        printf("pc: %i\n", pc);
-        printf("sp: %i\n", sp);
-        printf("ram:\n");
-        for(int rrr = 0; rrr<9; rrr++)
+        printf("  %08X\n", word0);
+        printf("  %08X\n", word1);
+        printf("\n");
+        printf("  STACK -> [%u,%u,%u,..]\n", stack[0],stack[1],stack[2]);
+        printf("  PROGRAM COUNTER -> %i\n", pc);
+        printf("  STACK POINTER -> %i\n", sp);
+        printf("\n");
+        for(int rrr = 0; rrr<5; rrr++)
         {
-            printf("       %u: %u\n", rrr, ram[rrr]);
+            printf("  RAM[000%u]: %u\n", rrr, ram[rrr]);
         }
-        printf("    ...\n");
-        printf("    4100: %u\n", ram[4100]);
-        printf("\n\n");
+        printf("\n");
+        printf("  RAM[4096]: %u  // pointer U\n", ram[4096]);
+        printf("  RAM[4097]: %u  // pointer V\n", ram[4097]);
+        printf("  RAM[4098]: %u  // pointer Y\n", ram[4098]);
+        printf("  RAM[4099]: %u  // pointer Z\n", ram[4099]);
+        printf("  RAM[4100]: %u  // return\n", ram[4100]);
+        printf("\n  -----------\n\n");
 #endif
         pc += 2;
         switch(word0_second_half)
