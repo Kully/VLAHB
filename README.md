@@ -1,8 +1,29 @@
 # VLAHB
 
-### How to Build
+(pron. _"vee-lab"_)
+
+**V**irtual machine<br>
+**L**anguage<br>
+**A**ssembly<br>
+**H**ex<br>
+**B**inary<br>
+
+Write your own games and programs with a _brand new_ assembly langauge called `V-ASM`!
+
+<u>Specs</u>
+
+- assembler, compiler, virtual machine
+- runs on SDL2
+- static linking capable
+- 48 opcodes
+- 160x144 pixel display
+- 60 fps
+- lots of fun to use
+<!-- add ram and rom size here - how to count it -->
 
 ---
+
+## Steps to Build
 
 #### Step 1
 
@@ -26,6 +47,7 @@ Note that `-s` is a flag for statically-linking all the .asm files in the /asm d
 | `$ python3 asm.py B.asm C.asm -s` | Compile all files in /asm and start at top of B.asm |
 
 #### Step 2
+
 ```bash
 $ ./run.sh
 ```
