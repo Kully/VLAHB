@@ -6,7 +6,7 @@
 **H**ex<br>
 **B**inary<br><br>
 
-**Write your own games and programs with a _brand new_ assembly langauge in VLAHB!** (pron. _"vee-lab"_)
+**Write your own games and programs with a __brand new__ assembly langauge in VLAHB!** (pron. _"vee-lab"_)
 
 <br>
 
