@@ -1,5 +1,11 @@
 # VLAHB
 
+**V**irtual machine<br>
+**L**anguage<br>
+**A**ssembly<br>
+**H**ex<br>
+**B**inary<br><br>
+
 Write your own games and programs with a _brand new_ assembly langauge in `VLAHB`! (pron. _"vee-lab"_)
 
 __Specs__
@@ -13,12 +19,6 @@ __Specs__
 - vm runs on SDL2
 - written in C and Python
 - lots of fun! :smile_cat:
-
-**V**irtual machine<br>
-**L**anguage<br>
-**A**ssembly<br>
-**H**ex<br>
-**B**inary<br>
 
 <br><br>
 
