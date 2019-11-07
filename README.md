@@ -2,7 +2,7 @@
 
 Write your own games and programs with a _brand new_ assembly langauge in `VLAHB`! (pron. _"vee-lab"_)
 
----
+####
 
 __Specs__
 
@@ -16,7 +16,7 @@ __Specs__
 - written in C and Python
 - lots of fun! :smile_cat:
 
----
+####
 
 **V**irtual machine<br>
 **L**anguage<br>
@@ -24,7 +24,6 @@ __Specs__
 **H**ex<br>
 **B**inary<br>
 
----
 
 ## Steps to Build
 
