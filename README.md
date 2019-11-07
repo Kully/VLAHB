@@ -22,7 +22,7 @@ __Specs__
 
 <br><br>
 
-## Steps to Build
+## How to Build
 
 #### Step 1
 
