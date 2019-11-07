@@ -1,16 +1,18 @@
 # VLAHB
 
-(pron. _"vee-lab"_)
-
 **V**irtual machine<br>
 **L**anguage<br>
 **A**ssembly<br>
 **H**ex<br>
 **B**inary<br>
 
-Write your own games and programs with a _brand new_ assembly langauge called `V-ASM`!
+**Write your own games and programs with a _brand new_ assembly langauge in `VLAHB`!**
 
-<u>Specs</u>
+(pron. _"vee-lab"_)
+
+---
+
+__Specs__
 
 - virtual machine, assembler, compiler
 - 48 opcodes
