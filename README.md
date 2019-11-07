@@ -24,9 +24,7 @@ __Specs__
 
 ## How to Build
 
-#### Step 1
-
-Modify the `python3 asm.py conway.asm -s` line in run.sh
+### Step 1: Modify the `python3 asm.py conway.asm -s` line in run.sh
 
 ```bash
 #!/bin/bash
@@ -45,15 +43,10 @@ Note that `-s` is a flag for statically-linking all the .asm files in the /asm d
 | `$ python3 asm.py C.asm -s` | Compile all files in /asm and start at top of C.asm |
 | `$ python3 asm.py B.asm C.asm -s` | Compile all files in /asm and start at top of B.asm |
 
-#### Step 2
-
-```bash
-$ ./run.sh
-```
+### Step 2: `$ ./run.sh`
 
 Happy Coding! :tada: :tada: :tada:
 
 ---
 
-
-<!-- For a more educational walkthrough of **VLAHB** checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) -->
+Checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) of **VLAHB** for an overview of the assembly language.
