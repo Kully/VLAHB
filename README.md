@@ -12,14 +12,15 @@ Write your own games and programs with a _brand new_ assembly langauge called `V
 
 <u>Specs</u>
 
-- assembler, compiler, virtual machine
-- runs on SDL2
-- static linking capable
+- virtual machine, assembler, compiler
 - 48 opcodes
+- 262 kb of ram
 - 160x144 pixel display
+- static linking capable
 - 60 fps
-- lots of fun to use
-<!-- add ram and rom size here - how to count it -->
+- vm runs on SDL2
+- written in C and Python
+- lots of fun! :smile_cat:
 
 ---
 

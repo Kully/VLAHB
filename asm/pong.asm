@@ -1,7 +1,8 @@
-// ****
-// PONG
-// ****
 PONG_MAIN:
+    // ****
+    // PONG
+    // ****
+
     // global variables
     LD R[30000] 4    // LPattle X
     LD R[30001] 80   // LPattle Y
