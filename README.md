@@ -51,4 +51,4 @@ Happy Coding! :tada: :tada: :tada:
 
 ---
 
-Checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) of **VLAHB** for an overview of the assembly language.
+<!-- Checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) of **VLAHB** for an overview of the assembly language. -->
