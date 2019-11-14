@@ -1,7 +1,7 @@
 # VLAHB
 
 **V**irtual machine<br>
-**L**anguage<br>
+**L**inker<br>
 **A**ssembly<br>
 **H**ex<br>
 **B**inary<br><br>
