@@ -90,6 +90,18 @@ def compute_label_indices_from_file(file_asm, cumsum_hex_lines, num_errors):
     return lines_for_program, cumsum_hex_lines, num_errors
 
 
+def split_hexfile_into_byte_array(giant_hex_file_str):
+    byte_arr = []
+    for word in giant_hex_file_str.split('\n'):
+        byte_arr += [
+            util.hex_to_int(word[:2]),
+            util.hex_to_int(word[2:4]),
+            util.hex_to_int(word[4:6]),
+            util.hex_to_int(word[6:])
+        ]
+    return bytearray(byte_arr)
+
+
 def validate_and_make_hexfile(file_asm, lines, num_errors):
     hex_file_str = ''
     extra_line_for_raw_hex = 0
@@ -799,19 +811,22 @@ if __name__ == '__main__':
         )
         giant_hex_file_str += hex_file_str
 
+    # compiler messages
     print('\n%s error%s generated' %(num_errors, ('s' if num_errors!=1 else '')))
     if num_errors == 0:
         print(colored('pass', 'green'))
     else:
         print(colored('fail', 'red'))
 
+    # convert hexfile to byte array
+    binary_format = split_hexfile_into_byte_array(giant_hex_file_str[:-1])
 
-    # write (statically-linked) hexfile to disk
-    f = open('hex/file.hex', 'w')
-    f.write(giant_hex_file_str)
+    # write bytearray to disk
+    f = open('bin/file.bin', 'w+b')
+    f.write(binary_format)
     f.close()
 
-    # set PC for program start
+    # write starting Program Counter (PC)
     f = open('start_pc.txt', 'w')
     f.write(str(where_PC_starts))
     f.close()

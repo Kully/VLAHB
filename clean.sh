@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rm -f hex/*.hex
+rm -f bin/*.bin
