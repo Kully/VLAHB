@@ -36,13 +36,9 @@ Note that `-s` is a flag for statically-linking all the .asm files in the /asm d
 | `$ python3 assembler.py C.asm -s` | Compile all files in /asm and start at top of C.asm |
 | `$ python3 assembler.py B.asm C.asm -s` | Compile all files in /asm and start at top of B.asm |
 
-### Step 2: `$ ./run.sh`
+### Step 2: Run `$ ./run.sh` to build and the binary and run the program. 
 
-Run the snippet below to view the machine code displayed as hex in the terminal.
-
-```bash
-xxd -c 4 bin/file.bin
-```
+<b>Tip:</b> Run `$ xxd -c 4 bin/file.bin` to view the machine code displayed as hex in the terminal.
 
 Happy Coding! :tada: :tada: :tada:
 
