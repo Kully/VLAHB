@@ -3,7 +3,7 @@ _Checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) of _VLAHB_ for a
 
 ## Building
 
-### Step 1: Modify the `python3 assembler.py conway.asm -s` line in run.sh
+### Step 1: Pick which asm files to compile in [run.sh](https://github.com/Kully/VLAHB/blob/master/run.sh#L3)
 
 Note that `-s` is a flag for statically-linking all the .asm files in the /asm directory. If you list 1 or more .asm filenames w/o the -s flag, it will only compile those files and start at the first one. If you list 1 or more .asm filenames with the `-s` flag, it will compile _all_ the files in the /asm directory and start with the first one.
 
@@ -13,7 +13,7 @@ Note that `-s` is a flag for statically-linking all the .asm files in the /asm d
 | `$ python3 assembler.py C.asm -s` | Compile all files in /asm and start at top of C.asm |
 | `$ python3 assembler.py B.asm C.asm -s` | Compile all files in /asm and start at top of B.asm |
 
-### Step 2: Run `$ ./run.sh` to build and the binary and run the program. 
+### Step 2: `$ ./run.sh`
 
 <b>Tip:</b> Run `$ xxd -c 4 bin/file.bin` to view the machine code displayed as hex in the terminal.
 
