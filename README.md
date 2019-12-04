@@ -5,9 +5,7 @@ _Write your own games and programs with a brand new assembly langauge called V-A
 **L**inker<br>
 **A**ssembly<br>
 **H**ex<br>
-**B**inary<br><br>
-
-<br>
+**B**inary<br>
 
 __Specs__
 
