@@ -1,12 +1,11 @@
 # VLAHB
+_Write your own games and programs with a brand new assembly langauge called V-ASM!_
 
 **V**irtual machine<br>
 **L**inker<br>
 **A**ssembly<br>
 **H**ex<br>
 **B**inary<br><br>
-
-**Write your own games and programs with a brand-new assembly langauge in VLAHB!** (pron. _"vee-lab"_)
 
 <br>
 
