@@ -1,14 +1,15 @@
 # VLAHB
 _Write your own games and programs with a brand new assembly langauge called V-ASM!_
 
+```
 **V**irtual machine<br>
 **L**inker<br>
 **A**ssembly<br>
 **H**ex<br>
 **B**inary<br>
+```
 
-__Specs__
-
+## Specs
 - virtual machine, assembler/compiler
 - 48 opcodes
 - 262 kb of ram
