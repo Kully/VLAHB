@@ -1,15 +1,17 @@
+# VLAHB
 `V`irtual machine<br>
 `L`inker<br>
 `A`ssembly<br>
 `H`ex<br>
 `B`inary<br>
 
-# VLAHB
 _Checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) of _VLAHB_ for an overview of the assembly language_
 
 ## To Build
 
 `$ ./run.sh`
+
+(NB Pick which asm files to compile on [this line of run.sh](https://github.com/Kully/VLAHB/blob/master/run.sh#L3))
 
 ## Tips
 
@@ -21,9 +23,9 @@ _Checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) of _VLAHB_ for a
 | `$ python3 assembler.py C.asm -s` | Compile all files in /asm and start at top of C.asm |
 | `$ python3 assembler.py B.asm C.asm -s` | Compile all files in /asm and start at top of B.asm |
 
-Pick which asm files to compile in [run.sh](https://github.com/Kully/VLAHB/blob/master/run.sh#L3)
-
 2. Run `$ xxd -c 4 bin/file.bin` to view the machine code displayed as hex in the terminal.
+
+3. Turn on DEBUG mode [here](https://github.com/Kully/VLAHB/blob/master/vm.c#L17) to get helpful debug messages printed per instruction in terminal. _Slows down virtual machine a ton._
 
 ---
 
