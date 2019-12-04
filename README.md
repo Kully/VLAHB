@@ -1,13 +1,7 @@
+# VLAHB
+_Checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) of _VLAHB_ for an overview of the assembly language_
 
-`V`irtual machine<br>
-`L`inker<br>
-`A`ssembly<br>
-`H`ex<br>
-`B`inary<br>
-
->> Checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) of **VLAHB** for an overview of the assembly language.
-
-# Building
+## Building
 
 ### Step 1: Modify the `python3 assembler.py conway.asm -s` line in run.sh
 
@@ -27,7 +21,8 @@ Note that `-s` is a flag for statically-linking all the .asm files in the /asm d
 
 ---
 
-### Specs
+<u>Specs</u>
+
 - virtual machine, assembler/compiler
 - 48 opcodes
 - 262 kb of ram
@@ -38,4 +33,8 @@ Note that `-s` is a flag for statically-linking all the .asm files in the /asm d
 - written in C and Python
 - lots of fun! :smile_cat:
 
-<br>
+`V`irtual machine<br>
+`L`inker<br>
+`A`ssembly<br>
+`H`ex<br>
+`B`inary<br>
