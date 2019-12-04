@@ -15,7 +15,8 @@ _Checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) of _VLAHB_ for a
 
 ## Tips
 
-1. Note that `-s` is a flag for statically-linking all the .asm files in the /asm directory. If you list 1 or more .asm filenames w/o the -s flag, it will only compile those files and start at the first one. If you list 1 or more .asm filenames with the `-s` flag, it will compile _all_ the files in the /asm directory and start with the first one.
+#### Statically Linking files
+`-s` is a flag for statically-linking all the .asm files in the /asm directory. If you list 1 or more .asm filenames w/o the -s flag, it will only compile those files and start at the first one. If you list 1 or more .asm filenames with the `-s` flag, it will compile _all_ the files in the /asm directory and start with the first one.
 
 | code | meaning |
 |:-------|:------|
@@ -23,9 +24,11 @@ _Checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) of _VLAHB_ for a
 | `$ python3 assembler.py C.asm -s` | Compile all files in /asm and start at top of C.asm |
 | `$ python3 assembler.py B.asm C.asm -s` | Compile all files in /asm and start at top of B.asm |
 
-2. Run `$ xxd -c 4 bin/file.bin` to view the machine code displayed as hex in the terminal.
+#### Debug Messages
+Turn on DEBUG mode [here](https://github.com/Kully/VLAHB/blob/master/vm.c#L17) to get helpful debug messages printed per instruction in terminal. _Slows down virtual machine a ton._
 
-3. Turn on DEBUG mode [here](https://github.com/Kully/VLAHB/blob/master/vm.c#L17) to get helpful debug messages printed per instruction in terminal. _Slows down virtual machine a ton._
+#### View Machine Code
+Run `$ xxd -c 4 bin/file.bin` to view the machine code displayed as hex in the terminal.
 
 ---
 
