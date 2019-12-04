@@ -1,5 +1,3 @@
-# VLAHB
-_Write your own games and programs with a brand new assembly langauge called V-ASM!_
 
 `V`irtual machine<br>
 `L`inker<br>
@@ -7,20 +5,9 @@ _Write your own games and programs with a brand new assembly langauge called V-A
 `H`ex<br>
 `B`inary<br>
 
-### Specs
-- virtual machine, assembler/compiler
-- 48 opcodes
-- 262 kb of ram
-- 160x144 pixel display
-- static linking capable
-- 60 fps
-- vm runs on SDL2
-- written in C and Python
-- lots of fun! :smile_cat:
+>> Checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) of **VLAHB** for an overview of the assembly language.
 
-<br><br>
-
-## How to Build
+# Building
 
 ### Step 1: Modify the `python3 assembler.py conway.asm -s` line in run.sh
 
@@ -36,8 +23,19 @@ Note that `-s` is a flag for statically-linking all the .asm files in the /asm d
 
 <b>Tip:</b> Run `$ xxd -c 4 bin/file.bin` to view the machine code displayed as hex in the terminal.
 
-Happy Coding! :tada: :tada: :tada:
+### Step 3: Write your own games and programs with a brand new assembly langauge called V-ASM! :tada: :tada: :tada:
 
 ---
 
-Checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) of **VLAHB** for an overview of the assembly language.
+### Specs
+- virtual machine, assembler/compiler
+- 48 opcodes
+- 262 kb of ram
+- 160x144 pixel display
+- static linking capable
+- 60 fps
+- vm runs on SDL2
+- written in C and Python
+- lots of fun! :smile_cat:
+
+<br>
