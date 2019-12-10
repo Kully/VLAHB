@@ -10,8 +10,8 @@ import time
 # REGEX #
 #########
 
-REGEX_LABEL_AND_COLON = r'[\t ]*([A-Za-z_]{1}[A-Za-z_\d]{1,}):'
-REGEX_LABEL = r'([A-Za-z_]{1}[A-Za-z_\d]{1,})'
+REGEX_LABEL_AND_COLON = r'[\t ]*([A-Za-z_]{1}[A-Za-z_\d]{0,}):'
+REGEX_LABEL = r'([A-Za-z_]{1}[A-Za-z_\d]{0,})'
 
 REGEX_LD_R_ONE = r'R\[\d+]'
 REGEX_HEX = r'0X[0-9a-fA-F]+'
@@ -23,10 +23,10 @@ REGEX_UV_ONE = r'R\[([UVYZ])]'
 REGEX_UV_TWO = r'R\[([UVYZ]):([UVYZ])]'
 
 # for arrays
-REGEX_ARRAY_LD = r'([A-Za-z_]{1}[A-Za-z_\d]{1,}) R\[(\d+)\] R\[(\d+)\] (\d+) (\d+)'
+REGEX_ARRAY_LD = r'([A-Za-z_]{1}[A-Za-z_\d]{0,}) R\[(\d+)\] R\[(\d+)\] (\d+) (\d+)'
 REGEX_REGISTER_ONLY_ARRAY_LD = r'R\[([UVYZ])] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\]'
 REGEX_REGISTER_ONLY_VRAM_IDX_ARRAY_LD = r'R\[([UVYZ])] R\[(\d+)\] R\[(\d+)\] R\[(\d+)\]'
-REGEX_LD_LABEL_PC = r'R\[(\d+)\] ([A-Za-z_]{1}[A-Za-z_\d]{1,})'
+REGEX_LD_LABEL_PC = r'R\[(\d+)\] ([A-Za-z_]{1}[A-Za-z_\d]{0,})'
 
 
 def hex_to_int(h):
