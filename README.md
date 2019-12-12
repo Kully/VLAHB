@@ -7,6 +7,10 @@
 
 _Checkout the [blog post](http://adamkulidjian.com/vlahb-blog/) of _VLAHB_ for an overview of the assembly language_
 
+![Image](gifs/conway2.gif) |  ![Image](gifs/pong2.gif)
+
+![Image](gifs/ball2.gif) |  ![Image](gifs/noise2.gif)
+
 ## To Build
 
 `$ ./run.sh`
