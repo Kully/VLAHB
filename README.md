@@ -40,7 +40,7 @@ Run `$ xxd -c 4 bin/file.bin` to view the machine code displayed as hex in the t
 
 - virtual machine, assembler/compiler
 - 48 opcodes
-- 262 kb of ram
+- 262KB of ram
 - 160x144 pixel display
 - static linking capable
 - 60 fps
