@@ -26,7 +26,7 @@ LABELS_TO_PC = {}
 COMMENT_SYMBOL = '//'
 
 valid_opcodes_keywords = [
-    'LD', 'ADD', 'SUB', 'MUL', 'DIV', 'CALL', 'CMP', 'LT', 'LTE', 'GT',
+    'LD', 'ADD', 'SUB', 'MUL', 'DIV', 'REM', 'CALL', 'CMP', 'LT', 'LTE', 'GT',
     'GTE', 'GOTO', 'RETURN', 'PUSH', 'POP', 'EXIT', 'WAIT', 'SHT', 'RAND',
     'INPUT', 'BLIT'
 ]
@@ -493,6 +493,40 @@ def validate_and_make_hexfile(file_asm, lines, num_errors):
                 else:
                     opcode_val = util.opcode_lookup_dict['DIRECT DIVIDE']
                     word1 = util.int_to_hex(args[1]).zfill(8)
+
+                # check if dividing by 0
+                if word1 == '00000000':
+                    msg=f'attempting to divide by zero'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
+
+                word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
+                word0_second_half = opcode_val.zfill(4)
+
+            elif opcode == 'REM':
+                valid_opcode = True
+
+                if len(args) < 2 or not re.match(util.REGEX_LD_R_ONE, args[0]):
+                    msg=f'requires 2 or more arguments after {opcode}'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
+
+                elif re.match(util.REGEX_LD_R_ONE, args[1]):
+                    opcode_val = util.opcode_lookup_dict['REGISTER TO REGISTER REMAINDER']
+                    word1 = util.int_to_hex(args[1][2:-1]).zfill(8)
+
+                else:
+                    opcode_val = util.opcode_lookup_dict['DIRECT REMAINDER']
+                    word1 = util.int_to_hex(args[1]).zfill(8)
+
+                # check if remainder by 0
+                if word1 == '00000000':
+                    msg=f'attempting to divide by zero'
+                    num_errors = error_msg(
+                        file_asm, line_idx, line, num_errors, msg
+                    )
 
                 word0_first_half = util.int_to_hex(args[0][2:-1]).zfill(4)
                 word0_second_half = opcode_val.zfill(4)
