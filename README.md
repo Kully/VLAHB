@@ -7,8 +7,7 @@
 
 _Checkout the [blog post](http://adamkulidjian.com/2019/11/13/vlahb.html) of _VLAHB_ for an overview of the assembly language_
 
-![Image](gifs/conway2.gif) | ![Image](gifs/pong2.gif)
-
+![Image](gifs/conway2.gif) | ![Image](gifs/pong2.gif) <br>
 ![Image](gifs/ball2.gif) |  ![Image](gifs/noise2.gif)
 
 ## To Build
