@@ -1,21 +1,6 @@
-// ******
-// Colors
-// ******
-
-// 0XFF0000FF - Red
-// 0X00FF00FF - Green
-// 0X0000FFFF - Blue
-// 0X000000FF - Black
-// 0XFAFAFAFF - Light Grey
-// 0X333333FF - Dark Grey
-
-// colorhunt - easter colors
-// *************************
-// 0Xfcf9ecff - faded baige
-// 0Xb0f4e6ff - cool blue
-// 0X67eacaff - clean green
-// 0X12d3cfff - ocean blue
-
+// ***
+// STD
+// ***
 
 STD_CLEAR:
 	LD R[4096] 4100
