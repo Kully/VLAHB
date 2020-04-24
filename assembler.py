@@ -804,8 +804,8 @@ def validate_and_make_hexfile(file_asm, lines, num_errors):
 
 if __name__ == '__main__':
     staticallyLinked = (True if '-s' in sys.argv else False)
-    asm_filenames_in_argv = [f for f in sys.argv if f.endswith('.asm')]
-    all_files_in_asm_folder = sorted([f for f in os.listdir('./asm') if f.endswith('.asm')])
+    asm_filenames_in_argv = [f for f in sys.argv if f.endswith('.vasm')]
+    all_files_in_asm_folder = sorted([f for f in os.listdir('./asm') if f.endswith('.vasm')])
 
     filename_where_pc_starts = asm_filenames_in_argv[0]
 
