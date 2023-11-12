@@ -1,21 +1,21 @@
 # VLAHB
+
+- An original assmebly langauge you can use to write your own games.
+- For details on the underlying mechanics of the language, read this [blog post](http://adamkulidjian.com/vlahb.html).
+
+![Image](gifs/conway2.gif)
+
 `V`irtual machine<br>
 `L`inker<br>
 `A`ssembly<br>
 `H`ex<br>
 `B`inary<br>
 
-_Checkout the [blog post](http://adamkulidjian.com/vlahb.html) of VLAHB for an overview of the assembly language_
-
-![Image](gifs/conway2.gif)  ![Image](gifs/pong2.gif)
-
-## To Build
+## Building
 
 `$ ./run.sh`
 
 (NB Pick which asm files to compile on [this line of run.sh](https://github.com/Kully/VLAHB/blob/master/run.sh#L3))
-
-## Tips
 
 #### Statically Linking files
 `-s` is a flag for statically-linking all the .asm files in the /asm directory. If you list 1 or more .asm filenames w/o the -s flag, it will only compile those files and start at the first one. If you list 1 or more .asm filenames with the `-s` flag, it will compile _all_ the files in the /asm directory and start with the first one.
@@ -32,8 +32,6 @@ Turn on DEBUG mode [here](https://github.com/Kully/VLAHB/blob/master/vm.c#L17) t
 #### View Machine Code
 Run `$ xxd -c 4 bin/file.bin` to view the machine code displayed as hex in the terminal.
 
----
-
 #### Specs
 
 - virtual machine, assembler/compiler
@@ -45,7 +43,5 @@ Run `$ xxd -c 4 bin/file.bin` to view the machine code displayed as hex in the t
 - vm runs on SDL2
 - written in C and Python
 - lots of fun! :smile_cat:
-
-#### Opcode Performance
 
 ![Image](gifs/opcodes.png)
