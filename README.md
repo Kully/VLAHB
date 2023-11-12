@@ -7,8 +7,7 @@
 
 _Checkout the [blog post](http://adamkulidjian.com/vlahb.html) of VLAHB for an overview of the assembly language_
 
-![Image](gifs/conway2.gif) | ![Image](gifs/pong2.gif) <br>
-![Image](gifs/ball2.gif) |  ![Image](gifs/noise2.gif)
+![Image](gifs/conway2.gif)  ![Image](gifs/pong2.gif)
 
 ## To Build
 
@@ -35,7 +34,7 @@ Run `$ xxd -c 4 bin/file.bin` to view the machine code displayed as hex in the t
 
 ---
 
-<u>Specs</u>
+#### Specs
 
 - virtual machine, assembler/compiler
 - 48 opcodes
@@ -46,3 +45,7 @@ Run `$ xxd -c 4 bin/file.bin` to view the machine code displayed as hex in the t
 - vm runs on SDL2
 - written in C and Python
 - lots of fun! :smile_cat:
+
+#### Opcode Performance
+
+![Image](gifs/opcodes.png)
